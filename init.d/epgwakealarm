@@ -1,0 +1,56 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          epgwakealarm
+# Required-Start:    $remote_fs $syslog mysql
+# Required-Stop:     
+# Default-Start:     2
+# Default-Stop:      0 1 6
+# Short-Description: epgrec
+# Description:       epgrec
+#            
+### END INIT INFO
+
+# Author: Foo Bar <foobar@baz.org>
+#
+# Please remove the "Author" lines above and replace them
+# with your own name if you copy and modify this script.
+
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+EPGREC_DIR=/var/www/epgrec
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:$EPGREC_DIR:
+DESC="Description of the service"
+NAME=epgwakealarm
+SCRIPTNAME=/etc/init.d/$NAME
+
+do_start()
+{
+	$EPGREC_DIR/epgwakealarm.php start
+	return 0
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	$EPGREC_DIR/epgwakealarm.php stop
+	return 0
+}
+
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop}" >&2
+	exit 3
+	;;
+esac
+
+:
