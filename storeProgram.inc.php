@@ -43,6 +43,12 @@ function storeProgram( $type, $xmlfile ) {
 	else if( $type == "GR") $map = $GR_CHANNEL_MAP;
 	else if( $type == "CS") $map = $CS_CHANNEL_MAP;
 	
+	// SIDマップファイルの準備
+	global $BS_SID_MAP, $CS_SID_MAP;
+	$sid_map = array();
+	if( $type == "BS" ) $sid_map = $BS_SID_MAP;
+	else if( $type == "CS") $sid_map = $CS_SID_MAP;
+	
 	// XML parse
   	$xml = @simplexml_load_file( $xmlfile );
 	if( $xml === false ) {
@@ -63,12 +69,16 @@ function storeProgram( $type, $xmlfile ) {
 				$rec->channel = $map["$disc"];
 				$rec->channel_disc = $disc;
 				$rec->name = $ch->{'display-name'};
+				if ( $type == "BS" ||  $type == "CS" )
+					$rec->sid = $sid_map["$disc"];
 			}
 		}
 		else {
 			// 存在した場合も、とりあえずチャンネル名は更新する
 			$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
 			$rec->name = $ch->{'display-name'};
+			if ( $type == "BS" ||  $type == "CS" )
+				$rec->sid = $sid_map["$disc"];
 		}
 	 }
 	 catch( Exception $e ) {
