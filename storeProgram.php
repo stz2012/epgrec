@@ -25,9 +25,9 @@
   $cmdline = $settings->epgdump." ";
   
   if( $type === "GR" ) {
-	$key = $argv[3];	// key
-	$xmlfile = $settings->temp_xml.$key."";
-	$cmdline .= $key." ".$file." ".$xmlfile;
+	$ch = $argv[3];	// channel
+	$xmlfile = $settings->temp_xml."_gr".$ch;
+	$cmdline .= $ch." ".$file." ".$xmlfile;
   }
   else if( $type === "CS1" ) {
 	$type = "CS";

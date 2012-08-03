@@ -123,13 +123,13 @@
 
   // 地上波を処理する
   if( $settings->gr_tuners != 0 ) {
-	foreach( $GR_CHANNEL_MAP as $key=>$value ){
+	foreach( $GR_CHANNEL_MAP as $value ){
 		// 録画重複チェック
 		$num = DBRecord::countRecords(  RESERVE_TBL, "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < addtime( now(), '00:01:10')" );
 		if($num < $settings->gr_tuners && check_file($temp_data_gr.$value."")) {
 			$cmdline = "CHANNEL=".$value." DURATION=60 TYPE=GR TUNER=0 MODE=0 OUTPUT=".$temp_data_gr.$value." ".DO_RECORD . " >/dev/null 2>&1";
 			exec( $cmdline );
-			$cmdline = INSTALL_PATH."/storeProgram.php GR ".$temp_data_gr.$value." ".$key;
+			$cmdline = INSTALL_PATH."/storeProgram.php GR ".$temp_data_gr.$value." ".$value;
 			$gr_procs[] = epgrec_exec( $cmdline );
   		}
   	}
