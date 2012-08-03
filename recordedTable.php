@@ -63,6 +63,10 @@ try{
 		$arr['thumb'] = "<img src=\"".$settings->install_url.$settings->thumbs."/".htmlentities($r->path, ENT_QUOTES,"UTF-8").".jpg\" />";
 		$arr['cat'] = $cat->name_en;
 		$arr['mode'] = $RECORD_MODE[$r->mode]['name'];
+		if (file_exists(INSTALL_PATH.$settings->spool."/".$r->path))
+			$arr['fsize'] = filesize_n(INSTALL_PATH.$settings->spool."/".$r->path);
+		else
+			$arr['fsize'] = '';
 		
 		array_push( $records, $arr );
 	}
@@ -109,4 +113,22 @@ try{
 catch( exception $e ) {
 	exit( $e->getMessage() );
 }
+
+function filesize_n($path)
+{
+	$size = @filesize($path);
+	if( $size <= 0 ){
+		ob_start();
+		system('ls -al "'.$path.'" | awk \'BEGIN {FS=" "}{print $5}\'');
+		$size = ob_get_clean();
+	}
+	return human_filesize($size);
+}
+
+function human_filesize($bytes, $decimals = 2) {
+	$sz = 'BKMGTP';
+	$factor = floor((strlen($bytes) - 1) / 3);
+	return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+}
+
 ?>
