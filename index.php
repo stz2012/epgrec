@@ -48,7 +48,7 @@ $programs = array();
 $tmprec = new DBRecord(CHANNEL_TBL);
 $recarr = $tmprec->fetch_array( "type", $type );
 foreach( $recarr as $val) {
-	$channel_map["$val->channel_disc"] = $val->channel;
+	$channel_map["{$val['channel_disc']}"] = $val['channel'];
 }
 $st = 0;
 $prec = null;
