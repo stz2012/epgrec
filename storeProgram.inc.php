@@ -61,9 +61,7 @@ function storeProgram( $type, $xmlfile ) {
 			$rec->channel = $map["$disc"];
 			$rec->channel_disc = $disc;
 			$rec->name = $ch->{'display-name'};
-			// BS／CSの場合、SIDをチャンネルマップより設定
-			if ( $type == "BS" ||  $type == "CS" )
-				$rec->sid = $sid;
+			$rec->sid = $sid;
 		}
 		else {
 			// 存在した場合も、とりあえずチャンネル名は更新する

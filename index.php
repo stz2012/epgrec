@@ -46,7 +46,7 @@ for( $i = 0 ; $i < $program_length; $i++ ) {
 // 番組表
 $programs = array();
 $tmprec = new DBRecord(CHANNEL_TBL);
-$recarr = $tmprec->fetch_array( "type", $type );
+$recarr = $tmprec->fetch_array( "type", $type, "id > 0 ORDER BY sid ASC" );
 foreach( $recarr as $val) {
 	$channel_map["{$val['channel_disc']}"] = $val['channel'];
 }
