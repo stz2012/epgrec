@@ -34,20 +34,10 @@ function doKeywordReservation() {
 }
 
 function storeProgram( $type, $xmlfile ) {
-	global $BS_CHANNEL_MAP, $GR_CHANNEL_MAP, $CS_CHANNEL_MAP;
 	global $settings;
 	
 	// チャンネルマップファイルの準備
 	$map = array();
-	if( $type == "BS" ) $map = $BS_CHANNEL_MAP;
-	else if( $type == "GR") $map = $GR_CHANNEL_MAP;
-	else if( $type == "CS") $map = $CS_CHANNEL_MAP;
-	
-	// SIDマップファイルの準備
-	global $BS_SID_MAP, $CS_SID_MAP;
-	$sid_map = array();
-	if( $type == "BS" ) $sid_map = $BS_SID_MAP;
-	else if( $type == "CS") $sid_map = $CS_SID_MAP;
 	
 	// XML parse
   	$xml = @simplexml_load_file( $xmlfile );
@@ -58,27 +48,33 @@ function storeProgram( $type, $xmlfile ) {
 	// channel抽出
 	foreach( $xml->channel as $ch ) {
 		$disc = $ch['id'];
+		$tmp_arr = explode('_', $ch['id']);
+		$sid = $tmp_arr[1];
+		$map[$disc] = $ch['tp'];
 	 try {
 		// チャンネルデータを探す
 		$num = DBRecord::countRecords( CHANNEL_TBL , "WHERE channel_disc = '" . $disc ."'" );
 		if( $num == 0 ) {
-			if( array_key_exists( "$disc", $map ) ) {
-				// チャンネルデータがないなら新規作成
-				$rec = new DBRecord( CHANNEL_TBL );
-				$rec->type = $type;
-				$rec->channel = $map["$disc"];
-				$rec->channel_disc = $disc;
-				$rec->name = $ch->{'display-name'};
-				if ( $type == "BS" ||  $type == "CS" )
-					$rec->sid = $sid_map["$disc"];
-			}
+			// チャンネルデータがないなら新規作成
+			$rec = new DBRecord( CHANNEL_TBL );
+			$rec->type = $type;
+			$rec->channel = $map["$disc"];
+			$rec->channel_disc = $disc;
+			$rec->name = $ch->{'display-name'};
+			// BS／CSの場合、SIDをチャンネルマップより設定
+			if ( $type == "BS" ||  $type == "CS" )
+				$rec->sid = $sid;
 		}
 		else {
 			// 存在した場合も、とりあえずチャンネル名は更新する
 			$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
 			$rec->name = $ch->{'display-name'};
+			// BS／CSの場合、チャンネル番号とSIDをチャンネルマップより更新
 			if ( $type == "BS" ||  $type == "CS" )
-				$rec->sid = $sid_map["$disc"];
+			{
+				$rec->channel = $map["$disc"];
+				$rec->sid = $sid;
+			}
 		}
 	 }
 	 catch( Exception $e ) {
