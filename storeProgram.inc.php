@@ -50,7 +50,7 @@ function storeProgram( $type, $xmlfile ) {
 		$disc = $ch['id'];
 		$tmp_arr = explode('_', $ch['id']);
 		$sid = $tmp_arr[1];
-		$map[$disc] = $ch['tp'];
+		$map["$disc"] = $ch['tp'];
 	 try {
 		// チャンネルデータを探す
 		$num = DBRecord::countRecords( CHANNEL_TBL , "WHERE channel_disc = '" . $disc ."'" );
