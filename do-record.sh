@@ -26,7 +26,7 @@ case ${TYPE} in
     *)
         case ${MODE} in
             0)
-                $RECORDER2 --b25 --sid epg $CHANNEL $DURATION ${OUTPUT} >/dev/null
+                $RECORDER2 --b25 $CHANNEL $DURATION ${OUTPUT} >/dev/null
                 ;;
             *)
                 $RECORDER2 --b25 --sid $SID $CHANNEL $DURATION ${OUTPUT} >/dev/null
