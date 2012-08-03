@@ -14,12 +14,10 @@ case ${TYPE} in
     "BS"|"CS")
         case ${MODE} in
             0)
-                $RECORDER1 --b25 --strip --sync --lnb \
-			$CHANNEL $DURATION ${OUTPUT} >/dev/null
+                $RECORDER1 --b25 --strip --sync $CHANNEL $DURATION ${OUTPUT} >/dev/null
                 ;;
             *)
-                $RECORDER1 --b25 --strip --sync --lnb --sid $SID \
-			$CHANNEL $DURATION ${OUTPUT} >/dev/null
+                $RECORDER1 --b25 --strip --sync --sid $SID $CHANNEL $DURATION ${OUTPUT} >/dev/null
                 ;;
         esac
         ;;
