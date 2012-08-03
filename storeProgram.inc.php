@@ -35,8 +35,6 @@ function doKeywordReservation() {
 
 function storeProgram( $type, $xmlfile ) {
 	global $settings;
-	
-	// チャンネルマップファイルの準備
 	$map = array();
 	
 	// XML parse
@@ -67,7 +65,7 @@ function storeProgram( $type, $xmlfile ) {
 			// 存在した場合も、とりあえずチャンネル名は更新する
 			$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
 			$rec->name = $ch->{'display-name'};
-			// BS／CSの場合、チャンネル番号とSIDをチャンネルマップより更新
+			// BS／CSの場合、チャンネル番号とSIDを更新
 			if ( $type == "BS" ||  $type == "CS" )
 			{
 				$rec->channel = $map["$disc"];
