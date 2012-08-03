@@ -88,6 +88,20 @@
 
   if( file_exists( $settings->temp_data ) ) @unlink( $settings->temp_data );
 
+  // 地上波を処理する
+  if( $settings->gr_tuners != 0 ) {
+	foreach( $GR_CHANNEL_MAP as $value ){
+		// 録画重複チェック
+		$num = DBRecord::countRecords(  RESERVE_TBL, "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < addtime( now(), '00:01:10')" );
+		if($num < $settings->gr_tuners && check_file($temp_data_gr.$value."")) {
+			$cmdline = "CHANNEL=".$value." DURATION=60 TYPE=GR TUNER=0 MODE=0 OUTPUT=".$temp_data_gr.$value." ".DO_RECORD . " >/dev/null 2>&1";
+			exec( $cmdline );
+			$cmdline = INSTALL_PATH."/storeProgram.php GR ".$temp_data_gr.$value." ".$value;
+			$gr_procs[] = epgrec_exec( $cmdline );
+  		}
+  	}
+  }
+
   // BSを処理する
   if( $settings->bs_tuners != 0 ) {
 	// 録画重複チェック
@@ -118,20 +132,6 @@
 			$cmdline = INSTALL_PATH."/storeProgram.php CS2 ".$temp_data_cs2;
 			$cs2_proc = epgrec_exec( $cmdline );
 	  	}
-  	}
-  }
-
-  // 地上波を処理する
-  if( $settings->gr_tuners != 0 ) {
-	foreach( $GR_CHANNEL_MAP as $value ){
-		// 録画重複チェック
-		$num = DBRecord::countRecords(  RESERVE_TBL, "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < addtime( now(), '00:01:10')" );
-		if($num < $settings->gr_tuners && check_file($temp_data_gr.$value."")) {
-			$cmdline = "CHANNEL=".$value." DURATION=60 TYPE=GR TUNER=0 MODE=0 OUTPUT=".$temp_data_gr.$value." ".DO_RECORD . " >/dev/null 2>&1";
-			exec( $cmdline );
-			$cmdline = INSTALL_PATH."/storeProgram.php GR ".$temp_data_gr.$value." ".$value;
-			$gr_procs[] = epgrec_exec( $cmdline );
-  		}
   	}
   }
   
