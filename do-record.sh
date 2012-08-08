@@ -14,7 +14,7 @@ case ${TYPE} in
     "BS"|"CS")
         case ${MODE} in
             0)
-                $RECORDER1 --b25 --strip --sync $CHANNEL $DURATION ${OUTPUT} >/dev/null
+                $RECORDER1 --b25 --strip --sync --sid epg $CHANNEL $DURATION ${OUTPUT} >/dev/null
                 ;;
             *)
                 $RECORDER1 --b25 --strip --sync --sid $SID $CHANNEL $DURATION ${OUTPUT} >/dev/null
@@ -24,7 +24,7 @@ case ${TYPE} in
     *)
         case ${MODE} in
             0)
-                $RECORDER2 --b25 $CHANNEL $DURATION ${OUTPUT} >/dev/null
+                $RECORDER2 --b25 --sid epg $CHANNEL $DURATION ${OUTPUT} >/dev/null
                 ;;
             *)
                 $RECORDER2 --b25 --sid $SID $CHANNEL $DURATION ${OUTPUT} >/dev/null
