@@ -9,17 +9,6 @@ echo "SID  : $SID"
 
 RECORDER=/usr/local/bin/recpt1
 
-# fail safe
-case $CHANNEL in
-    101|102|191|192|193)
-	if [ $SID = 'hd' ]; then
-	    SID=$CHANNEL
-	fi ;;
-esac
-if [ -z $SID ]; then
-    SID='hd'
-fi
-
 if [ ${MODE} = 0 ]; then
    # MODE=0では必ず無加工のTSを吐き出すこと
    $RECORDER --b25 --strip $CHANNEL $DURATION ${OUTPUT} >/dev/null
