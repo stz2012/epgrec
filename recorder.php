@@ -304,7 +304,7 @@ try{
 	}
 }
 catch( Exception $e ) {
-	reclog( "recorder:: ".$e->getMessage(), $e->getLevel() );
+	reclog( "recorder:: ".$e->getMessage(), EPGREC_ERROR );
 }
 
 msg_remove_queue( $msgh_r );	// メッセージハンドラ開放
