@@ -1,4 +1,14 @@
+【epgrec + α（STZ版）】
 epgrecは日本のデジタル放送用録画システムです。
+こちらは亜流版ですのでご注意下さい。
+
+本家はこちら→ http://sourceforge.jp/projects/epgrec/
+
+※このシステムは以下のプログラムとの組み合わせを前提としたものです。
+epgdump    STZ版：https://github.com/stz2012/epgdump/
+recfsusb2n STZ版：https://github.com/stz2012/recfsusb2n/
+recfriio   STZ版：https://github.com/stz2012/recfriio/
+recpt1      本家：http://hg.honeyplanet.jp/pt1/
 
 ●改造のための情報
 
