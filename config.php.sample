@@ -76,9 +76,9 @@ define( "RECORDER_CMD", INSTALL_PATH . "/recorder.php" );
 // BSでepgdumpが頻繁に落ちる場合は、受信状態のいいチャンネルに変えることで
 // 改善するかもしれません
 
-define( "BS_EPG_CHANNEL",  "211"  );	// BS
-define( "CS1_EPG_CHANNEL", "CS8"  );	// CS1
-define( "CS2_EPG_CHANNEL", "CS24" );	// CS2
+define( "BS_EPG_CHANNEL",  "BS09_0" );	// BS
+define( "CS1_EPG_CHANNEL", "CS8"    );	// CS1
+define( "CS2_EPG_CHANNEL", "CS24"   );	// CS2
 
 // 地上デジタルチャンネルテーブルsettings/gr_channel.phpが存在するならそれを
 // 優先する
