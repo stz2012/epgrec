@@ -194,6 +194,7 @@ class Reservation {
 			%ET%	終了日時
 			%TYPE%	GR/BS/CS
 			%CH%	チャンネル番号
+			%SID%	サービスID
 			%DOW%	曜日（Sun-Mon）
 			%DOWJ%	曜日（日-土）
 			%YEAR%	開始年
@@ -208,16 +209,18 @@ class Reservation {
 			$day_of_week = array( "日","月","火","水","木","金","土" );
 			$filename = $settings->filename_format;
 			
-			// %TITLE%
+			// %TITLE%	番組タイトル
 			$filename = mb_str_replace("%TITLE%", trim($title), $filename);
 			// %ST%	開始日時
 			$filename = mb_str_replace("%ST%",date("YmdHis", $start_time), $filename );
 			// %ET%	終了日時
 			$filename = mb_str_replace("%ET%",date("YmdHis", $end_time), $filename );
-			// %TYPE%	GR/BS
+			// %TYPE%	GR/BS/CS
 			$filename = mb_str_replace("%TYPE%",$crec->type, $filename );
 			// %CH%	チャンネル番号
 			$filename = mb_str_replace("%CH%","".$crec->channel, $filename );
+			// %SID%	サービスID
+			$filename = mb_str_replace("%SID%","".$crec->sid, $filename );
 			// %DOW%	曜日（Sun-Mon）
 			$filename = mb_str_replace("%DOW%",date("D", $start_time), $filename );
 			// %DOWJ%	曜日（日-土）
