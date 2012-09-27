@@ -44,7 +44,7 @@ for( $i = 0 ; $i < $program_length; $i++ ) {
 
 // チャンネルマップ
 $tmprec = new DBRecord(CHANNEL_TBL);
-$recarr = $tmprec->fetch_array( "type", $type, "id > 0 ORDER BY sid ASC" );
+$recarr = $tmprec->fetch_array( "type", $type, "id > 0 ORDER BY sid+0 ASC" );
 foreach( $recarr as $val) {
 	$channel_map["{$val['channel_disc']}"] = $val['channel'];
 }

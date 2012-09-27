@@ -87,98 +87,113 @@ class Reservation {
 			$tuners = ($crec->type == "GR") ? (int)($settings->gr_tuners) : (int)($settings->bs_tuners);
 			$type_str = ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS') ";
 			
-			$battings = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' ".
-															  "AND ".$type_str.
-															  "AND starttime < '".toDatetime($end_time) ."' ".
-															  "AND endtime > '".toDatetime($rec_start)."'"
-			);
+			// 影響する予約情報を集める
+			$trecs = DBRecord::createRecords(RESERVE_TBL, "WHERE complete = '0' ".
+											"AND ".$type_str.
+											"AND starttime < '".toDatetime($end_time)."' ".
+											"AND endtime > '".toDatetime($rec_start)."'" );
+			// 情報を配列に入れる
+			for( $i = 0; $i < count($trecs) ; $i++ ) {
+				$dim_start_time[$i] = toTimestamp($trecs[$i]->starttime);
+				$dim_end_time[$i] = toTimestamp($trecs[$i]->endtime);
+			}
+			// 新規予約の値も配列に追加
+			$dim_start_time[count($trecs)] = $rec_start;
+			$dim_end_time[count($trecs)] = $end_time;
 			
-			if( $battings >= $tuners ) {
-				// 重複を発見した
-				if( $settings->force_cont_rec == 1 ) {
-					// 解消可能な重複かどうかを調べる
-					// 前後の予約数
-					$nexts = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' ".
-																	"AND ".$type_str.
-																	"AND starttime = '".toDatetime($end_time - $settings->former_time)."'");
-					
-					$prevs = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' ".
-																"AND ".$type_str.
-																"AND endtime = '".$starttime."'"  );
-					
-					// 前後を引いてもチューナー数と同数以上なら重複の解消は無理
-					if( ($battings - $nexts - $prevs) >= $tuners )
-						throw new Exception( "重複予約を解消できません" );
-					
-					// 直後の番組はあるか?
-					if( $nexts ) {
-						// この番組の終わりをちょっとだけ早める
-						$end_time = $end_time - $settings->former_time - $settings->rec_switch_time;
-						$duration = $end_time - $rec_start;		// durationを計算しなおす
+			// 配列を使って重複を調べ、重複解消を検証する
+			$battings = 0;
+			$mi = 0;
+			for( $i = 0; $i <= count($trecs) ; $i++ ) {
+				$mem_battings = 0;
+				for( $j = 0; $j <= count($trecs) ; $j++ ) {
+					if( ( $i <> $j ) && ( $dim_start_time[$j] < $dim_end_time[$i] ) && ( $dim_end_time[$j] >= $dim_end_time[$i] ) ) {
+						$mem_battings++; // 重複をカウント
 					}
-					$battings -= $nexts;
-					
-					// 直前の録画予約を見付ける
-					$trecs = DBRecord::createRecords(RESERVE_TBL, "WHERE complete = '0' ".
-																		 "AND ".$type_str.
-																		 "AND endtime = '".$starttime."'" );
-					// 直前の番組をずらす
-					for( $i = 0; $i < count($trecs) ; $i++ ) {
-						if( $battings < $tuners ) break;	// 解消終了のハズ?
-						// 予約修正に必要な情報を取り出す
-						$prev_id           = $trecs[$i]->id;
-						$prev_program_id   = $trecs[$i]->program_id;
-						$prev_channel_id   = $trecs[$i]->channel_id;
-						$prev_title        = $trecs[$i]->title;
-						$prev_description  = $trecs[$i]->description;
-						$prev_category_id  = $trecs[$i]->category_id;
-						$prev_starttime    = $trecs[$i]->starttime;
-						$prev_endtime      = $trecs[$i]->endtime;
-						$prev_autorec      = $trecs[$i]->autorec;
-						$prev_mode         = $trecs[$i]->mode;
-						$prev_dirty        = $trecs[$i]->dirty;
-						
-						$prev_start_time = toTimestamp($prev_starttime);
-						// 始まっていない予約？
-						if( $prev_start_time > (time() + PADDING_TIME + $settings->former_time) ) {
-							// 開始時刻を元に戻す
-							$prev_starttime = toDatetime( $prev_start_time + $settings->former_time );
-							// 終わりをちょっとだけずらす
-							$prev_endtime   = toDatetime( toTimestamp($prev_endtime) - $settings->former_time - $settings->rec_switch_time );
-							
-							// tryのネスト
-							try {
-								// いったん予約取り消し
-								self::cancel( $prev_id );
-								// 再予約
-								self::custom( 
-									$prev_starttime,			// 開始時間Datetime型
-									$prev_endtime,				// 終了時間Datetime型
-									$prev_channel_id,			// チャンネルID
-									$prev_title,				// タイトル
-									$prev_description,			// 概要
-									$prev_category_id,			// カテゴリID
-									$prev_program_id,			// 番組ID
-									$prev_autorec,				// 自動録画
-									$prev_mode,
-									$prev_dirty );
-							}
-							catch( Exception $e ) {
-								throw new Exception( "重複予約を解消できません" );
-							}
-						}
-						else {
-							throw new Exception( "重複予約を解消できません" );
-						}
-						$battings--;
-					}
-					if( $battings < 0 ) $battings = 0;
-					// これで重複解消したはず
 				}
-				else {
-					throw new Exception( "重複予約があります" );
+				if( $mem_battings > $tuners ) {	// 重複が多すぎるので予約不可
+					throw new Exception( " 重複予約があります" );
+				}
+				// チューナー数が足りないとき、連続予約="する"なら重複解消を試みる
+				if( ( $mem_battings >= $tuners ) && ( $settings->force_cont_rec == 1 ) ) {
+					for( $j = 0; $j <= count($trecs) ; $j++ ) {
+						// 連続予約があるか？
+						if( ( $i <> $j ) && ( $dim_end_time[$i] > $dim_start_time[$j] - $settings->rec_switch_time )
+						 && ( $dim_end_time[$i] <= $dim_start_time[$j] + $settings->extra_time + $settings->former_time ) ) {
+							// 録画が始まっていないか？
+							if( $dim_start_time[$i] > ( time() + PADDING_TIME + $settings->former_time + $settings->rec_switch_time ) + 1 ) {
+								$mem[$mi] = $i;	// 変更すべき予約IDをメモ
+								$dim_end_time[$i] = $dim_start_time[$j] - $settings->rec_switch_time; // 先行予約の終了時刻を早める
+							}
+							else {
+								$mem[$mi] = $j;	// 変更すべき予約IDをメモ
+								$dim_start_time[$j] = $dim_end_time[$i] + $settings->rec_switch_time; // 後続予約の開始時刻を遅くする
+							}
+							$mi++;
+							$mem_battings--;
+							break;
+						}
+					}
+				}
+				if( $mem_battings >= $tuners ) { // 重複解消できない
+					for( $j = 0; $j < count($trecs) ; $j++ ) {
+						if( ( $dim_start_time[$j] < $dim_end_time[$i] ) && ( $dim_end_time[$j] >= $dim_end_time[$i] ) ) {
+							 $msg = $msg."\n  「".$trecs[$j]->title."」";
+						}
+					}
+					throw new Exception( " 予約が重複しています".$msg );
+				}
+				if( $battings < $mem_battings ) {
+					$battings = $mem_battings;
 				}
 			}
+			
+			// ここまでくれば予約可能
+			for( $i = 0; $i < $mi ; $i++ ) { // 重複解消が必要なら実行する
+				if( $mem[$i] == count($trecs) ) { // 変更すべきは新規予約
+					$rec_start = $dim_start_time[$mem[$i]];
+					$end_time = $dim_end_time[$mem[$i]];
+					$duration = $end_time - $rec_start;	// durationを計算しなおす
+				}
+				else { // 変更すべきは既存予約
+					// 予約修正に必要な情報を取り出す
+					$prev_id           = $trecs[$mem[$i]]->id;
+					$prev_program_id   = $trecs[$mem[$i]]->program_id;
+					$prev_channel_id   = $trecs[$mem[$i]]->channel_id;
+					$prev_title        = $trecs[$mem[$i]]->title;
+					$prev_description  = $trecs[$mem[$i]]->description;
+					$prev_category_id  = $trecs[$mem[$i]]->category_id;
+					$prev_starttime    = $trecs[$mem[$i]]->starttime;
+					$prev_endtime      = $trecs[$mem[$i]]->endtime;
+					$prev_autorec      = $trecs[$mem[$i]]->autorec;
+					$prev_mode         = $trecs[$mem[$i]]->mode;
+					$prev_dirty        = $trecs[$mem[$i]]->dirty;
+					$prev_start_time = toTimestamp($prev_starttime);
+					// 開始時刻を再設定
+					$prev_starttime = toDatetime( $dim_start_time[$mem[$i]] + $settings->former_time );
+					// 終了時刻を再設定
+					$prev_endtime   = toDatetime( $dim_end_time[$mem[$i]] );
+					// tryのネスト
+					try {
+						self::cancel( $prev_id );	// いったん予約取り消し
+						self::custom( 			// 再予約
+							$prev_starttime,	// 開始時間Datetime型
+							$prev_endtime,		// 終了時間Datetime型
+							$prev_channel_id,	// チャンネルID
+							$prev_title,		// タイトル
+							$prev_description,	// 概要
+							$prev_category_id,	// カテゴリID
+							$prev_program_id,	// 番組ID
+							$prev_autorec,		// 自動録画
+							$prev_mode,
+							$prev_dirty );
+					}
+					catch( Exception $e ) {
+						throw new Exception( " 予約時刻変更(再予約)に失敗しました\n  「".$prev_title."」" );
+					}
+				}
+			}
+			
 			// チューナー番号
 			$tuner = $battings;
 			

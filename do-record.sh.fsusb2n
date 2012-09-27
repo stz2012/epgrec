@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 echo "CHANNEL : $CHANNEL"
 echo "DURATION: $DURATION"
 echo "OUTPUT  : $OUTPUT"
@@ -11,7 +11,7 @@ RECORDER=/usr/local/bin/recfsusb2n
 
 if [ ${MODE} = 0 ]; then
    # MODE=0‚Å‚Í•K‚¸–³‰ÁH‚ÌTS‚ð“f‚«o‚·‚±‚Æ
-   $RECORDER --b25 $CHANNEL $DURATION ${OUTPUT} >/dev/null
+   $RECORDER --b25 --sid epg $CHANNEL $DURATION ${OUTPUT} >/dev/null
 elif [ ${MODE} = 1 ]; then
    # –Ú“I‚ÌSID‚Ì‚ÝŽc‚·
    $RECORDER --b25 --sid $SID $CHANNEL $DURATION ${OUTPUT} >/dev/null

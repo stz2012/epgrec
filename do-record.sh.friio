@@ -11,7 +11,7 @@ RECORDER=/usr/local/bin/recfriio
 
 if [ ${MODE} = 0 ]; then
    # MODE=0‚Å‚Í•K‚¸–³‰ÁH‚ÌTS‚ð“f‚«o‚·‚±‚Æ
-   $RECORDER --b25 --strip --sync $CHANNEL $DURATION ${OUTPUT} >/dev/null
+   $RECORDER --b25 --strip --sync --sid epg $CHANNEL $DURATION ${OUTPUT} >/dev/null
 elif [ ${MODE} = 1 ]; then
    # –Ú“I‚ÌSID‚Ì‚ÝŽc‚·
    $RECORDER --b25 --strip --sync --sid $SID $CHANNEL $DURATION ${OUTPUT} >/dev/null

@@ -11,7 +11,7 @@ RECORDER=/usr/local/bin/recpt1
 
 if [ ${MODE} = 0 ]; then
    # MODE=0では必ず無加工のTSを吐き出すこと
-   $RECORDER --b25 --strip $CHANNEL $DURATION ${OUTPUT} >/dev/null
+   $RECORDER --b25 --strip --sid epg $CHANNEL $DURATION ${OUTPUT} >/dev/null
 elif [ ${MODE} = 1 ]; then
    # 目的のSIDのみ残す
    $RECORDER --b25 --strip --sid $SID $CHANNEL $DURATION ${OUTPUT} >/dev/null
