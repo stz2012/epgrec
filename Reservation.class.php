@@ -292,6 +292,7 @@ class Reservation {
 			$rrec->autorec = $autorec;
 			$rrec->mode = $mode;
 			$rrec->reserve_disc = md5( $crec->channel_disc . toDatetime( $start_time ). toDatetime( $end_time ) );
+			$rrec->update();
 			
 			// 予約実行
 			$cmdline = $settings->at." ".date("H:i m/d/Y", $at_start);
