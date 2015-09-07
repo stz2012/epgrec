@@ -118,18 +118,13 @@ class InstallController extends CommonController
 		$this->setting->save();
 
 		// データベース接続チェック
-		$dbh = @mysql_connect( $this->setting->db_host, $this->setting->db_user, $this->setting->db_pass );
-		if ( $dbh == false )
+		try
+		{
+			$dbh = new PDO($this->model->dsn);
+		}
+		catch( Exception $e )
 		{
 			jdialog( "MySQLに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step2" );
-			exit();
-		}
-
-		$sqlstr = "use ".$this->setting->db_name;
-		$res = @mysql_query( $sqlstr );
-		if ( $res == false )
-		{
-			jdialog( "データベース名が異なるようです", "{$this->getCurrentUri(false)}/step2" );
 			exit();
 		}
 

@@ -33,7 +33,7 @@ class ModelBase
 	 */
 	public function initDb()
 	{
-		if (self::$connInst != null)
+		if (self::isConnect())
 		{
 			$this->db = self::$connInst;
 			//UtilLog::writeLog("PDOインスタンスの再利用: ".print_r(self::$connInst, true), 'DEBUG');
@@ -102,6 +102,15 @@ class ModelBase
 	public static function setConnectionInfo($connInfo)
 	{
 		self::$connInfo = $connInfo;
+	}
+
+	/**
+	 * 接続状態を判定
+	 * @return bool
+	 */
+	public static function isConnect()
+	{
+		return (self::$connInst != null);
 	}
 
 	/**

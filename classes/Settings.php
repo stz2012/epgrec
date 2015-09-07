@@ -187,6 +187,18 @@ class Settings extends SimpleXMLElement
 		}
 	}
 	
+	public function getConnInfo()
+	{
+		return array(
+			'type'   => 'mysql',
+			'host'   => $this->setting->db_host,
+			'port'   => 3306,
+			'dbname' => $this->setting->db_name,
+			'dbuser' => $this->setting->db_user,
+			'dbpass' => $this->setting->db_pass
+		);
+	}
+	
 	public function exists( $property )
 	{
 		return (int)count( $this->{$property} );

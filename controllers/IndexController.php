@@ -516,15 +516,6 @@ class IndexController extends CommonController
 		}
 		$reserve_id = $this->request->getPost('reserve_id');
 
-		$dbh = false;
-		if ( $this->setting->mediatomb_update == 1 )
-		{
-			$sqlstr = "use ".$this->setting->db_name;
-			@mysql_query( $sqlstr );
-			$sqlstr = "set NAME utf8";
-			@mysql_query( $sqlstr );
-		}
-
 		try
 		{
 			$rec = new DBRecord(RESERVE_TBL, "id", $reserve_id );
@@ -533,12 +524,15 @@ class IndexController extends CommonController
 			{
 				$rec->title = trim( $this->request->getPost('title') );
 				$rec->dirty = 1;
-				if ( ($dbh !== false) && ($rec->complete == 1) )
+				if ( ($this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
 				{
 					$title = trim( $this->request->getPost('title'));
 					$title .= "(".date("Y/m/d", toTimestamp($rec->starttime)).")";
-					$sqlstr = "update mt_cds_object set dc_title='".$title."' where metadata regexp 'epgrec:id=".$reserve_id."$'";
-					@mysql_query( $sqlstr );
+					$this->model->updateRow('mt_cds_object', array('dc_title' => $title),
+																array('metadata' => array(
+																		'operator' => 'regexp',
+																		   'value' => 'epgrec:id='.$reserve_id.'$'))
+					);
 				}
 			}
 			
@@ -546,12 +540,15 @@ class IndexController extends CommonController
 			{
 				$rec->description = trim( $this->request->getPost('description') );
 				$rec->dirty = 1;
-				if ( ($dbh !== false) && ($rec->complete == 1) )
+				if ( ($this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
 				{
 					$desc = "dc:description=".trim( $this->request->getPost('description'));
 					$desc .= "&epgrec:id=".$reserve_id;
-					$sqlstr = "update mt_cds_object set metadata='".$desc."' where metadata regexp 'epgrec:id=".$reserve_id."$'";
-					@mysql_query( $sqlstr );
+					$this->model->updateRow('mt_cds_object', array('metadata' => $desc),
+																array('metadata' => array(
+																		'operator' => 'regexp',
+																		   'value' => 'epgrec:id='.$reserve_id.'$'))
+					);
 				}
 			}
 		}
