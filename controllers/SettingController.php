@@ -13,9 +13,10 @@ class SettingController extends CommonController
 	{
 		global $RECORD_MODE;
 		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "record_mode", $RECORD_MODE );
 		$this->view->assign( "install_path", INSTALL_PATH );
 		$this->view->assign( "sitetitle", "環境設定" );
+		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/save" );
+		$this->view->assign( "record_mode", $RECORD_MODE );
 	}
 
 	/**
@@ -26,6 +27,7 @@ class SettingController extends CommonController
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "install_path", INSTALL_PATH );
 		$this->view->assign( "sitetitle", "システム設定" );
+		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/save" );
 	}
 
 	/**

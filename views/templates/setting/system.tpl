@@ -1,12 +1,18 @@
 {include file='header.tpl'}
 
 <div class="container">
-<h2>MySQLデータベース設定</h2>
+<h2>{$sitetitle}</h2>
+{if $message != ''}
+{$message}
+{else}
 <a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting">環境設定へ</a>
+{/if}
 </div>
 
 <div class="container">
-<form id="system_setting" method="post" action="{$home_url}setting/save" class="formSetting">
+<form id="system_setting" method="post" action="{$post_to}" class="formSetting">
+
+<h2>MySQLデータベース設定</h2>
 
 <h3>MySQLホスト名</h3>
 <div class="setting">
@@ -26,7 +32,6 @@
 <input type="text" name="db_pass" value="{$settings->db_pass}" size="15" class="required" />
 </div>
 
-
 <h3>使用データベース名</h3>
 <div class="setting">
 <div class="caption">使用するデータベース名を設定します。設定するデータベースは接続ユーザーがテーブルの作成等を行う権限を持っている必要があります。</div>
@@ -39,7 +44,6 @@
 <input type="text" name="tbl_prefix" value="{$settings->tbl_prefix}" size="15" class="required" />
 </div>
 
-
 <h2>インストール関連設定</h2>
 
 <h3>インストールURL</h3>
@@ -47,7 +51,6 @@
 <div class="caption">epgrecをLAN内のクライアントから参照することができるURLを設定します。http://localhost…のままで利用することも可能ですが、その場合はビデオの視聴等がサーバー上でしかできないなどの制限が生じます。</div>
 <input type="text" name="install_url" value="{$settings->install_url}" size="40" class="required" />
 </div>
-
 
 <h3>録画保存ディレクトリ</h3>
 <div class="setting">
@@ -70,13 +73,11 @@
 <input type="text" id="id_ffmpeg" name="ffmpeg" value="{$settings->ffmpeg}" size="40" class="required" />
 </div>
 
-
 <h3>サムネール保存ディレクトリ</h3>
 <div class="setting">
 <div class="caption">サムネールを保存するディレクトリを{$install_path}からの相対パスで設定します。設定の方法、条件は録画保存ディレクトリと同様です。</div>
 <input type="text" id="id_thumbs" name="thumbs" value="{$settings->thumbs}" size="15" class="required" />
 </div>
-
 
 <h3>EPG取得用テンポラリファイルの設定</h3>
 <div class="setting">
@@ -94,7 +95,6 @@
 <div><b>atrm：</b><input type="text" name="atrm" value="{$settings->atrm}" size="30" class="required" /></div>
 <div><b>sleep：</b><input type="text" name="sleep" value="{$settings->sleep}" size="30" class="required" /></div>
 </div>
-
 
 <h3>省電力の設定</h3>
 <div class="setting">
@@ -129,7 +129,6 @@
 <div class="caption">シャットダウンさせるコマンドを設定してください。省電力が有効なときに使う値です。</div>
 <div><b>グループ名：</b><input type="text" name="shutdown" id="id_shutdown" value="{$settings->shutdown}" size="40" class="required" /></div>
 </div>
-
 
 <input type="submit" value="設定を保存する" id="system_setting-submit" />
 </form>

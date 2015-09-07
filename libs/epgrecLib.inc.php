@@ -60,6 +60,16 @@ function mb_str_replace($search, $replace, $target, $encoding = "UTF-8" )
 	return $notArray ? $target[0] : $target;
 }
 
+/**
+ * クラスのオートロード
+ * @param string $className クラス名
+ */
+function custom_autoloader($className)
+{
+	$file_name = preg_replace('/[^a-z_A-Z0-9]/u', '', $className) . '.php';
+	require_once $file_name;
+}
+
 function filesize_n($path)
 {
 	$size = @filesize($path);

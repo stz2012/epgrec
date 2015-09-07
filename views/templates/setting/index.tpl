@@ -1,12 +1,18 @@
 {include file='header.tpl'}
 
 <div class="container">
-<h2>デジタルチューナー設定</h2>
+<h2>{$sitetitle}</h2>
+{if $message != ''}
+{$message}
+{else}
 <a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting/system">システム設定へ</a>/<a href="{$home_url}setting/viewLog">動作ログを見る</a>
+{/if}
 </div>
 
 <div class="container">
-<form id="env_setting" method="post" action="{$home_url}setting/save">
+<form id="env_setting" method="post" action="{$post_to}">
+
+<h2>デジタルチューナー設定</h2>
 
 <h3>地デジチューナーの台数</h3>
 <div class="setting">
@@ -31,7 +37,6 @@
 
 <h2>録画関連設定</h2>
 
-
 <h3>録画開始の余裕時間（秒）</h3>
 <div class="setting">
 <div class="caption">epgrecは番組開始時間より早く録画を開始します。どのくらい録画開始を早めるかを秒で設定してください。早める時間を短くしすぎると、番組冒頭がとぎれる恐れがあります。設定できる時間は0秒以上180秒未満です。</div>
@@ -53,13 +58,11 @@
 </select>
 </div>
 
-
 <h3>録画コマンドの切り替え時間</h3>
 <div class="setting">
 <div class="caption">連続した番組を予約するとき、録画が終了して次の録画を開始するまでの余裕時間（秒）を設定します。1以上の秒数を設定してください。設定する秒数が短いほど録画時間を短縮する時間が短くなりますが、この時間を短くしすぎると連続した番組の予約に失敗する恐れがあります。失敗するかどうかは使用している録画コマンドやチューナーに依存します。</div>
 <input type="text" name="rec_switch_time" id="id_rec_switch_time" value="{$settings->rec_switch_time}" size="4" class="required digits" min="1" />
 </div>
-
 
 <h3>優先する録画モード</h3>
 <div class="setting">
@@ -71,8 +74,6 @@
 {/foreach}
 </select>
 </div>
-
-
 
 <h3>mediatomb連係機能</h3>
 <div class="setting">
@@ -126,20 +127,17 @@
 <input type="text" name="program_length" value="{$settings->program_length}" size="2" class="required digits" min="2" max="24" />
 </div>
 
-
 <h3>1局あたりの幅</h3>
 <div class="setting">
 <div class="caption">番組表の1局当たりの幅をピクセル数で設定します。標準は150ピクセルです。</div>
 <input type="text" id="ch_set_width" name="ch_set_width" value="{$settings->ch_set_width}" size="4" class="required digits" min="20" />
 </div>
 
-
 <h3>1時間あたりの高さ</h3>
 <div class="setting">
 <div class="caption">番組表の1時間あたりの高さをピクセル数で設定します。標準は120ピクセルです。なお、60で割り切れないピクセル数を指定するとFirefoxを除くブラウザでは番組の高さが揃わなくなり見た目が悪くなるかもしれません。これはFirefox以外のブラウザでは実数のピクセルを正しくレンダリングしないためです。</div>
 <input type="text" id="height_per_hour" name="height_per_hour" value="{$settings->height_per_hour}" size="4" class="required digits" min="30" />
 </div>
-
 
 <input type="submit" value="設定を保存する" id="env_setting-submit" />
 </form>

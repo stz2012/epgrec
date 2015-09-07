@@ -15,7 +15,8 @@ class IndexController extends CommonController
 		parent::preAction();
 		
 		// 設定ファイルの有無を検査する
-		if ( ! file_exists( INSTALL_PATH."/settings/config.xml") ) {
+		if ( ! file_exists( INSTALL_PATH."/settings/config.xml") )
+		{
 			/*header( "Content-Type: text/html;charset=utf-8" );
 			exit( "<script type=\"text/javascript\">\n" .
 			"<!--\n".
@@ -34,14 +35,22 @@ class IndexController extends CommonController
 		// パラメータの処理
 		// 表示する長さ（時間）
 		$program_length = $this->setting->program_length;
-		if ( $this->request->getQuery('length') ) $program_length = (int) $this->request->getQuery('length');
+		if ( $this->request->getQuery('length') )
+		{
+			$program_length = (int) $this->request->getQuery('length');
+		}
 		// 地上=GR/BS=BS
 		$type = "GR";
-		if ( $this->request->getQuery('type') ) $type = $this->request->getQuery('type');
+		if ( $this->request->getQuery('type') )
+		{
+			$type = $this->request->getQuery('type');
+		}
 		// 現在の時間
 		$top_time = mktime( date("H"), 0 , 0 );
-		if ( $this->request->getQuery('time') ) {
-			if ( sscanf( $this->request->getQuery('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 ) {
+		if ( $this->request->getQuery('time') )
+		{
+			if ( sscanf( $this->request->getQuery('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 )
+			{
 				$tmp_time = mktime( $h, 0, 0, $mon, $day, $y );
 				if ( ($tmp_time < ($top_time + 3600 * 24 * 8)) && ($tmp_time > ($top_time - 3600 * 24 * 8)) )
 					$top_time = $tmp_time;
@@ -50,14 +59,16 @@ class IndexController extends CommonController
 		$last_time = $top_time + 3600 * $program_length;
 
 		// 時刻欄
-		for( $i = 0 ; $i < $program_length; $i++ ) {
+		for( $i = 0 ; $i < $program_length; $i++ )
+		{
 			$tvtimes[$i] = date("H", $top_time + 3600 * $i );
 		}
 
 		// チャンネルマップ
 		$tmprec = new DBRecord(CHANNEL_TBL);
 		$recarr = $tmprec->fetch_array( "type", $type, "id > 0 ORDER BY sid+0 ASC" );
-		foreach( $recarr as $val) {
+		foreach( $recarr as $val)
+		{
 			$channel_map["{$val['channel_disc']}"] = $val['channel'];
 		}
 
@@ -65,16 +76,20 @@ class IndexController extends CommonController
 		$programs = array();
 		$st = 0;
 		$prec = null;
-		try {
+		try
+		{
 			$prec = new DBRecord(PROGRAM_TBL);
 		}
-		catch( Exception $e ) {
+		catch( Exception $e )
+		{
 			exit('プログラムテーブルが存在しないようです。インストールをやり直してください.');
 		}
 		$num_ch = 0;
-		foreach( $channel_map as $channel_disc => $channel ) {
+		foreach( $channel_map as $channel_disc => $channel )
+		{
 			$prev_end = $top_time;
-		 	try {
+		 	try
+		 	{
 				$crec = new DBRecord( CHANNEL_TBL, "channel_disc", $channel_disc );
 				$programs[$st]["skip"] = $crec->skip;
 				if ( $crec->skip == 0 ) $num_ch++;
@@ -90,11 +105,13 @@ class IndexController extends CommonController
 				                               );
 				$programs[$st]['list'] = array();
 				$num = 0;
-				foreach( $reca as $prg ) {
+				foreach( $reca as $prg )
+				{
 					$prg_starttime = $start = strtotime($prg['starttime']);
 					$prg_endtime = strtotime($prg['endtime']);
 					// 前プログラムとの空きを調べる
-					if ( ($prg_starttime - $prev_end) > 0 ) {
+					if ( ($prg_starttime - $prev_end) > 0 )
+					{
 						$height = ($prg_starttime-$prev_end) * $this->setting->height_per_hour / 3600;
 						$programs[$st]['list'][$num]['category_none'] = "none";
 						$programs[$st]['list'][$num]['height'] = $height;
@@ -107,11 +124,13 @@ class IndexController extends CommonController
 					
 					$height = $prg_endtime - $prg_starttime;
 					// $top_time より早く始まっている番組
-					if ( $prg_starttime < $top_time ) {
+					if ( $prg_starttime < $top_time )
+					{
 						$height = $prg_endtime - $top_time;
 					}
 					// $last_time より遅く終わる番組
-					if ( $prg_endtime > $last_time ) {
+					if ( $prg_endtime > $last_time )
+					{
 						$height = $height - ($prg_endtime - $last_time);
 					}
 					$height = $height * $this->setting->height_per_hour / 3600;
@@ -131,13 +150,13 @@ class IndexController extends CommonController
 					$num++;
 				}
 			}
-			 catch( exception $e ) {
+			catch( exception $e )
+			{
 				$num_ch++;	// epgの無いチャンネル対応
-		//		exit( $e->getMessage() );
-		//		何もしない
 		 	}
 		 	// 空きを埋める
-			if ( ($last_time - $prev_end) > 0 ) {
+			if ( ($last_time - $prev_end) > 0 )
+			{
 				$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
 				$height = $height;
 				$programs[$st]['list'][$num]['category_name'] = "none";
@@ -163,7 +182,8 @@ class IndexController extends CommonController
 		$crec = DBRecord::createRecords( CATEGORY_TBL );
 		$cats = array();
 		$num = 0;
-		foreach( $crec as $val ) {
+		foreach( $crec as $val )
+		{
 			$cats[$num]['name_en'] = $val->name_en;
 			$cats[$num]['name_jp'] = $val->name_jp;
 			$num++;
@@ -173,21 +193,24 @@ class IndexController extends CommonController
 		// タイプ選択
 		$types = array();
 		$i = 0;
-		if ( $this->setting->bs_tuners != 0 ) {
+		if ( $this->setting->bs_tuners != 0 )
+		{
 			$types[$i]['selected'] = $type == "BS" ? 'class="selected"' : "";
 			$types[$i]['link'] = $this->getCurrentUri() . "?type=BS&length=".$program_length."&time=".date( "YmdH", $top_time);
 			$types[$i]['name'] = "BS";
 			$i++;
 
 			// CS
-			if ($this->setting->cs_rec_flg != 0) {
+			if ($this->setting->cs_rec_flg != 0)
+			{
 				$types[$i]['selected'] = $type == "CS" ? 'class="selected"' : "";
 				$types[$i]['link'] = $this->getCurrentUri() . "?type=CS&length=".$program_length."&time=".date( "YmdH", $top_time);
 				$types[$i]['name'] = "CS";
 				$i++;
 			}
 		}
-		if ( $this->setting->gr_tuners != 0 ) {
+		if ( $this->setting->gr_tuners != 0 )
+		{
 			$types[$i]['selected'] = $type == "GR" ? 'class="selected"' : "";
 			$types[$i]['link'] = $this->getCurrentUri() . "?type=GR&length=".$program_length."&time=".date( "YmdH", $top_time);
 			$types[$i]['name'] = "地上デジタル";
@@ -209,7 +232,8 @@ class IndexController extends CommonController
 		$day['ofweek'] = "";
 		$day['selected'] = "";
 		array_push( $days, $day );
-		for( $i = 0 ; $i < 8 ; $i++ ) {
+		for( $i = 0 ; $i < 8 ; $i++ )
+		{
 			$day['d'] = "".date("d", time() + 24 * 3600 * $i ) . "日";
 			$day['link'] = $get_param . "&time=".date( "Ymd", time() + 24 * 3600 * $i) . date("H" , $top_time );
 			$day['ofweek'] = $DAY_OF_WEEK[(int)date( "w", time() + 24 * 3600 * $i )];
@@ -220,7 +244,8 @@ class IndexController extends CommonController
 
 		// 時間選択
 		$toptimes = array();
-		for( $i = 0 ; $i < 24; $i+=4 ) {
+		for( $i = 0 ; $i < 24; $i+=4 )
+		{
 			$tmp = array();
 			$tmp['hour'] = sprintf( "%02d:00", $i );
 			$tmp['link'] = $get_param . "&time=".date("Ymd", $top_time ) . sprintf("%02d", $i );
@@ -237,14 +262,10 @@ class IndexController extends CommonController
 		$this->view->assign( "num_ch", $num_ch );
 		$this->view->assign( "num_all_ch" , count( $channel_map ) );
 
-		// date("Y-m-d H:i:s", $timestamp);
-
 		$sat_type = array('GR' => '地上デジタル', 'BS' => 'BSデジタル', 'CS' => 'CSデジタル');
 		$sitetitle = date( "Y", $top_time ) . "年" . date( "m", $top_time ) . "月" . date( "d", $top_time ) . "日". date( "H", $top_time ) .
 		              "時～".$sat_type[$type]."番組表";
-
 		$this->view->assign("sitetitle", $sitetitle );
-
 		$this->view->assign("top_time", str_replace( "-", "/" ,toDatetime($top_time)) );
 		$this->view->assign("last_time", str_replace( "-", "/" ,toDatetime($last_time)) );
 	}
@@ -288,7 +309,8 @@ class IndexController extends CommonController
 
 			$crecs = DBRecord::createRecords( CATEGORY_TBL );
 			$cats = array();
-			foreach( $crecs as $crec ) {
+			foreach( $crecs as $crec )
+			{
 				$cat = array();
 				$cat['id'] = $crec->id;
 				$cat['name'] = $crec->name_jp;
@@ -371,12 +393,14 @@ class IndexController extends CommonController
 		}
 
 		$start_time = @mktime( $this->request->getPost('shour'), $this->request->getPost('smin'), 0, $this->request->getPost('smonth'), $this->request->getPost('sday'), $this->request->getPost('syear') );
-		if ( ($start_time < 0) || ($start_time === false) ) {
+		if ( ($start_time < 0) || ($start_time === false) )
+		{
 			exit("Error:開始時間が不正です" );
 		}
 
 		$end_time = @mktime( $this->request->getPost('ehour'), $this->request->getPost('emin'), 0, $this->request->getPost('emonth'), $this->request->getPost('eday'), $this->request->getPost('eyear') );
-		if ( ($end_time < 0) || ($end_time === false) ) {
+		if ( ($end_time < 0) || ($end_time === false) )
+		{
 			exit("Error:終了時間が不正です" );
 		}
 
@@ -387,7 +411,8 @@ class IndexController extends CommonController
 		$mode = $this->request->getPost('record_mode');
 
 		$rval = 0;
-		try{
+		try
+		{
 			$rval = Reservation::custom(
 				toDatetime($start_time),
 				toDatetime($end_time),
@@ -401,7 +426,8 @@ class IndexController extends CommonController
 				1		// ダーティフラグ
 			);
 		}
-		catch( Exception $e ) {
+		catch( Exception $e )
+		{
 			exit( "Error:".$e->getMessage() );
 		}
 	}
@@ -416,51 +442,65 @@ class IndexController extends CommonController
 		$rec = null;
 		$path = "";
 
-		if ( $this->request->getQuery('program_id') ) {
+		if ( $this->request->getQuery('program_id') )
+		{
 			$program_id = $this->request->getQuery('program_id');
 		}
-		else if ( $this->request->getQuery('reserve_id') ) {
+		else if ( $this->request->getQuery('reserve_id') )
+		{
 			$reserve_id = $this->request->getQuery('reserve_id');
-			try {
+			try
+			{
 				$rec = new DBRecord( RESERVE_TBL, "id" , $reserve_id );
 				$program_id = $rec->program_id;
 				
-				if ( $this->request->getQuery('delete_file') ) {
-					if ( $this->request->getQuery('delete_file') == 1 ) {
+				if ( $this->request->getQuery('delete_file') )
+				{
+					if ( $this->request->getQuery('delete_file') == 1 )
+					{
 						$path = INSTALL_PATH."/".$this->setting->spool."/".$rec->path;
 					}
 				}
 			}
-			catch( Exception $e ) {
+			catch( Exception $e )
+			{
 				// 無視
 			}
 		}
 
 		// 手動取り消しのときには、その番組を自動録画対象から外す
-		if ( $program_id ) {
-			try {
+		if ( $program_id )
+		{
+			try
+			{
 				$rec = new DBRecord(PROGRAM_TBL, "id", $program_id );
 				$rec->autorec = 0;
 			}
-			catch( Exception $e ) {
+			catch( Exception $e )
+			{
 				// 無視
 			}
 		}
 
 		// 予約取り消し実行
-		try {
+		try
+		{
 			Reservation::cancel( $reserve_id, $program_id );
-			if ( $this->request->getQuery('delete_file') ) {
-				if ( $this->request->getQuery('delete_file') == 1 ) {
+			if ( $this->request->getQuery('delete_file') )
+			{
+				if ( $this->request->getQuery('delete_file') == 1 )
+				{
 					// ファイルを削除
-					if ( file_exists( $path) ) {
+					if ( file_exists( $path) )
+					{
 						@unlink($path);
 						@unlink($path.".jpg");
 					}
 				}
 			}
 		}
-		catch( Exception $e ) {
+		catch( Exception $e )
+		{
 			exit( "Error" . $e->getMessage() );
 		}
 	}
@@ -470,26 +510,31 @@ class IndexController extends CommonController
 	 */
 	public function changeAction()
 	{
-		if ( ! $this->request->getPost('reserve_id') ) {
+		if ( ! $this->request->getPost('reserve_id') )
+		{
 			exit("Error: IDが指定されていません" );
 		}
 		$reserve_id = $this->request->getPost('reserve_id');
 
 		$dbh = false;
-		if ( $this->setting->mediatomb_update == 1 ) {
+		if ( $this->setting->mediatomb_update == 1 )
+		{
 			$sqlstr = "use ".$this->setting->db_name;
 			@mysql_query( $sqlstr );
 			$sqlstr = "set NAME utf8";
 			@mysql_query( $sqlstr );
 		}
 
-		try {
+		try
+		{
 			$rec = new DBRecord(RESERVE_TBL, "id", $reserve_id );
 			
-			if ( $this->request->getPost('title') ) {
+			if ( $this->request->getPost('title') )
+			{
 				$rec->title = trim( $this->request->getPost('title') );
 				$rec->dirty = 1;
-				if ( ($dbh !== false) && ($rec->complete == 1) ) {
+				if ( ($dbh !== false) && ($rec->complete == 1) )
+				{
 					$title = trim( $this->request->getPost('title'));
 					$title .= "(".date("Y/m/d", toTimestamp($rec->starttime)).")";
 					$sqlstr = "update mt_cds_object set dc_title='".$title."' where metadata regexp 'epgrec:id=".$reserve_id."$'";
@@ -497,10 +542,12 @@ class IndexController extends CommonController
 				}
 			}
 			
-			if ( $this->request->getPost('description') ) {
+			if ( $this->request->getPost('description') )
+			{
 				$rec->description = trim( $this->request->getPost('description') );
 				$rec->dirty = 1;
-				if ( ($dbh !== false) && ($rec->complete == 1) ) {
+				if ( ($dbh !== false) && ($rec->complete == 1) )
+				{
 					$desc = "dc:description=".trim( $this->request->getPost('description'));
 					$desc .= "&epgrec:id=".$reserve_id;
 					$sqlstr = "update mt_cds_object set metadata='".$desc."' where metadata regexp 'epgrec:id=".$reserve_id."$'";
@@ -508,7 +555,8 @@ class IndexController extends CommonController
 				}
 			}
 		}
-		catch( Exception $e ) {
+		catch( Exception $e )
+		{
 			exit("Error: ". $e->getMessage());
 		}
 	}

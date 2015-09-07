@@ -68,17 +68,8 @@ $includes = array(INSTALL_PATH.'/classes', INSTALL_PATH.'/libs');
 $incPath = implode(PATH_SEPARATOR, $includes);
 set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
 require_once 'Smarty/Smarty.class.php';
+require_once 'epgrecLib.inc.php';
 setlocale(LC_ALL, 'ja_JP.UTF-8');
-
-/**
- * クラスのオートロード
- * @param string $className クラス名
- */
-function custom_autoloader($className)
-{
-	$file_name = preg_replace('/[^a-z_A-Z0-9]/u', '', $className) . '.php';
-	require_once $file_name;
-}
 spl_autoload_register('custom_autoloader');
 
 // 以降は必要に応じて変更する
