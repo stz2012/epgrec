@@ -1,7 +1,4 @@
 <?php
-include_once( 'config.php' );
-include_once( 'Settings.class.php' );
-
 class DBRecord {
 	protected $__table;
 	
@@ -135,7 +132,7 @@ class DBRecord {
 				$sqlstr = "UPDATE ".$this->__table." SET";
 				foreach( $this->__record_data as $property => $value ) {
 					if( $property === "id" ) continue;
-					$sqlstr .= " ".$property." = '".$value."',";
+					$sqlstr .= " ".$property." = '".mysql_real_escape_string($value)."',";
 				}
 				$sqlstr = rtrim($sqlstr, "," );
 				$sqlstr .= " WHERE id = '".$this->__id."'";

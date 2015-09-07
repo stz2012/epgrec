@@ -63,6 +63,24 @@ $RECORD_MODE = array(
 
 define( "INSTALL_PATH", dirname(__FILE__) );		// インストールパス
 
+// ライブラリのディレクトリをinclude_pathに追加
+$includes = array(INSTALL_PATH.'/classes', INSTALL_PATH.'/libs');
+$incPath = implode(PATH_SEPARATOR, $includes);
+set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
+require_once 'Smarty/Smarty.class.php';
+setlocale(LC_ALL, 'ja_JP.UTF-8');
+
+/**
+ * クラスのオートロード
+ * @param string $className クラス名
+ */
+function custom_autoloader($className)
+{
+	$file_name = preg_replace('/[^a-z_A-Z0-9]/u', '', $className) . '.php';
+	require_once $file_name;
+}
+spl_autoload_register('custom_autoloader');
+
 // 以降は必要に応じて変更する
 
 define( "PADDING_TIME", 180 );						// 詰め物時間
@@ -103,6 +121,10 @@ if( file_exists( INSTALL_PATH."/settings/config_custom.php" ) ) {
 	include_once( INSTALL_PATH."/settings/config_custom.php" );
 }
 
+// 後方互換性
+if( !defined( "RECORDER_CMD" ) ) {
+	define( "RECORDER_CMD", INSTALL_PATH."/recorder.php" );
+}
 
 // DBテーブル情報　以下は変更しないでください
 
@@ -110,7 +132,6 @@ define( "RESERVE_TBL",  "reserveTbl" );						// 予約テーブル
 define( "PROGRAM_TBL",  "programTbl" );						// 番組表
 define( "CHANNEL_TBL",  "channelTbl" );						// チャンネルテーブル
 define( "CATEGORY_TBL", "categoryTbl" );					// カテゴリテーブル
-define( "KEYWORD_TBL", "keywordTbl" );						// キーワードテーブル
-// ログテーブル
-define( "LOG_TBL", "logTbl" );
+define( "KEYWORD_TBL",  "keywordTbl" );						// キーワードテーブル
+define( "LOG_TBL",      "logTbl" );							// ログテーブル
 ?>

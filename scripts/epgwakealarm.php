@@ -2,11 +2,7 @@
 <?php
   $script_path = dirname( __FILE__ );
   chdir( $script_path );
-  include_once( $script_path . '/config.php');
-  include_once( INSTALL_PATH . '/DBRecord.class.php' );
-  include_once( INSTALL_PATH . '/Reservation.class.php' );
-  include_once( INSTALL_PATH . '/Settings.class.php' );
-  include_once( INSTALL_PATH . '/recLog.inc.php' );
+  include_once( dirname( $script_path ) . '/config.php');
   
   $acpi_timer_path = "/sys/class/rtc/rtc0/wakealarm";	// ここは書き換える必要があるPCがあるかもしれない
   

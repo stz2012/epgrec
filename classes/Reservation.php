@@ -1,18 +1,5 @@
 <?php
-include_once('config.php');
-include_once( INSTALL_PATH . "/DBRecord.class.php" );
-include_once( INSTALL_PATH . "/reclib.php" );
-include_once( INSTALL_PATH . "/Settings.class.php" );
-include_once( INSTALL_PATH . "/recLog.inc.php" );
-
-// 後方互換性
-if( !defined( "RECORDER_CMD" ) ) {
-	define( "RECORDER_CMD", INSTALL_PATH."/recorder.php" );
-}
-
-
 // 予約クラス
-
 class Reservation {
 	
 	public static function simple( $program_id , $autorec = 0, $mode = 0) {

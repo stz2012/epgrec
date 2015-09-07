@@ -1,11 +1,4 @@
 <?php
-include_once('config.php');
-include_once( INSTALL_PATH . "/DBRecord.class.php" );
-include_once( INSTALL_PATH . "/reclib.php" );
-include_once( INSTALL_PATH . "/Reservation.class.php" );
-include_once( INSTALL_PATH . '/Settings.class.php' );
-include_once( INSTALL_PATH . '/recLog.inc.php' );
-
 class Keyword extends DBRecord {
 	
 	public function __construct($property = null, $value = null ) {
@@ -34,7 +27,7 @@ class Keyword extends DBRecord {
 		
 		if( $keyword != "" ) {
 			if( $use_regexp ) {
-				$options .= " AND CONCAT(title,description) REGEXP '".mysql_real_escape_string($keyword)."'";
+				$options .= " AND MREGEXP(CONCAT(title,description), '".mysql_real_escape_string($keyword)."')";
 			}
 			else {
 				$options .= " AND CONCAT(title,description) like _utf8'%".mysql_real_escape_string($keyword)."%' collate utf8_unicode_ci";

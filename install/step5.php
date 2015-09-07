@@ -1,6 +1,5 @@
 <?php
 include_once( "../config.php");
-include_once( INSTALL_PATH."/Settings.class.php" );
 
 $settings = Settings::factory();
 

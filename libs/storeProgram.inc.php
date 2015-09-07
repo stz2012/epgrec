@@ -1,6 +1,4 @@
 <?php
-include_once( INSTALL_PATH . "/reclib.php" );
-
 function garbageClean() {
 	// 不要なプログラムの削除
 	// 8日以上前のプログラムを消す

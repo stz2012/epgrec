@@ -2,13 +2,8 @@
 <?php
   $script_path = dirname( __FILE__ );
   chdir( $script_path );
-  include_once( $script_path . '/config.php');
-  include_once( INSTALL_PATH . '/DBRecord.class.php' );
-  include_once( INSTALL_PATH . '/Reservation.class.php' );
-  include_once( INSTALL_PATH . '/Keyword.class.php' );
-  include_once( INSTALL_PATH . '/Settings.class.php' );
-  include_once( INSTALL_PATH . '/storeProgram.inc.php' );
-  include_once( INSTALL_PATH . '/recLog.inc.php' );
+  include_once( dirname( $script_path ) . '/config.php');
+  include_once( 'storeProgram.inc.php' );
   
   
   // SIGTERMシグナル

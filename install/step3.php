@@ -1,10 +1,6 @@
 <?php
 include_once("../config.php");
-include_once("../Smarty/Smarty.class.php");
-include_once("../DBRecord.class.php");
-include_once("../Settings.class.php");
-include_once("../reclib.php" );
-include_once("../tableStruct.inc.php");
+include_once("tableStruct.inc.php");
 
 $settings = Settings::factory();
 $settings->post();	// いったん保存する

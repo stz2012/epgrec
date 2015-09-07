@@ -19,7 +19,6 @@ if(! file_exists( "../config.php" ) ) {
 }
 
 include_once("../config.php");
-include_once(INSTALL_PATH."/reclib.php");
 
 // do-record.shの存在チェック
 

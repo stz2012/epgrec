@@ -2,7 +2,7 @@
 <?php
   $script_path = dirname( __FILE__ );
   chdir( $script_path );
-  include_once( $script_path . '/config.php');
+  include_once( dirname( $script_path ) . '/config.php');
 
   $type = $argv[1];	// BS CS1 CS2 GR
   $file = $argv[2];	// TSファイル
@@ -10,14 +10,6 @@
   
   // プライオリティ低に
   pcntl_setpriority(20);
-  
-  include_once( INSTALL_PATH . '/DBRecord.class.php' );
-  include_once( INSTALL_PATH . '/Reservation.class.php' );
-  include_once( INSTALL_PATH . '/Keyword.class.php' );
-  include_once( INSTALL_PATH . '/Settings.class.php' );
-  include_once( INSTALL_PATH . '/storeProgram.inc.php' );
-  include_once( INSTALL_PATH . "/reclib.php" );
-  
   
   $settings = Settings::factory();
   

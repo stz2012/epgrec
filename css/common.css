@@ -1,0 +1,184 @@
+a {text-decoration:none;}
+
+.bold {font-weight:bold;}
+.small {font-size:75%;}
+.nonborderbox * {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+#float_titles {position:absolute;background-image: url(../imgs/trancBG50.png);}
+
+#float_titles div.set.ctg_sel {background-color:#BBB;color:#3CF}
+#float_titles .ctg_sel  a{color:#111;}
+
+#float_titles div.set {float:left;background-color:#444;padding:4px;margin:4px;}
+#float_titles span.title {float:left;color:#ACF;}
+#float_titles ul {float:left;padding:0;margin:0;}
+#float_titles ul li {float:left;list-style:none;margin:0 0 0 4px;}
+#float_titles li a{padding:1px 4px;background-color:#555;color:#FFF;}
+#float_titles li.selected a{background-color:#48B;}
+#float_titles li a:hover{background-color:#28D;}
+
+#float_titles, #tvtable {}
+#tvtable {line-height:1.2em;width:100%;position:relative;}
+#tvtimes,#tvtimes2 {position:absolute;	background-image: url(../imgs/trancBG70.png);}
+#tvtimes,#tvtimes2, .tvtimeDM {width:40px;}
+#tv_chs {padding-left:40px;padding-right:40px;}
+div.tvtime {
+	height:120px;
+	color:#EEE;
+	text-align:center;
+	font-weight:bold;
+	font-size:120%;
+	background-image: url(../imgs/dot2.gif);
+	background-repeat: repeat-x;
+	background-position: left bottom;
+}
+#tvtable div.tvtimetop {padding:8px 0px;}
+
+#tvtable div.ch_set {width:150px;float:left;background-color:#BBB;}
+.ch_set_skip { display: none; }
+
+
+#tvtable div.ch_title, #tvtable div.prg {margin-right:2px;}
+#tvtable div.ch_title {padding:8px 0px;background-color:#333;color:#DDD;font-weight:bold;text-align:center}
+.ch_title_skip { display: none;}
+.ch_skip_color { color: red;}
+
+.ch_disc {display :none;}
+.ch_skip {display :none;}
+.ch_sid  {display :none;}
+.ch_name {display :none;}
+.ch_hash {display :none;}
+
+#tvtable div.prg {
+	overflow:hidden;
+	color:#444;
+	background-image: url(../imgs/dot2.gif);
+	background-image: url(../imgs/prg_bg2.png);
+	background-repeat: repeat-x;
+	background-position: left bottom;
+	-moz-border-radius: 0.6em 0.6em 0.3em 0.3em;
+	-webkit-border-radius: 0.6em;
+	-webkit-border-bottom-right-radius: 0.3em;
+	-webkit-border-bottom-left-radius: 0.3em;
+}
+#tvtable div.prg_none {background-color:#eee;}
+#tvtable div.prg_dummy {margin:3px 6px;}
+#tvtable div.prg_title {color:#111;font-weight:bold;}
+#tvtable div.prg_subtitle {font-size:80%;}
+#tvtable div.prg_desc {font-size:80%;}
+
+#tvtable div.prg_start,#tvtable div.prg_duration,#tvtable div.prg_channel ,#tvtable div.prg_id  {display: none;}
+
+#tvtable div.ctg_news, #category_select a.ctg_news {background-color: #FFFFD8;}
+#tvtable div.ctg_etc, #category_select a.ctg_etc {background-color: #FFFFFF;}
+#tvtable div.ctg_information, #category_select a.ctg_information {background-color: #F2D8FF;}
+#tvtable div.ctg_sports, #category_select a.ctg_sports {background-color: #D8FFFF;}
+#tvtable div.ctg_cinema, #category_select a.ctg_cinema {background-color: #FFD8D8;}
+#tvtable div.ctg_music, #category_select a.ctg_music {background-color: #D8D8FF;}
+#tvtable div.ctg_drama, #category_select a.ctg_drama {background-color: #D8FFD8;}
+#tvtable div.ctg_anime, #category_select a.ctg_anime {background-color: #FFE4C8;}
+#tvtable div.ctg_variety, #category_select a.ctg_variety {background-color: #FFD2EB;}
+#tvtable div.ctg_10, #category_select a.ctg_10 {background-color: #E4F4F4;}
+#tvtable div.ctg-hide, #category_select a.ctg-hide {background-color: #F8F8F8;color:#888;}
+#tvtable div.ctg-hide .prg_title, #category_select a.ctg-hide .prg_title{color:#666;}
+#tvtable div.prg_rec  {background-color: #F55;color:#FEE}
+#tvtable div.prg_rec .prg_title,#tvtable div.prg_hover .prg_title {color:white;}
+#tvtable div.prg_hover  {background-color: #28D;color:#EFF}
+
+#float_titles { z-index:100}
+#float_titles div.ch_title {width:150px;float:left;color:#FFF;font-weight:bold;text-align:center}
+#float_titles div.ch_title div{padding:8px 0px;margin:0 6px 0 4px;background-image: url(../imgs/trancBG50.png);}
+
+
+#float_follows {position:absolute;}
+#prg_info {
+	display:none;
+	position:absolute;
+	top:0;left:0;
+	width:100%;
+	background-color:#246;
+	color:#BDF;
+	height:80px;
+}
+#prg_info div.prg_dummy{margin:4px 20px;}
+#prg_info div.prg_title {font-weight:bold;font-size:120%;color:#FFF;}
+#prg_info span.prg_sub  {color:#FFF;}
+
+#tableNowBas {position:absolute;background:red;width:100%;top:190px;height:2px;overflow:hidden;}
+
+table#reservation_table {
+    border: 1px #BBB solid;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table#reservation_table th {
+    padding: 5px;
+    border: #E3E3E3 solid;
+    border-width: 0 0 1px 1px;
+    background: #BBB;
+    font-weight: bold;
+    line-height: 120%;
+    text-align: center;
+}
+table#reservation_table td {
+    padding: 5px;
+    border: 1px #BBB solid;
+    border-width: 0 0 1px 1px;
+    text-align: center;
+}
+
+table#reservation_table tr.ctg_news, #category_select a.ctg_news {background-color: #FFFFD8;}
+table#reservation_table tr.ctg_etc, #category_select a.ctg_etc {background-color: #FFFFFF;}
+table#reservation_table tr.ctg_information, #category_select a.ctg_information {background-color: #F2D8FF;}
+table#reservation_table tr.ctg_sports, #category_select a.ctg_sports {background-color: #D8FFFF;}
+table#reservation_table tr.ctg_cinema, #category_select a.ctg_cinema {background-color: #FFD8D8;}
+table#reservation_table tr.ctg_music, #category_select a.ctg_music {background-color: #D8D8FF;}
+table#reservation_table tr.ctg_drama, #category_select a.ctg_drama {background-color: #D8FFD8;}
+table#reservation_table tr.ctg_anime, #category_select a.ctg_anime {background-color: #FFE4C8;}
+table#reservation_table tr.ctg_variety, #category_select a.ctg_variety {background-color: #FFD2EB;}
+table#reservation_table tr.ctg_10, #category_select a.ctg_10 {background-color: #E4F4F4;}
+
+table#log_table {
+    width: 800px;
+    border: 1px #BBB solid;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table#log_table th {
+    padding: 5px;
+    border: #E3E3E3 solid;
+    border-width: 0 0 1px 1px;
+    background: #BBB;
+    font-weight: bold;
+    line-height: 120%;
+    text-align: center;
+}
+table#log_table td {
+    padding: 5px;
+    border: 1px #BBB solid;
+    border-width: 0 0 1px 1px;
+    text-align: center;
+}
+
+table#log_table td.errorlevel0 {background-color: #FFFFFF;}
+table#log_table td.errorlevel1 {background-color: yellow;}
+table#log_table td.errorlevel2 {background-color: red;}
+
+div.setting { padding: 0px; margin-left: 20px; margin-bottom: 20px;}
+
+#floatBox4Dialog .prg_title{font-size:120%;font-weight:bold;padding:0.4em 0;text-align:center;}
+#floatBox4Dialog .prg_rec_cfg{background:#EEE;padding:1em 2em;margin:0.4em 0;}
+#floatBox4Dialog .labelLeft {width:8em;float:left;text-align:right;}
+#floatBox4Dialog .button {padding:0.4em 1em;}
+#floatBox4Dialog > form > div {clear:left;}
+
+#channelDialog .prg_title{font-size:120%;font-weight:bold;padding:0.4em 0;text-align:center;}
+#channelDialog .prg_rec_cfg{background:#EEE;padding:1em 2em;margin:0.4em 0;}
+#channelDialog .labelLeft {width:8em;float:left;text-align:right;}
+#channelDialog .button {padding:0.4em 1em;}

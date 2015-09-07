@@ -1,17 +1,51 @@
 <?php
-include_once("config.php");
-include_once(INSTALL_PATH."/Smarty/Smarty.class.php");
-include_once(INSTALL_PATH."/Settings.class.php");
+/**
+ * epgrec - 設定ページコントローラ
+ * @package CommonController
+ * @subpackage SettingController
+ */
+class SettingController extends CommonController
+{
+	/**
+	 * 環境設定
+	 */
+	public function indexAction()
+	{
+		global $RECORD_MODE;
+		$this->view->assign( "settings", $this->setting );
+		$this->view->assign( "record_mode", $RECORD_MODE );
+		$this->view->assign( "install_path", INSTALL_PATH );
+		$this->view->assign( "sitetitle", "環境設定" );
+	}
 
-$settings = Settings::factory();
-$smarty = new Smarty();
+	/**
+	 * システム設定
+	 */
+	public function systemAction()
+	{
+		$this->view->assign( "settings", $this->setting );
+		$this->view->assign( "install_path", INSTALL_PATH );
+		$this->view->assign( "sitetitle", "システム設定" );
+	}
 
-$smarty->assign( "settings", $settings );
-$smarty->assign( "record_mode", $RECORD_MODE );
-$smarty->assign( "install_path", INSTALL_PATH );
-$smarty->assign( "post_to", "postsettings.php" );
-$smarty->assign( "sitetitle", "環境設定設定" );
-$smarty->assign( "message", '<a href="index.php">設定せずに番組表に戻る</a>/<a href="systemSetting.php">システム設定へ</a>/<a href="logViewer.php">動作ログを見る</a>' );
+	/**
+	 * ログ表示
+	 */
+	public function viewLogAction()
+	{
+		$arr = $this->model->selectRow('*', "{$this->setting->tbl_prefix}".LOG_TBL, '', array(array('logtime', 'DESC')));
+		$this->view->assign( "sitetitle" , "epgrec動作ログ" );
+		$this->view->assign( "logs", $arr );
+	}
 
-$smarty->display("envSetting.html");
+	/**
+	 * 設定保存
+	 */
+	public function saveAction()
+	{
+		$this->setting->post($this->request->getPost());
+		$this->setting->save();
+		jdialog("設定が保存されました", HOME_URL);
+	}
+}
 ?>
