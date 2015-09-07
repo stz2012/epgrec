@@ -1,164 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+{include file='header.tpl'}
 
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>{$sitetitle}</title>
-<meta http-equiv="Content-Style-Type" content="text/css">
-
-{literal}
-<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
-<link rel="stylesheet" href="start/jquery-ui-1.7.2.custom.css" type="text/css">
-<script type="text/javascript" src="js/mdabasic.js"></script>
-<script type="text/javascript">
-	var PRG = {
-		rec:function(id){
-			$.get(INISet.prgRecordURL, { program_id: id } ,function(data){
-				if(data.match(/^error/i)){
-					alert(data);
-				}else{
-					$('#resid_' + id).addClass('prg_rec');
-				}
-			});
-		},
-		customform:function(id) {
-			$('#floatBox4Dialog').dialog('close');
-			$.get('reservationform.php', { program_id: id }, function(data) {
-				if(data.match(/^error/i)){
-					alert(data);
-				}
-				else {
-					var str = data;
-					str += '<div style="margin:2em 0 1em 0;text-align:center;"><a href="javascript:PRG.customrec()" class="ui-state-default ui-corner-all ui-dialog-buttonpane button">予約する</a></div>';
-					$('#floatBox4Dialog').html(str);
-					$('#floatBox4Dialog').dialog('open', 'center');
-				}
-			});
-		},
-		customrec:function() {
-			var id_syear = $('#id_syear').val();
-			var id_smonth = $('#id_smonth').val();
-			var id_sday = $('#id_sday').val();
-			var id_shour = $('#id_shour').val();
-			var id_smin = $('#id_smin').val();
-			var id_eyear = $('#id_eyear').val();
-			var id_emonth = $('#id_emonth').val();
-			var id_eday = $('#id_eday').val();
-			var id_ehour = $('#id_ehour').val();
-			var id_emin = $('#id_emin').val();
-			var id_channel_id = $('#id_channel_id').val();
-			var id_record_mode = $('#id_record_mode').val();
-			var id_title = $('#id_title').val();
-			var id_description = $('#id_description').val();
-			var id_category_id = $('#id_category_id ').val();
-			var id_program_id = $('#id_program_id').val();
-			var with_program_id = $('#id_program_id').attr('checked');
-			
-			if( ! with_program_id ) id_program_id = 0;
-			
-			$.post('customReservation.php', { syear: id_syear,
-							  smonth: id_smonth,
-							  sday: id_sday,
-							  shour: id_shour,
-							  smin: id_smin,
-							  eyear: id_eyear,
-							  emonth: id_emonth,
-							  eday: id_eday,
-							  ehour: id_ehour,
-							  emin: id_emin,
-							  channel_id: id_channel_id,
-							  record_mode: id_record_mode,
-							  title: id_title,
-							  description: id_description,
-							  category_id: id_category_id,
-							  program_id: id_program_id }, function(data) {
-				if(data.match(/^error/i)){
-					$('#floatBox4Dialog').dialog('close');
-					alert(data);
-				}
-				else {
-					var id = parseInt(data);
-					if( id ) {
-						$('#resid_' + id).addClass('prg_rec');
-					}
-					$('#floatBox4Dialog').dialog('close');
-				}
-			});
-		}
-	}
-	
-	$(document).ready(function () {
-		var DG = $('#floatBox4Dialog');
-		DG.dialog({title:'録画予約',width:600});
-		DG.dialog('close');
-	});
-</script>
-<style type="text/css">
-<!--
-body {padding:4px;margin:0;font-size:10pt;}
-a {text-decoration:none;}
-
-table#reservation_table {
-    width: 800px;
-    border: 1px #BBB solid;
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-table#reservation_table th {
-    padding: 5px;
-    border: #E3E3E3 solid;
-    border-width: 0 0 1px 1px;
-    background: #BBB;
-    font-weight: bold;
-    line-height: 120%;
-    text-align: center;
-}
-table#reservation_table td {
-    padding: 5px;
-    border: 1px #BBB solid;
-    border-width: 0 0 1px 1px;
-    text-align: center;
-}
-
-table#reservation_table tr.ctg_news, #category_select a.ctg_news {background-color: #FFFFD8;}
-table#reservation_table tr.ctg_etc, #category_select a.ctg_etc {background-color: #FFFFFF;}
-table#reservation_table tr.ctg_information, #category_select a.ctg_information {background-color: #F2D8FF;}
-table#reservation_table tr.ctg_sports, #category_select a.ctg_sports {background-color: #D8FFFF;}
-table#reservation_table tr.ctg_cinema, #category_select a.ctg_cinema {background-color: #FFD8D8;}
-table#reservation_table tr.ctg_music, #category_select a.ctg_music {background-color: #D8D8FF;}
-table#reservation_table tr.ctg_drama, #category_select a.ctg_drama {background-color: #D8FFD8;}
-table#reservation_table tr.ctg_anime, #category_select a.ctg_anime {background-color: #FFE4C8;}
-table#reservation_table tr.ctg_variety, #category_select a.ctg_variety {background-color: #FFD2EB;}
-table#reservation_table tr.ctg_10, #category_select a.ctg_10 {background-color: #E4F4F4;}
-table#reservation_table tr.prg_rec  {background-color: #F55;color:#FEE}
-
-#floatBox4Dialog .prg_title{font-size:120%;font-weight:bold;padding:0.4em 0;text-align:center;}
-#floatBox4Dialog .prg_rec_cfg{background:#EEE;padding:1em 2em;margin:0.4em 0;}
-#floatBox4Dialog .labelLeft {width:8em;float:left;text-align:right;}
-#floatBox4Dialog .button {padding:0.4em 1em;}
-
-
-
--->
-</style>
-{/literal}
-
-</head>
-
-<body>
-
+<div class="container">
 <h2>{$sitetitle}</h2>
+<a href="{$home_url}index">番組表に戻る</a>/<a href="{$this_class->getCurrentUri(false)}/keyword">自動録画キーワード管理へ</a>
+</div>
 
-
-
-<div><a href="index.php">番組表に戻る</a>/<a href="keywordTable.php">自動録画キーワード管理へ</a></div>
-
-<div>
+<div class="container">
 絞り込み：
-<form method="post" action="programTable.php">
+<form method="post" action="{$this_class->getCurrentUri()}">
 <input type="hidden" name="do_search" value="1" />
 検索語句<input type="text" size="20" name="search" value="{$search}" /><br />
 正規表現使用<input type="checkbox" name="use_regexp" value="1" {if $use_regexp}checked{/if} />
@@ -192,10 +41,10 @@ table#reservation_table tr.prg_rec  {background-color: #F55;color:#FEE}
 </form>
 </div>
 
-
-
+<div class="container">
 {if count($programs)}
-<table id="reservation_table">
+<table id="reservation_table" class="table">
+<thead>
  <tr>
   <th>種別</th>
   <th>局名</th>
@@ -206,7 +55,8 @@ table#reservation_table tr.prg_rec  {background-color: #F55;color:#FEE}
   <th>簡易録画</th>
   <th>詳細録画</th>
  </tr>
-
+</thead>
+<tbody>
 {foreach from=$programs item=program}
  <tr id="resid_{$program.id}" class="ctg_{$program.cat}{if $program.rec > 0} prg_rec{/if}">
   <td>{$program.type}</td>
@@ -219,16 +69,20 @@ table#reservation_table tr.prg_rec  {background-color: #F55;color:#FEE}
   <td><input type="button" value="詳細" onClick="javascript:PRG.customform('{$program.id}')" /></td>
  </tr>
 {/foreach}
+</tbody>
 </table>
 {else}
-  該当する番組はありません
+<p>該当する番組はありません</p>
 {/if}
-<div>{$programs|@count}件ヒット</div>
-{if count($programs) >= 300}<div>表示最大300件まで</div>{/if}
+</div>
+<div class="container">{$programs|@count}件ヒット</div>
+{if count($programs) >= 300}
+<div class="container">表示最大300件まで</div>
+{/if}
 {if $do_keyword}
 {if (count($programs) < 300)}
-<div>
-<form method="post" action="keywordTable.php">
+<div class="container">
+<form method="post" action="{$this_class->getCurrentUri(false)}/keyword">
   <b>語句:</b>{$search|escape}
   <b>正規表現:</b>{if $use_regexp}使う{else}使わない{/if}
   <b>種別:</b>{if $k_type == "*"}すべて{else}{$k_type}{/if}
@@ -256,16 +110,6 @@ table#reservation_table tr.prg_rec  {background-color: #F55;color:#FEE}
 {/if}
 {/if}
 
-<div id="floatBox4Dialog">jQuery UI Dialog</div>
-
-{literal}
-<script type="text/javascript">
-var INISet = {
-	prgRecordURL : 'simpleReservation.php',			// 簡易予約
-	prgRecordPlusURL : 'recordp.php',		// 詳細予約
-	prgCancelURL : 'cancelReservation.php'		// 予約キャンセル
-}
-</script>
-{/literal}
-</body>
-</html>
+{include file='INISet.tpl'}
+<script type="text/javascript" src="{$home_url}js/search.js"></script>
+{include file='footer.tpl'}

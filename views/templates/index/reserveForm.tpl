@@ -1,4 +1,4 @@
-<form method="post" action="customReservation.php">
+<form method="post" action="{$this_class->getCurrentUri(false)}/custom">
 <div>
 <span class="labelLeft">開始日時</span>
         <input type="text" size="4" name="syear" id="id_syear" value="{$syear}" />年
@@ -23,9 +23,9 @@
 <div>
 <span class="labelLeft">録画モード</span>
     <select name="record_mode" id="id_record_mode">
-        {section name=mode loop=$record_mode}
-          <option value="{$smarty.section.mode.index}">{$record_mode[mode].name}</option>
-        {/section}
+        {foreach from=$record_mode item=mode name=recmode}
+           <option value="{$smarty.foreach.recmode.index}" {$mode.selected} >{$mode.name}</option>
+        {/foreach}
         </select>
      </div>
 <div>

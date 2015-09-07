@@ -1,66 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="Content-Style-Type" content="text/css">
-<title>{$sitetitle}</title>
+{include file='header.tpl'}
 
-<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="js/messages_ja.js"></script>
-
-<script type="text/javascript">
-<!--
-{literal}
-
-	var PRG = {
-		force_cont:function() {
-			if( $('#id_force_cont_rec' ).val() == 0 ) {
-				$('#id_rec_switch_time').attr('disabled','disabled');
-			}
-			else {
-				$('#id_rec_switch_time').attr('disabled',false);
-			}
-		}
-	}
-	$(document).ready(function(){
-		$("#env_setting").validate();
-		PRG.force_cont();
-	});
-
-{/literal}
-
--->
-</script>
-
-
-<style type="text/css">
-<!--
-{literal}
-
-body {padding:4px;margin:0;font-size:10pt; width: 85%;}
-a {text-decoration:none;}
-
-.bold {font-weight:bold;}
-.small {font-size:75%;}
-
-div.setting { padding: 0px; margin-left: 20px; margin-bottom: 20px;}
-
-{/literal}
--->
-</style>
-</head>
-<body>
-
-
-
-<form id="env_setting" method="post" action="{$post_to}">
-
-<div>{$message}</div>
-
+<div class="container">
 <h2>デジタルチューナー設定</h2>
+<a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting/system">システム設定へ</a>/<a href="{$home_url}setting/viewLog">動作ログを見る</a>
+</div>
 
+<div class="container">
+<form id="env_setting" method="post" action="{$home_url}setting/save">
 
 <h3>地デジチューナーの台数</h3>
 <div class="setting">
@@ -197,5 +143,16 @@ div.setting { padding: 0px; margin-left: 20px; margin-bottom: 20px;}
 
 <input type="submit" value="設定を保存する" id="env_setting-submit" />
 </form>
-</body>
-</html>
+</div>
+<script type="text/javascript" src="{$home_url}js/setting.js"></script>
+<script type="text/javascript">
+<!--
+{literal}
+$(document).ready(function(){
+	$("#env_setting").validate();
+	PRG.force_cont();
+});
+{/literal}
+-->
+</script>
+{include file='footer.tpl'}

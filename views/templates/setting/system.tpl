@@ -1,84 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="Content-Style-Type" content="text/css">
-<title>{$sitetitle}</title>
+{include file='header.tpl'}
 
-<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="js/messages_ja.js"></script>
-
-<script type="text/javascript">
-<!--
-{literal}
-
-	var PRG = {
-		thumbs:function() {
-			if( $('#id_use_thumbs' ).val() == 0 ) {
-				$('#id_ffmpeg').attr('disabled','disabled');
-				$('#id_thumbs').attr('disabled','disabled');
-			}
-			else {
-				$('#id_ffmpeg').attr('disabled',false);
-				$('#id_thumbs').attr('disabled',false);
-			}
-		},
-		
-		power_reduce:function() {
-			if( $('#id_use_power_reduce').val() == 0 ) {
-				$('#id_getepg_timer').attr('disabled','disabled');
-				$('#id_wakeup_before').attr('disabled','disabled');
-				$('#id_www_group').attr('disabled','disabled');
-				$('#id_www_user').attr('disabled','disabled');
-				$('#id_shutdown').attr('disabled','disabled');
-			}
-			else {
-				$('#id_getepg_timer').attr('disabled',false);
-				$('#id_wakeup_before').attr('disabled',false);
-				$('#id_www_group').attr('disabled',false);
-				$('#id_www_user').attr('disabled',false);
-				$('#id_shutdown').attr('disabled',false);
-			}
-		}
-	}
-	$(document).ready(function(){
-		$("#system_setting").validate();
-		PRG.thumbs();
-		PRG.power_reduce();
-	});
-
-{/literal}
-
--->
-</script>
-
-
-<style type="text/css">
-<!--
-{literal}
-
-body {padding:4px;margin:0;font-size:10pt; width: 85%;}
-a {text-decoration:none;}
-
-.bold {font-weight:bold;}
-.small {font-size:75%;}
-
-div.setting { padding: 0px; margin-left: 20px; margin-bottom: 20px;}
-
-{/literal}
--->
-</style>
-</head>
-<body>
-
-<div>{$message}</div>
-
+<div class="container">
 <h2>MySQLデータベース設定</h2>
+<a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting">環境設定へ</a>
+</div>
 
-<form id="system_setting" method="post" action="{$post_to}">
-
+<div class="container">
+<form id="system_setting" method="post" action="{$home_url}setting/save" class="formSetting">
 
 <h3>MySQLホスト名</h3>
 <div class="setting">
@@ -205,5 +133,17 @@ div.setting { padding: 0px; margin-left: 20px; margin-bottom: 20px;}
 
 <input type="submit" value="設定を保存する" id="system_setting-submit" />
 </form>
-</body>
-</html>
+</div>
+<script type="text/javascript" src="{$home_url}js/setting.js"></script>
+<script type="text/javascript">
+<!--
+{literal}
+$(document).ready(function(){
+	$("#system_setting").validate();
+	PRG.thumbs();
+	PRG.power_reduce();
+});
+{/literal}
+-->
+</script>
+{include file='footer.tpl'}

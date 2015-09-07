@@ -1,75 +1,33 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+{include file='header.tpl'}
 
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>{$sitetitle}</title>
-<meta http-equiv="Content-Style-Type" content="text/css">
-
-{literal}
-<style type="text/css">
-<!--
-body {padding:4px;margin:0;font-size:10pt;}
-a {text-decoration:none;}
-
-table#log_table {
-    width: 800px;
-    border: 1px #BBB solid;
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-table#log_table th {
-    padding: 5px;
-    border: #E3E3E3 solid;
-    border-width: 0 0 1px 1px;
-    background: #BBB;
-    font-weight: bold;
-    line-height: 120%;
-    text-align: center;
-}
-table#log_table td {
-    padding: 5px;
-    border: 1px #BBB solid;
-    border-width: 0 0 1px 1px;
-    text-align: center;
-}
-
-table#log_table td.errorlevel0 {background-color: #FFFFFF;}
-table#log_table td.errorlevel1 {background-color: yellow;}
-table#log_table td.errorlevel2 {background-color: red;}
-
--->
-</style>
-{/literal}
-
-</head>
-
-<body>
-
+<div class="container">
 <h2>{$sitetitle}</h2>
+<a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting">環境設定へ</a>
+</div>
 
-<div><a href="index.php">番組表に戻る</a></div>
-
-<table id="log_table">
+<div class="container">
+<table id="log_table" class="table">
+<thead>
  <tr>
   <th>レベル</th>
   <th>日時</th>
   <th>内容</th>
  </tr>
-
+</thead>
+<tbody>
 {foreach from=$logs item=log}
  <tr>
-  <td class="errorlevel{$log->level}">
-    {if $log->level == 0}情報
-    {elseif $log->level == 1}警告
-    {elseif $log->level == 2}エラー
+  <td class="errorlevel{$log.level}">
+    {if $log.level == 0}情報
+    {elseif $log.level == 1}警告
+    {elseif $log.level == 2}エラー
     {/if}
   </td>
-  <td>{$log->logtime}</td>
-  <td>{$log->message|escape}</td>
+  <td>{$log.logtime}</td>
+  <td>{$log.message|escape}</td>
  </tr>
 {/foreach}
-</body>
-</html>
+</tbody>
+</table>
+</div>
+{include file='footer.tpl'}
