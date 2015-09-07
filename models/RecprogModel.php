@@ -45,7 +45,7 @@ class RecprogModel extends CommonModel
 		if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")
-				$sql .= " AND CONCAT(title,description) like '%:search%'";
+				$sql .= " AND CONCAT(title,description) like :search";
 			if ($POST_DATA['category_id'] != 0)
 				$sql .= " AND category_id= :cate_id";
 			if ($POST_DATA['station'] != 0)
@@ -59,7 +59,7 @@ class RecprogModel extends CommonModel
 		if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")
-				$stmt->bindValue(':search', $POST_DATA['search']);
+				$stmt->bindValue(':search', "%{$POST_DATA['search']}%");
 			if ($POST_DATA['category_id'] != 0)
 				$stmt->bindValue(':cate_id', $POST_DATA['category_id']);
 			if ($POST_DATA['station'] != 0)

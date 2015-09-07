@@ -18,7 +18,7 @@ class ModelBase
 	/**
 	 * @var object PDOインスタンス
 	 */
-	protected $db;
+	protected $db = false;
 
 	/**
 	 * コンストラクタ
@@ -102,72 +102,6 @@ class ModelBase
 	public static function setConnectionInfo($connInfo)
 	{
 		self::$connInfo = $connInfo;
-	}
-
-	/**
-	 * 列データを取得
-	 * @param string $tableName テーブル名
-	 * @return array
-	 */
-	public function selectField($tableName)
-	{
-		$tmp_data = array();
-		$fields = 'column_name, ordinal_position, is_nullable, data_type,';
-		$fields .= ' character_maximum_length, character_octet_length,';
-		$fields .= ' numeric_precision, numeric_scale,';
-		$fields .= ' column_type, column_key, column_comment';
-		$stmt = $this->db->prepare("SELECT {$fields} FROM information_schema.columns
-									 WHERE table_name = :tbl_name");
-		$param = $this->defineParamType($tableName);
-		$stmt->bindValue(":tbl_name", $tableName, $param);
-		if ($stmt->execute() !== false)
-		{
-			$tmp_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		}
-		$stmt->closeCursor();
-		
-		$ret_data = array();
-		if (count($tmp_data) > 0 && is_array($tmp_data))
-		{
-			foreach ($tmp_data as $value)
-			{
-				$column_name = strtolower($value['column_name']);
-				$comment_arr = explode(' : ', $value['column_comment']);
-				$tmp_arr = array();
-				$tmp_arr['no'] = $value['ordinal_position'];
-				$tmp_arr['name'] = (trim($comment_arr[0]) != '') ? $comment_arr[0] : $column_name;
-				$tmp_arr['type'] = $value['column_type'];
-				$tmp_arr['is_nullable'] = ($value['is_nullable'] == 'YES') ? true : false;
-				$tmp_arr['is_primary'] = ($value['column_key'] == 'PRI') ? true : false;
-				switch ($value['data_type'])
-				{
-					case 'date':
-						$tmp_arr['max_length'] = 10;
-						break;
-					
-					case 'datetime':
-						$tmp_arr['max_length'] = 19;
-						break;
-					
-					case 'varchar':
-					case 'text':
-					case 'longtext':
-					case 'tinytext':
-						$tmp_arr['max_length'] = $value['character_maximum_length'];
-						$tmp_arr['max_bytes']  = $value['character_octet_length'];
-						break;
-					
-					case 'int':
-					case 'bigint':
-					case 'smallint':
-					case 'decimal':
-						$tmp_arr['max_length'] = $value['numeric_precision'] + $value['numeric_scale'];
-						break;
-				}
-				$ret_data[$column_name] = $tmp_arr;
-			}
-		}
-		return $ret_data;
 	}
 
 	/**

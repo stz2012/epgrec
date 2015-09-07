@@ -20,7 +20,7 @@ function garbageClean() {
 function doKeywordReservation() {
   // キーワード自動録画予約
  	$arr = array();
-	$arr = Keyword::createKeywords();
+	$arr = Keyword::createRecords( KEYWORD_TBL );
 	foreach( $arr as $val ) {
 		try {
 			$val->reservation();

@@ -20,37 +20,35 @@ class Keyword extends DBRecord {
 									$limit = 300 ) {
 		$sts = Settings::factory();
 		
-		$dbh = @mysql_connect($sts->db_host, $sts->db_user, $sts->db_pass );
-		
 		// ちょっと先を検索する
 		$options = " WHERE starttime > '".date("Y-m-d H:i:s", time() + $sts->padding_time + 60 )."'";
 		
-		if( $keyword != "" ) {
-			if( $use_regexp ) {
-				$options .= " AND MREGEXP(CONCAT(title,description), '".mysql_real_escape_string($keyword)."')";
+		if ( $keyword != "" ) {
+			if ( $use_regexp ) {
+				$options .= " AND MREGEXP(CONCAT(title,description), '".$this->db->quote($keyword)."')";
 			}
 			else {
-				$options .= " AND CONCAT(title,description) like _utf8'%".mysql_real_escape_string($keyword)."%' collate utf8_unicode_ci";
+				$options .= " AND CONCAT(title,description) like _utf8'%".$this->db->quote($keyword)."%' collate utf8_unicode_ci";
 			}
 		}
 		
-		if( $type != "*" ) {
+		if ( $type != "*" ) {
 			$options .= " AND type = '".$type."'";
 		}
 		
-		if( $category_id != 0 ) {
+		if ( $category_id != 0 ) {
 			$options .= " AND category_id = '".$category_id."'";
 		}
 		
-		if( $channel_id != 0 ) {
+		if ( $channel_id != 0 ) {
 			$options .= " AND channel_id = '".$channel_id."'";
 		}
 		
-		if( $weekofday != 7 ) {
+		if ( $weekofday != 7 ) {
 			$options .= " AND WEEKDAY(starttime) = '".$weekofday."'";
 		}
 		
-		if( $prgtime != 24 ) {
+		if ( $prgtime != 24 ) {
 			$options .= " AND time(starttime) BETWEEN cast('".sprintf( "%02d:00:00", $prgtime)."' as time) AND cast('".sprintf("%02d:59:59", $prgtime)."' as time)";
 		}
 		
@@ -67,7 +65,7 @@ class Keyword extends DBRecord {
 	}
 	
 	private function getPrograms() {
-		if( $this->__id == 0 ) return false;
+		if ( $this->__id == 0 ) return false;
 		$recs = array();
 		try {
 			 $recs = self::search( trim($this->keyword), $this->use_regexp, $this->type, $this->category_id, $this->channel_id, $this->weekofday, $this->prgtime );
@@ -79,7 +77,7 @@ class Keyword extends DBRecord {
 	}
 	
 	public function reservation() {
-		if( $this->__id == 0 ) return;
+		if ( $this->__id == 0 ) return;
 		
 		$precs = array();
 		try {
@@ -91,7 +89,7 @@ class Keyword extends DBRecord {
 		// 一気に録画予約
 		foreach( $precs as $rec ) {
 			try {
-				if( $rec->autorec ) {
+				if ( $rec->autorec ) {
 					Reservation::simple( $rec->id, $this->__id, $this->autorec_mode );
 					reclog( "Keyword.class::キーワードID".$this->id."の録画が予約された");
 					usleep( 100 );		// あんまり時間を空けないのもどう?
@@ -104,7 +102,7 @@ class Keyword extends DBRecord {
 	}
 	
 	public function delete() {
-		if( $this->id == 0 ) return;
+		if ( $this->id == 0 ) return;
 		
 		$precs = array();
 		try {
@@ -118,7 +116,7 @@ class Keyword extends DBRecord {
 			try {
 				$reserve = new DBRecord( RESERVE_TBL, "program_id", $rec->id );
 				// 自動予約されたもののみ削除
-				if( $reserve->autorec ) {
+				if ( $reserve->autorec ) {
 					Reservation::cancel( $reserve->id );
 					usleep( 100 );		// あんまり時間を空けないのもどう?
 				}
@@ -133,25 +131,6 @@ class Keyword extends DBRecord {
 		catch( Exception $e ) {
 			throw $e;
 		}
-	}
-
-	// staticなファンクションはオーバーライドできない
-	static function createKeywords( $options = "" ) {
-		$retval = array();
-		$arr = array();
-		try{
-			$tbl = new self();
-			$sqlstr = "SELECT * FROM ".$tbl->__table." " .$options;
-			$result = $tbl->__query( $sqlstr );
-		}
-		catch( Exception $e ) {
-			throw $e;
-		}
-		if( $result === false ) throw new exception("レコードが存在しません");
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-			array_push( $retval, new self('id', $row['id']) );
-		}
-		return $retval;
 	}
 	
 	public function __destruct() {
