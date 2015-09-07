@@ -74,11 +74,11 @@ spl_autoload_register('custom_autoloader');
 
 // 以降は必要に応じて変更する
 
-define( "PADDING_TIME", 180 );						// 詰め物時間
-define( "DO_RECORD", INSTALL_PATH . "/do-record.sh" );		// レコードスクリプト
-define( "COMPLETE_CMD", INSTALL_PATH . "/recomplete.php" );	// 録画終了コマンド
-define( "GEN_THUMBNAIL", INSTALL_PATH . "/gen-thumbnail.sh" );	// サムネール生成スクリプト
-define( "RECORDER_CMD", INSTALL_PATH . "/recorder.php" );
+define( "PADDING_TIME",  180 );											// 詰め物時間
+define( "DO_RECORD",     INSTALL_PATH . "/scripts/do-record.sh" );		// レコードスクリプト
+define( "COMPLETE_CMD",  INSTALL_PATH . "/scripts/recomplete.php" );		// 録画終了コマンド
+define( "GEN_THUMBNAIL", INSTALL_PATH . "/scripts/gen-thumbnail.sh" );	// サムネール生成スクリプト
+define( "RECORDER_CMD",  INSTALL_PATH . "/scripts/recorder.php" );
 
 // BS/CSでEPGを取得するチャンネル
 // 通常は変える必要はありません
@@ -91,7 +91,8 @@ define( "CS2_EPG_CHANNEL", "CS24"   );	// CS2
 
 // 地上デジタルチャンネルテーブルsettings/gr_channel.phpが存在するならそれを
 // 優先する
-if( file_exists( INSTALL_PATH."/settings/gr_channel.php" ) ) {
+if ( file_exists( INSTALL_PATH."/settings/gr_channel.php" ) )
+{
 	unset($GR_CHANNEL_MAP);
 	include_once( INSTALL_PATH."/settings/gr_channel.php" );
 }
@@ -99,7 +100,8 @@ if( file_exists( INSTALL_PATH."/settings/gr_channel.php" ) ) {
 //
 // settings/site_conf.phpがあればそれを優先する
 //
-if( file_exists( INSTALL_PATH."/settings/site_conf.php" ) ) {
+if ( file_exists( INSTALL_PATH."/settings/site_conf.php" ) )
+{
 	unset($GR_CHANNEL_MAP);
 	unset($RECORD_MODE);
 	include_once( INSTALL_PATH."/settings/site_conf.php" );
@@ -108,13 +110,9 @@ if( file_exists( INSTALL_PATH."/settings/site_conf.php" ) ) {
 // Deprecated
 // カスタマイズした設定をロードし、デフォルト設定をオーバライドする
 // unsetはカスタム設定ファイルの責任で行う
-if( file_exists( INSTALL_PATH."/settings/config_custom.php" ) ) {
+if ( file_exists( INSTALL_PATH."/settings/config_custom.php" ) )
+{
 	include_once( INSTALL_PATH."/settings/config_custom.php" );
-}
-
-// 後方互換性
-if( !defined( "RECORDER_CMD" ) ) {
-	define( "RECORDER_CMD", INSTALL_PATH."/recorder.php" );
 }
 
 // DBテーブル情報　以下は変更しないでください
