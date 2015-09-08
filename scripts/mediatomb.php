@@ -10,18 +10,13 @@ try
 {
 	$recs = DBRecord::createRecords( RESERVE_TBL );
 
-	// DB接続
-	ModelBase::setConnectionInfo($settings->getConnInfo());
-	$db_obj = new ModelBase();
-	if ( $db_obj->isConnect() === false )
-		exit( "mysql connection fail" );
-
 	foreach( $recs as $rec )
 	{
+		// タイトル更新
 		$title = $rec->title."(".date("Y/m/d", toTimestamp($rec->starttime)).")";
 		$db_obj->updateRow('mt_cds_object', array('dc_title' => $title),
 													array('dc_title' => $rec->path));
-		
+		// 説明更新
 		$desc = "dc:description=".trim($rec->description);
 		$desc .= "&epgrec:id=".$rec->id;
 		$db_obj->updateRow('mt_cds_object', array('metadata' => $desc),

@@ -1,5 +1,6 @@
 <?php
-function garbageClean() {
+function garbageClean()
+{
 	// 不要なプログラムの削除
 	// 8日以上前のプログラムを消す
 	$arr = array();
@@ -17,11 +18,13 @@ function garbageClean() {
 	foreach( $arr as $val ) $val->delete();
 }
 
-function doKeywordReservation() {
+function doKeywordReservation()
+{
   // キーワード自動録画予約
  	$arr = array();
 	$arr = Keyword::createRecords( KEYWORD_TBL );
-	foreach( $arr as $val ) {
+	foreach( $arr as $val )
+	{
 		try {
 			$val->reservation();
 		}
@@ -31,59 +34,63 @@ function doKeywordReservation() {
 	}
 }
 
-function storeProgram( $type, $xmlfile ) {
+function storeProgram( $type, $xmlfile )
+{
 	global $settings;
 	$map = array();
 	
 	// XML parse
   	$xml = @simplexml_load_file( $xmlfile );
-	if( $xml === false ) {
+	if ( $xml === false )
+	{
 		reclog( "getepg:: 正常な".$xmlfile."が作成されなかった模様(放送間帯でないなら問題ありません)", EPGREC_WARN );
 		return;	// XMLが読み取れないなら何もしない
 	}
 	// channel抽出
-	foreach( $xml->channel as $ch ) {
+	foreach( $xml->channel as $ch )
+	{
 		$disc = $ch['id'];
 		$tmp_arr = explode('_', $ch['id']);
 		$sid = $tmp_arr[1];
 		$map["$disc"] = $ch['tp'];
-	 try {
-		// チャンネルデータを探す
-		$num = DBRecord::countRecords( CHANNEL_TBL , "WHERE channel_disc = '" . $disc ."'" );
-		if( $num == 0 ) {
-			// チャンネルデータがないなら新規作成
-			$rec = new DBRecord( CHANNEL_TBL );
-			$rec->type = $type;
-			$rec->channel = $map["$disc"];
-			$rec->channel_disc = $disc;
-			$rec->name = $ch->{'display-name'};
-			$rec->sid = $sid;
-		}
-		else {
-			// 存在した場合も、とりあえずチャンネル名は更新する
-			$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
-			$rec->name = $ch->{'display-name'};
-			// BS／CSの場合、チャンネル番号とSIDを更新
-			if ( $type == "BS" ||  $type == "CS" )
+		try
+		{
+			// チャンネルデータを探す
+			$num = DBRecord::countRecords( CHANNEL_TBL , "WHERE channel_disc = '" . $disc ."'" );
+			if ( $num == 0 )
 			{
+				// チャンネルデータがないなら新規作成
+				$rec = new DBRecord( CHANNEL_TBL );
+				$rec->type = $type;
 				$rec->channel = $map["$disc"];
+				$rec->channel_disc = $disc;
+				$rec->name = $ch->{'display-name'};
 				$rec->sid = $sid;
 			}
+			else {
+				// 存在した場合も、とりあえずチャンネル名は更新する
+				$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
+				$rec->name = $ch->{'display-name'};
+				// BS／CSの場合、チャンネル番号とSIDを更新
+				if ( $type == "BS" ||  $type == "CS" )
+				{
+					$rec->channel = $map["$disc"];
+					$rec->sid = $sid;
+				}
+			}
 		}
-	 }
-	 catch( Exception $e ) {
-		reclog( "getepg::DBの接続またはチャンネルテーブルの書き込みに失敗", EPGREC_ERROR );
-	 }
+		catch( Exception $e ) {
+			reclog( "getepg::DBの接続またはチャンネルテーブルの書き込みに失敗", EPGREC_ERROR );
+		}
 	}
 	// channel 終了
 	
 	// programme 取得
-	
-	foreach( $xml->programme as $program ) {
+	foreach( $xml->programme as $program )
+	{
 		$channel_rec = null;
-		
 		$channel_disc = $program['channel']; 
-		if( ! array_key_exists( "$channel_disc", $map ) ) continue;
+		if ( ! array_key_exists( "$channel_disc", $map ) ) continue;
 		$channel = $map["$channel_disc"];
 		
 		try {
@@ -92,8 +99,8 @@ function storeProgram( $type, $xmlfile ) {
 		catch( Exception $e ) {
 			reclog( "getepg::チャンネルレコード $channel_disc が発見できない", EPGREC_ERROR );
 		}
-		if( $channel_rec == null ) continue;	// あり得ないことが起きた
-		if( $channel_rec->skip == 1 ) continue;	// 受信しないチャンネル
+		if ( $channel_rec == null ) continue;	// あり得ないことが起きた
+		if ( $channel_rec->skip == 1 ) continue;	// 受信しないチャンネル
 		
 		$starttime = str_replace(" +0900", '', $program['start'] );
 		$endtime = str_replace( " +0900", '', $program['stop'] );
@@ -101,21 +108,23 @@ function storeProgram( $type, $xmlfile ) {
 		$desc = $program->desc;
 		$cat_ja = "";
 		$cat_en = "";
-		foreach( $program->category as $cat ) {
-			if( $cat['lang'] == "ja_JP" ) $cat_ja = $cat;
-			if( $cat['lang'] == "en" ) $cat_en = $cat;
+		foreach( $program->category as $cat )
+		{
+			if ( $cat['lang'] == "ja_JP" ) $cat_ja = $cat;
+			if ( $cat['lang'] == "en" ) $cat_en = $cat;
 		}
 		$program_disc = md5( $channel_disc . $starttime . $endtime );
 		// printf( "%s %s %s %s %s %s %s \n", $program_disc, $channel, $starttime, $endtime, $title, $desc, $cat_ja );
 		
 		// カテゴリ登録
-		
 		$cat_rec = null;
-		try {
+		try
+		{
 			// カテゴリを処理する
 			$category_disc = md5( $cat_ja . $cat_en );
 			$num = DBRecord::countRecords(CATEGORY_TBL, "WHERE category_disc = '".$category_disc."'" );
-			if( $num == 0 ) {
+			if ( $num == 0 )
+			{
 				// 新規カテゴリの追加
 				$cat_rec = new DBRecord( CATEGORY_TBL );
 				$cat_rec->name_jp = $cat_ja;
@@ -133,29 +142,36 @@ function storeProgram( $type, $xmlfile ) {
 		}
 		
 		// プログラム登録
-		
-		try {
+		try
+		{
 			//
 			$num = DBRecord::countRecords(PROGRAM_TBL, "WHERE program_disc = '".$program_disc."'" );
-			if( $num == 0 ) {
+			if ( $num == 0 )
+			{
 				// 新規番組
 				// 重複チェック 同時間帯にある番組
 				$options = "WHERE channel_disc = '".$channel_disc."' ".
 					"AND starttime < '". $endtime ."' AND endtime > '".$starttime."'";
 				$battings = DBRecord::countRecords(PROGRAM_TBL, $options );
-				if( $battings > 0 ) {
+				if ( $battings > 0 )
+				{
 					// 重複発生＝おそらく放映時間の変更
 					$records = DBRecord::createRecords(PROGRAM_TBL, $options);
-					foreach( $records as $rec ) {
+					foreach( $records as $rec )
+					{
 						// 自動録画予約された番組は放映時間変更と同時にいったん削除する
-						try {
+						try
+						{
 							$reserve = new DBRecord(RESERVE_TBL, "program_id", $rec->id );
 							// すでに開始されている録画は無視する
-							if( time() > (toTimestamp($reserve->starttime) - PADDING_TIME - $settings->former_time) ) {
+							if ( time() > (toTimestamp($reserve->starttime) - PADDING_TIME - $settings->former_time) )
+							{
 								reclog( "getepg::録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は録画開始後に時間変更が発生した可能性がある", EPGREC_WARN );
 							}
-							else {
-								if( $reserve->autorec ) {
+							else
+							{
+								if ( $reserve->autorec )
+								{
 									reclog( "getepg::録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は時間変更の可能性があり予約取り消し" );
 									Reservation::cancel( $reserve->id );
 								}
@@ -183,17 +199,20 @@ function storeProgram( $type, $xmlfile ) {
 				$rec->program_disc = $program_disc;
 				$rec->update();
 			}
-			else {
+			else
+			{
 				// 番組内容更新
 				$rec = new DBRecord( PROGRAM_TBL, "program_disc", $program_disc );
 				$rec->title = $title;
 				$rec->description = $desc;
 				$rec->category_id = $cat_rec->id;
 				$rec->update();
-				try {
+				try
+				{
 					$reserve = new DBRecord( RESERVE_TBL, "program_id", $rec->id );
 					// dirtyが立っておらず現在より後の録画予約であるなら
-					if( ($reserve->dirty == 0) && (toTimestamp($reserve->starttime) > time()) ) {
+					if ( ($reserve->dirty == 0) && (toTimestamp($reserve->starttime) > time()) )
+					{
 						$reserve->title = $title;
 						$reserve->description = $desc;
 						reclog( "getepg:: 予約ID".$reserve->id."のEPG情報が更新された" );
@@ -206,7 +225,8 @@ function storeProgram( $type, $xmlfile ) {
 				// 書き込む
 			}
 		}
-		catch(Exception $e) {
+		catch(Exception $e)
+		{
 			reclog( "getepg:: プログラムテーブルに問題が生じた模様", EPGREC_ERROR );
 			reclog( "getepg:: ".$e->getMessage()."" , EPGREC_ERROR);
 			exit( $e->getMessage() );
