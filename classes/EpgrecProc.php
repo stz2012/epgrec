@@ -5,6 +5,7 @@ class EpgrecProc
 	private $procEnv;
 	private $procRes = null;
 	private $procSub = array();
+	private $isRunSub = false;
 
 	// コンストラクタ
 	function __construct( $cmd, $env = null )
@@ -39,12 +40,20 @@ class EpgrecProc
 				foreach( $this->procSub as $proc )
 				{
 					if ( $proc->isRunning() )
+					{
+						$this->isRunSub = true;
 						return true;
+					}
 				}
 			}
 			return false;
 		}
 		return true;
+	}
+
+	public function isRunningSub()
+	{
+		return $this->isRunSub;
 	}
 
 	public function addSubCmd( $cmd )

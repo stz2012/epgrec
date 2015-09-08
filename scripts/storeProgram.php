@@ -44,7 +44,7 @@ else exit();
 exec( $cmdline );
 if ( file_exists( $xmlfile ) )
 {
-	storeProgram( $type, $xmlfile );
+	parse_epgdump_file( $type, $xmlfile );
 	@unlink( $xmlfile );
 }
 else

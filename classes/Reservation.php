@@ -212,35 +212,35 @@ class Reservation {
 			$filename = $settings->filename_format;
 			
 			// %TITLE%	番組タイトル
-			$filename = mb_str_replace("%TITLE%", trim($title), $filename);
+			$filename = $this->_mb_str_replace("%TITLE%", trim($title), $filename);
 			// %ST%	開始日時
-			$filename = mb_str_replace("%ST%",date("YmdHis", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%ST%",date("YmdHis", $start_time), $filename );
 			// %ET%	終了日時
-			$filename = mb_str_replace("%ET%",date("YmdHis", $end_time), $filename );
+			$filename = $this->_mb_str_replace("%ET%",date("YmdHis", $end_time), $filename );
 			// %TYPE%	GR/BS/CS
-			$filename = mb_str_replace("%TYPE%",$crec->type, $filename );
+			$filename = $this->_mb_str_replace("%TYPE%",$crec->type, $filename );
 			// %CH%	チャンネル番号
-			$filename = mb_str_replace("%CH%","".$crec->channel, $filename );
+			$filename = $this->_mb_str_replace("%CH%","".$crec->channel, $filename );
 			// %SID%	サービスID
-			$filename = mb_str_replace("%SID%","".$crec->sid, $filename );
+			$filename = $this->_mb_str_replace("%SID%","".$crec->sid, $filename );
 			// %DOW%	曜日（Sun-Mon）
-			$filename = mb_str_replace("%DOW%",date("D", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%DOW%",date("D", $start_time), $filename );
 			// %DOWJ%	曜日（日-土）
-			$filename = mb_str_replace("%DOWJ%",$day_of_week[(int)date("w", $start_time)], $filename );
+			$filename = $this->_mb_str_replace("%DOWJ%",$day_of_week[(int)date("w", $start_time)], $filename );
 			// %YEAR%	開始年
-			$filename = mb_str_replace("%YEAR%",date("Y", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%YEAR%",date("Y", $start_time), $filename );
 			// %MONTH%	開始月
-			$filename = mb_str_replace("%MONTH%",date("m", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%MONTH%",date("m", $start_time), $filename );
 			// %DAY%	開始日
-			$filename = mb_str_replace("%DAY%",date("d", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%DAY%",date("d", $start_time), $filename );
 			// %HOUR%	開始時
-			$filename = mb_str_replace("%HOUR%",date("H", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%HOUR%",date("H", $start_time), $filename );
 			// %MIN%	開始分
-			$filename = mb_str_replace("%MIN%",date("i", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%MIN%",date("i", $start_time), $filename );
 			// %SEC%	開始秒
-			$filename = mb_str_replace("%SEC%",date("s", $start_time), $filename );
+			$filename = $this->_mb_str_replace("%SEC%",date("s", $start_time), $filename );
 			// %DURATION%	録画時間（秒）
-			$filename = mb_str_replace("%DURATION%","".$duration, $filename );
+			$filename = $this->_mb_str_replace("%DURATION%","".$duration, $filename );
 			
 			// あると面倒くさそうな文字を全部_に
 //			$filename = preg_replace("/[ \.\/\*:<>\?\\|()\'\"&]/u","_", trim($filename) );
@@ -420,6 +420,25 @@ class Reservation {
 			reclog("Reservation::cancel 予約キャンセルでDB接続またはアクセスに失敗した模様", EPGREC_ERROR );
 			throw $e;
 		}
+	}
+
+	// マルチバイトstr_replace
+	private function _mb_str_replace($search, $replace, $target, $encoding = "UTF-8" )
+	{
+		$notArray = !is_array($target) ? TRUE : FALSE;
+		$target = $notArray ? array($target) : $target;
+		$search_len = mb_strlen($search, $encoding);
+		$replace_len = mb_strlen($replace, $encoding);
+		
+		foreach ($target as $i => $tar) {
+			$offset = mb_strpos($tar, $search);
+			while ($offset !== FALSE){
+				$tar = mb_substr($tar, 0, $offset).$replace.mb_substr($tar, $offset + $search_len);
+				$offset = mb_strpos($tar, $search, $offset + $replace_len);
+			}
+			$target[$i] = $tar;
+		}
+		return $notArray ? $target[0] : $target;
 	}
 }
 ?>

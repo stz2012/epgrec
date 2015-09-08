@@ -76,7 +76,7 @@ try
 	
 	// 録画開始
 	$proch = false;
-	if ( ( $proch = EpgrecProc::execCommand(DO_RECORD, $env_rec) ) !== false )
+	if ( ( $proch = EpgrecProcMng::execCommand(DO_RECORD, $env_rec) ) !== false )
 	{
 		reclog("recorder:: 録画ID".$rrec->id .":".$rrec->type.$rrec->channel.$rrec->title."の録画開始" );
 		// 録画完了待ち

@@ -10,6 +10,22 @@ class EpgrecProcMng
 		return $p->startCommand();
 	}
 
+	// デーモン作成
+	public function createDaemon()
+	{
+		if ( pcntl_fork() != 0 )
+			return false;
+		posix_setsid();
+		if ( pcntl_fork() != 0 )
+			return false;
+		pcntl_signal(SIGTERM, function($signo = 0) {
+			// とりあえずシグナルは無視する
+		});
+		fclose(STDIN);
+		fclose(STDOUT);
+		fclose(STDERR);
+	}
+
 	public function addQueue( $cmd )
 	{
 		$this->procQueue[] = new EpgrecProc( $cmd );
@@ -27,26 +43,16 @@ class EpgrecProcMng
 			{
 				foreach( $this->procQueue as $proc )
 				{
-					if ( $proc->isRunning() ) $counter++;
+					if ( $proc->isRunning() )
+					{
+						if ( $proc->isRunningSub() && $counter > 0)
+							break;
+						$counter++;
+					}
 				}
 			}
-		} while( $counter != 0 );
-	}
-
-	// デーモン作成
-	public static function createDaemon()
-	{
-		if ( pcntl_fork() != 0 )
-			return false;
-		posix_setsid();
-		if ( pcntl_fork() != 0 )
-			return false;
-		pcntl_signal(SIGTERM, function($signo = 0) {
-			// とりあえずシグナルは無視する
-		});
-		fclose(STDIN);
-		fclose(STDOUT);
-		fclose(STDERR);
+		}
+		while( $counter != 0 );
 	}
 }
 ?>

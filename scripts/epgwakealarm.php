@@ -27,7 +27,7 @@
 		}
 		else if( (intval($wakeupvars->getepg_time) + intval($settings->getepg_timer) * 3600 ) <= time() ) {
 			$wakeupvars->reason = "getepg";
-			exec( INSTALL_PATH."/getepg.php >/dev/null 2>&1" );
+			exec( GET_EPG_CMD." >/dev/null 2>&1" );
 		}
 		else {
 			$wakeupvars->reason = "other";

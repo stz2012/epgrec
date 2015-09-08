@@ -76,9 +76,11 @@ spl_autoload_register('custom_autoloader');
 
 define( "PADDING_TIME",  180 );											// 詰め物時間
 define( "DO_RECORD",     INSTALL_PATH . "/scripts/do-record.sh" );		// レコードスクリプト
-define( "COMPLETE_CMD",  INSTALL_PATH . "/scripts/recomplete.php" );		// 録画終了コマンド
 define( "GEN_THUMBNAIL", INSTALL_PATH . "/scripts/gen-thumbnail.sh" );	// サムネール生成スクリプト
-define( "RECORDER_CMD",  INSTALL_PATH . "/scripts/recorder.php" );
+define( "GET_EPG_CMD",   INSTALL_PATH . "/scripts/getEpg.php" );		// EPGデータ取得コマンド
+define( "STORE_PRG_CMD", INSTALL_PATH . "/scripts/storeProgram.php" );	// 番組データ保存コマンド
+define( "RECORDER_CMD",  INSTALL_PATH . "/scripts/recorder.php" );		// 録画制御コマンド
+define( "COMPLETE_CMD",  INSTALL_PATH . "/scripts/recomplete.php" );	// 録画終了コマンド
 
 // BS/CSでEPGを取得するチャンネル
 // 通常は変える必要はありません

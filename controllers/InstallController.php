@@ -37,8 +37,8 @@ class InstallController extends CommonController
 		$exec_files = array(
 			DO_RECORD,
 			RECORDER_CMD,
-			INSTALL_PATH."/scripts/getepg.php",
-			INSTALL_PATH."/scripts/storeProgram.php",
+			GET_EPG_CMD,
+			STORE_PRG_CMD,
 			$gen_thumbnail,
 		);
 
@@ -182,7 +182,7 @@ class InstallController extends CommonController
 	 */
 	public function step5Action()
 	{
-		@system( INSTALL_PATH.'/scripts/getepg.php &' );
+		@system( GET_EPG_CMD.' &' );
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "sitetitle", "インストール完了" );
 	}
