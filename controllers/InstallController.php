@@ -121,6 +121,7 @@ class InstallController extends CommonController
 		$this->setting->save();
 
 		// データベース接続チェック
+		$this->model->initDb();
 		if (!ModelBase::isConnect())
 		{
 			jdialog( "ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step2" );

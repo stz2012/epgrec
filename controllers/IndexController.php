@@ -20,6 +20,11 @@ class IndexController extends CommonController
 			$this->setNextPage('install');
 			return;
 		}
+		else if ( ! ModelBase::isConnect() )
+		{
+			$this->setNextPage('install', 'step2');
+			return;
+		}
 	}
 	
 	/**

@@ -93,7 +93,7 @@ class Settings extends SimpleXMLElement
 			
 			if (defined("GR_TUNERS")) $xml->gr_tuners = GR_TUNERS;
 			else $xml->gr_tuners = 1;
-
+			
 			if (defined("CS_REC_FLG")) $xml->cs_rec_flg = CS_REC_FLG;
 			else $xml->cs_rec_flg = 0;
 			
@@ -135,7 +135,7 @@ class Settings extends SimpleXMLElement
 			
 			if (defined("TBL_PREFIX")) $xml->tbl_prefix = TBL_PREFIX;
 			else $xml->tbl_prefix = "Recorder_";
-
+			
 			if (defined("EPGDUMP")) $xml->epgdump = EPGDUMP;
 			else $xml->epgdump = "/usr/local/bin/epgdump";
 			
@@ -144,7 +144,7 @@ class Settings extends SimpleXMLElement
 			
 			if (defined( "ATRM" )) $xml->atrm = ATRM;
 			else $xml->atrm = "/usr/bin/atrm";
-
+			
 			if (defined( "SLEEP" )) $xml->sleep = SLEEP;
 			else $xml->sleep = "/bin/sleep";
 			
@@ -200,7 +200,7 @@ class Settings extends SimpleXMLElement
 			return $xml;
 		}
 	}
-	
+
 	public function getConnInfo()
 	{
 		return array(
@@ -212,12 +212,12 @@ class Settings extends SimpleXMLElement
 			'dbpass' => $this->db_pass
 		);
 	}
-	
+
 	public function exists( $property )
 	{
 		return (int)count( $this->{$property} );
 	}
-	
+
 	public function post($POST_DATA)
 	{
 		if (!is_array($POST_DATA))
@@ -228,7 +228,7 @@ class Settings extends SimpleXMLElement
 				$this->{$key} = trim($value);
 		}
 	}
-	
+
 	public function save()
 	{
 		$this->asXML(INSTALL_PATH . self::CONFIG_XML);
