@@ -19,7 +19,7 @@ class InstallController extends CommonController
 		// do-record.shの存在チェック
 		if (! file_exists( DO_RECORD ) )
 		{
-			$contents .= "do-record.shが存在しません<br>do-record.sh.pt1やdo-record.sh.friioを参考に作成してください<br />";
+			$contents .= DO_RECORD."が存在しません<br>do-record.sh.pt1やdo-record.sh.friioを参考に作成してください<br />";
 			$this->view->assign( "sitetitle", "インストールステップ１" );
 			$this->view->assign( "contents" , $contents );
 			return;
@@ -120,10 +120,27 @@ class InstallController extends CommonController
 		$this->setting->post($this->request->getPost());
 		$this->setting->save();
 
+		$this->view->assign( "settings", $this->setting );
+		$this->view->assign( "install_path", INSTALL_PATH );
+		$this->view->assign( "sitetitle", "インストールステップ３" );
+		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step4" );
+		$this->view->assign( "message" , "環境設定を行います。これらの設定はデフォルトのままでも制限付きながら動作します。" );
+		$this->view->assign( "record_mode", $RECORD_MODE );
+	}
+
+	/**
+	 * インストール最終ステップ
+	 */
+	public function step4Action()
+	{
+		// 設定の保存
+		$this->setting->post($this->request->getPost());
+		$this->setting->save();
+
 		// データベース接続チェック
 		if (!ModelBase::isConnect())
 		{
-			jdialog( "ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step2" );
+			jdialog( "ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step3" );
 			exit();
 		}
 
@@ -150,26 +167,9 @@ class InstallController extends CommonController
 		}
 		catch( Exception $e )
 		{
-			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step2" );
+			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step3" );
 			exit();
 		}
-
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "install_path", INSTALL_PATH );
-		$this->view->assign( "sitetitle", "インストールステップ３" );
-		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step4" );
-		$this->view->assign( "message" , "環境設定を行います。これらの設定はデフォルトのままでも制限付きながら動作します。" );
-		$this->view->assign( "record_mode", $RECORD_MODE );
-	}
-
-	/**
-	 * インストール最終ステップ
-	 */
-	public function step4Action()
-	{
-		// 設定の保存
-		$this->setting->post($this->request->getPost());
-		$this->setting->save();
 
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "install_path", INSTALL_PATH );
