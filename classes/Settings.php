@@ -206,12 +206,12 @@ class Settings extends SimpleXMLElement
 	public function getConnInfo()
 	{
 		return array(
-			'type'   => $this->setting->db_type,
-			'host'   => $this->setting->db_host,
-			'port'   => $this->setting->db_port,
-			'dbname' => $this->setting->db_name,
-			'dbuser' => $this->setting->db_user,
-			'dbpass' => $this->setting->db_pass
+			'type'   => $this->db_type,
+			'host'   => $this->db_host,
+			'port'   => $this->db_port,
+			'dbname' => $this->db_name,
+			'dbuser' => $this->db_user,
+			'dbpass' => $this->db_pass
 		);
 	}
 	
