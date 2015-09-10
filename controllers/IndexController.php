@@ -17,11 +17,8 @@ class IndexController extends CommonController
 		// 設定ファイルの有無を検査する
 		if ( ! file_exists( INSTALL_PATH."/settings/config.xml") )
 		{
-			/*header( "Content-Type: text/html;charset=utf-8" );
-			exit( "<script type=\"text/javascript\">\n" .
-			"<!--\n".
-			"window.open(\"install/step1.php\",\"_self\");".
-			"// -->\n</script>" );*/
+			$this->setNextPage('install');
+			return;
 		}
 	}
 	

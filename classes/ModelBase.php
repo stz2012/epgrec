@@ -48,12 +48,19 @@ class ModelBase
 					self::$connInfo['port'],
 					self::$connInfo['dbname']
 				);
-				$this->db = new PDO($dsn, self::$connInfo['dbuser'], self::$connInfo['dbpass'], 
-					array(
-							PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8 COLLATE 'utf8_general_ci'",
-							PDO::MYSQL_ATTR_INIT_COMMAND => "SET SESSION sql_mode=''"
-					)
-				);
+				try
+				{
+					$this->db = new PDO($dsn, self::$connInfo['dbuser'], self::$connInfo['dbpass'], 
+						array(
+								PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8 COLLATE 'utf8_general_ci'",
+								PDO::MYSQL_ATTR_INIT_COMMAND => "SET SESSION sql_mode=''"
+						)
+					);
+				}
+				catch (Exception $e)
+				{
+					return;
+				}
 				// クエリのバッファリングを強制する
 				$this->db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 				// 自動コミットをOff
@@ -69,7 +76,14 @@ class ModelBase
 					self::$connInfo['dbuser'],
 					self::$connInfo['dbpass']
 				);
-				$this->db = new PDO($dsn);
+				try
+				{
+					$this->db = new PDO($dsn);
+				}
+				catch (Exception $e)
+				{
+					return;
+				}
 				// 自動コミットをOff
 				$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
 			}
@@ -79,7 +93,14 @@ class ModelBase
 					'sqlite:%s',
 					self::$connInfo['dbname']
 				);
-				$this->db = new PDO($dsn);
+				try
+				{
+					$this->db = new PDO($dsn);
+				}
+				catch (Exception $e)
+				{
+					return;
+				}
 			}
 			else
 				throw new Exception('接続パラメータ不正');
