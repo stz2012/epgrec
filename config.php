@@ -59,8 +59,6 @@ $RECORD_MODE = array(
 
 //////////////////////////////////////////////////////////////////////////////
 // 以降の変数・定数はほとんどの場合、変更する必要はありません
-
-
 define( "INSTALL_PATH", dirname(__FILE__) );		// インストールパス
 
 // ライブラリのディレクトリをinclude_pathに追加
@@ -73,7 +71,6 @@ setlocale(LC_ALL, 'ja_JP.UTF-8');
 spl_autoload_register('custom_autoloader');
 
 // 以降は必要に応じて変更する
-
 define( "PADDING_TIME",  180 );											// 詰め物時間
 define( "DO_RECORD",     INSTALL_PATH . "/scripts/do-record.sh" );		// レコードスクリプト
 define( "GEN_THUMBNAIL", INSTALL_PATH . "/scripts/gen-thumbnail.sh" );	// サムネール生成スクリプト
@@ -86,7 +83,6 @@ define( "COMPLETE_CMD",  INSTALL_PATH . "/scripts/recomplete.php" );	// 録画�
 // 通常は変える必要はありません
 // BSでepgdumpが頻繁に落ちる場合は、受信状態のいいチャンネルに変えることで
 // 改善するかもしれません
-
 define( "BS_EPG_CHANNEL",  "BS09_0" );	// BS
 define( "CS1_EPG_CHANNEL", "CS8"    );	// CS1
 define( "CS2_EPG_CHANNEL", "CS24"   );	// CS2
@@ -109,16 +105,7 @@ if ( file_exists( INSTALL_PATH."/settings/site_conf.php" ) )
 	include_once( INSTALL_PATH."/settings/site_conf.php" );
 }
 
-// Deprecated
-// カスタマイズした設定をロードし、デフォルト設定をオーバライドする
-// unsetはカスタム設定ファイルの責任で行う
-if ( file_exists( INSTALL_PATH."/settings/config_custom.php" ) )
-{
-	include_once( INSTALL_PATH."/settings/config_custom.php" );
-}
-
 // DBテーブル情報　以下は変更しないでください
-
 define( "RESERVE_TBL",  "reserveTbl" );						// 予約テーブル
 define( "PROGRAM_TBL",  "programTbl" );						// 番組表
 define( "CHANNEL_TBL",  "channelTbl" );						// チャンネルテーブル

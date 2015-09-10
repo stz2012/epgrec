@@ -10,8 +10,6 @@ class Settings extends SimpleXMLElement
 			$xmlfile = file_get_contents(INSTALL_PATH . self::CONFIG_XML);
 			$obj = new self($xmlfile);
 			
-			// 8月14日以降に追加した設定項目の自動生成
-			
 			// キーワード自動録画の録画モード
 			if ( $obj->exists("autorec_mode") == 0 ) {
 				$obj->autorec_mode = 0;
@@ -57,6 +55,18 @@ class Settings extends SimpleXMLElement
 			// シャットダウンコマンド
 			if ( $obj->exists("shutdown") == 0 ) {
 				$obj->shutdown = "sudo /sbin/shutdown";
+				$obj->save();
+			}
+			
+			// ＤＢタイプ
+			if ( $obj->exists("db_type") == 0 ) {
+				$obj->db_type = "mysql";
+				$obj->save();
+			}
+			
+			// ＤＢポート
+			if ( $obj->exists("db_port") == 0 ) {
+				$obj->db_port = 3306;
 				$obj->save();
 			}
 			
@@ -111,8 +121,14 @@ class Settings extends SimpleXMLElement
 			if (defined("FILENAME_FORMAT")) $xml->filename_format = FILENAME_FORMAT;
 			else $xml->filename_format = "%TYPE%%CH%_%ST%_%ET%";
 			
+			if (defined("DB_TYPE")) $xml->db_type = DB_TYPE;
+			else $xml->db_type = "mysql";
+			
 			if (defined("DB_HOST")) $xml->db_host = DB_HOST;
 			else $xml->db_host = "localhost";
+			
+			if (defined("DB_PORT")) $xml->db_port = DB_PORT;
+			else $xml->db_port = 3306;
 			
 			if (defined("DB_NAME")) $xml->db_name = DB_NAME;
 			else $xml->db_name = "yourdbname";
@@ -190,9 +206,9 @@ class Settings extends SimpleXMLElement
 	public function getConnInfo()
 	{
 		return array(
-			'type'   => 'mysql',
+			'type'   => $this->setting->db_type,
 			'host'   => $this->setting->db_host,
-			'port'   => 3306,
+			'port'   => $this->setting->db_port,
 			'dbname' => $this->setting->db_name,
 			'dbuser' => $this->setting->db_user,
 			'dbpass' => $this->setting->db_pass

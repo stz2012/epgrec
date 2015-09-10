@@ -12,23 +12,35 @@
 <div class="container">
 <form id="system_setting" method="post" action="{$post_to}" class="formSetting">
 
-<h2>MySQLデータベース設定</h2>
+<h2>データベース設定</h2>
 
-<h3>MySQLホスト名</h3>
+<h3>データベースドライバー名</h3>
 <div class="setting">
-<div class="caption">MySQLサーバーのホスト名を入力してください。</div>
+<div class="caption">データベースのドライバー名を選択してください。</div>
+{html_options name="db_type" options=$pdo_driver selected=$settings->db_type}
+</div>
+
+<h3>データベースホスト名</h3>
+<div class="setting">
+<div class="caption">データベースのホスト名を入力してください。</div>
 <input type="text" name="db_host" value="{$settings->db_host}" size="15" class="required" />
 </div>
 
-<h3>MySQL接続ユーザー名</h3>
+<h3>データベースポート</h3>
 <div class="setting">
-<div class="caption">MySQLサーバーの接続に使用するユーザー名を入力してください。</div>
+<div class="caption">データベースのポートを入力してください。</div>
+<input type="text" name="db_port" value="{$settings->db_port}" size="15" class="required" />
+</div>
+
+<h3>データベース接続ユーザー名</h3>
+<div class="setting">
+<div class="caption">データベースの接続に使用するユーザー名を入力してください。</div>
 <input type="text" name="db_user" value="{$settings->db_user}" size="15" class="required" />
 </div>
 
-<h3>MySQL接続パスワード</h3>
+<h3>データベース接続パスワード</h3>
 <div class="setting">
-<div class="caption">MySQLサーバーの接続に使用するパスワードを入力してください。</div>
+<div class="caption">データベースの接続に使用するパスワードを入力してください。</div>
 <input type="text" name="db_pass" value="{$settings->db_pass}" size="15" class="required" />
 </div>
 

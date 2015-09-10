@@ -5,6 +5,12 @@ define( "EPGREC_INFO" , 0 );
 define( "EPGREC_WARN" , 1 );
 define( "EPGREC_ERROR", 2 );
 
+$PDO_DRIVER_MAP = array(
+	'mysql'  => 'MySQL',
+	'pgsql'  => 'PostgreSQL',
+	'sqlite' => 'SQLite'
+);
+
 function reclog( $message , $level = EPGREC_INFO )
 {
 	

@@ -101,13 +101,13 @@ class InstallController extends CommonController
 	 */
 	public function step2Action()
 	{
-		global $RECORD_MODE;
+		global $PDO_DRIVER_MAP;
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "install_path", INSTALL_PATH );
 		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step3" );
 		$this->view->assign( "sitetitle", "インストールステップ２" );
 		$this->view->assign( "message", "システム設定を行います。このページの設定が正しく行われないとepgrecは機能しません。" );
-		$this->view->assign( "record_mode", $RECORD_MODE );
+		$this->view->assign( "pdo_driver", $PDO_DRIVER_MAP );
 	}
 
 	/**
@@ -120,27 +120,10 @@ class InstallController extends CommonController
 		$this->setting->post($this->request->getPost());
 		$this->setting->save();
 
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "install_path", INSTALL_PATH );
-		$this->view->assign( "sitetitle", "インストールステップ３" );
-		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step4" );
-		$this->view->assign( "message" , "環境設定を行います。これらの設定はデフォルトのままでも制限付きながら動作します。" );
-		$this->view->assign( "record_mode", $RECORD_MODE );
-	}
-
-	/**
-	 * インストール最終ステップ
-	 */
-	public function step4Action()
-	{
-		// 設定の保存
-		$this->setting->post($this->request->getPost());
-		$this->setting->save();
-
 		// データベース接続チェック
 		if (!ModelBase::isConnect())
 		{
-			jdialog( "ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step3" );
+			jdialog( "ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step2" );
 			exit();
 		}
 
@@ -167,9 +150,26 @@ class InstallController extends CommonController
 		}
 		catch( Exception $e )
 		{
-			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step3" );
+			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step2" );
 			exit();
 		}
+
+		$this->view->assign( "settings", $this->setting );
+		$this->view->assign( "install_path", INSTALL_PATH );
+		$this->view->assign( "sitetitle", "インストールステップ３" );
+		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step4" );
+		$this->view->assign( "message" , "環境設定を行います。これらの設定はデフォルトのままでも制限付きながら動作します。" );
+		$this->view->assign( "record_mode", $RECORD_MODE );
+	}
+
+	/**
+	 * インストール最終ステップ
+	 */
+	public function step4Action()
+	{
+		// 設定の保存
+		$this->setting->post($this->request->getPost());
+		$this->setting->save();
 
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "install_path", INSTALL_PATH );

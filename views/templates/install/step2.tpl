@@ -1,1 +1,1 @@
-{include file='setting/index.tpl'}
+{include file='setting/system.tpl'}
