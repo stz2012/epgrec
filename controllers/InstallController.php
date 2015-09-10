@@ -12,21 +12,23 @@ class InstallController extends CommonController
 	public function indexAction()
 	{
 		global $GR_CHANNEL_MAP;
-		$this->view->compile_dir = '/tmp';
+		$this->view->compile_dir = '/tmp';	// 一時的に設定
 		$err_flg = false;
 		$contents = "<p><b>epgrecのインストール状態をチェックします</b></p>";
 
 		// do-record.shの存在チェック
 		if (! file_exists( DO_RECORD ) )
 		{
-			$err_flg = true;
 			$contents .= "do-record.shが存在しません<br>do-record.sh.pt1やdo-record.sh.friioを参考に作成してください<br />";
+			$this->view->assign( "sitetitle", "インストールステップ１" );
+			$this->view->assign( "contents" , $contents );
+			return;
 		}
 
 		// パーミッションチェック
 		$rw_dirs = array( 
 			INSTALL_PATH."/settings",
-			INSTALL_PATH."/thumbs",
+			INSTALL_PATH."/htdocs/epgrec/thumbs",
 			INSTALL_PATH."/video",
 			INSTALL_PATH."/views/templates_c",
 		);
@@ -44,7 +46,7 @@ class InstallController extends CommonController
 		);
 
 		$contents .= "<br />";
-		$contents .= "<p><b>ディレクトリのパーミッションチェック（777）</b></p>";
+		$contents .= "<p><b>ディレクトリのパーミッションチェック（707）</b></p>";
 		$contents .= "<div>";
 		foreach($rw_dirs as $value )
 		{
@@ -53,7 +55,7 @@ class InstallController extends CommonController
 			if ( !($perm == "707" || $perm == "777") )
 			{
 				$err_flg = true;
-				$contents .= '<font color="red">...'.$perm.'... missing</font><br />このディレクトリを書き込み許可にしてください（ex. chmod 777 '.$value.'）<br />';
+				$contents .= '<font color="red">...'.$perm.'... missing</font><br />このディレクトリを書き込み許可にしてください（ex. chmod 707 '.$value.'）<br />';
 			}
 			else
 				$contents .= "...".$perm."...ok<br />";
@@ -61,16 +63,16 @@ class InstallController extends CommonController
 		$contents .= "</div>";
 
 		$contents .= "<br />";
-		$contents .= "<p><b>ファイルのパーミッションチェック（755）</b></p>";
+		$contents .= "<p><b>ファイルのパーミッションチェック（705）</b></p>";
 		$contents .= "<div>";
 		foreach($exec_files as $value )
 		{
 			$contents .= $value;
 			$perm = $this->_getPerm( $value );
-			if ( !($perm == "755" || $perm == "775" || $perm == "777") )
+			if ( !($perm == "705" || $perm == "755") )
 			{
 				$err_flg = true;
-				$contents .= '<font color="red">...'.$perm.'... missing</font><br>このファイルを実行可にしてください（ex. chmod 755 '.$value.'）<br />';
+				$contents .= '<font color="red">...'.$perm.'... missing</font><br>このファイルを実行可にしてください（ex. chmod 705 '.$value.'）<br />';
 			}
 			else
 				$contents .= "...".$perm."...ok<br />";
@@ -119,13 +121,9 @@ class InstallController extends CommonController
 		$this->setting->save();
 
 		// データベース接続チェック
-		try
+		if (!ModelBase::isConnect())
 		{
-			$dbh = new PDO($this->model->dsn);
-		}
-		catch( Exception $e )
-		{
-			jdialog( "MySQLに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step2" );
+			jdialog( "ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step2" );
 			exit();
 		}
 
