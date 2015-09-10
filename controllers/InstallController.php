@@ -12,6 +12,7 @@ class InstallController extends CommonController
 	public function indexAction()
 	{
 		global $GR_CHANNEL_MAP;
+		$this->view->compile_dir = '/tmp';
 		$err_flg = false;
 		$contents = "<p><b>epgrecのインストール状態をチェックします</b></p>";
 
