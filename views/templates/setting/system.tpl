@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-{if $message != ''}
+{if $message|default:'' != ''}
 {$message}
 {else}
 <a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting">環境設定へ</a>

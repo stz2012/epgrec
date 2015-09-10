@@ -67,6 +67,7 @@ class IndexController extends CommonController
 		}
 
 		// チャンネルマップ
+		$channel_map = array();
 		$tmprec = new DBRecord(CHANNEL_TBL);
 		$recarr = $tmprec->fetch_array( "type", $type, "id > 0 ORDER BY sid+0 ASC" );
 		foreach( $recarr as $val)

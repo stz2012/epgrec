@@ -23,8 +23,26 @@ class EpgrecProc
 			2 => array( 'file','/dev/null','w' ),
 		);
 		$this->procRes = proc_open( $this->procCmd, $descspec, $pipes, INSTALL_PATH, $this->procEnv );
-		if ( is_resource( $this->procRes ) ) return $this->procRes;
-		
+		if ( is_resource( $this->procRes ) )
+			return $this->procRes;
+		else
+			return false;
+	}
+
+	// コマンド実行待ち
+	public function waitCommand()
+	{
+		if ( $this->startCommand() !== false )
+		{
+			while (1);
+			{
+				$status = proc_get_status( $this->procRes );
+				if ( $status['running'] === false )
+					break;
+				sleep(1);
+			}
+			return true;
+		}
 		return false;
 	}
 
@@ -33,13 +51,14 @@ class EpgrecProc
 		if ($this->procRes == null)
 			return ($this->startCommand() !== false);
 		$status = proc_get_status( $this->procRes );
-		if ( ! $status['running'] )
+		UtilLog::writeLog("isRunning: ".print_r($status, true), 'DEBUG');
+		if ( $status['running'] === false )
 		{
 			if ( count($this->procSub) != 0 )
 			{
 				foreach( $this->procSub as $proc )
 				{
-					if ( $proc->isRunning() )
+					if ($proc instanceof EpgrecProc && $proc->isRunning())
 					{
 						$this->isRunSub = true;
 						return true;

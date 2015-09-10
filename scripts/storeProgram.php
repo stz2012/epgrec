@@ -41,7 +41,9 @@ else if ( $type === "BS" )
 }
 else exit();
 
-exec( $cmdline );
+$proc = new EpgrecProc( $cmdline );
+$proc->waitCommand();
+
 if ( file_exists( $xmlfile ) )
 {
 	parse_epgdump_file( $type, $xmlfile );

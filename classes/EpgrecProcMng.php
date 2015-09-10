@@ -24,11 +24,13 @@ class EpgrecProcMng
 		fclose(STDIN);
 		fclose(STDOUT);
 		fclose(STDERR);
+		return true;
 	}
 
-	public function addQueue( $cmd )
+	public function addQueue( $proc )
 	{
-		$this->procQueue[] = new EpgrecProc( $cmd );
+		if ($proc instanceof EpgrecProc)
+			$this->procQueue[] = $proc;
 	}
 
 	public function waitQueue()
@@ -43,7 +45,7 @@ class EpgrecProcMng
 			{
 				foreach( $this->procQueue as $proc )
 				{
-					if ( $proc->isRunning() )
+					if ($proc instanceof EpgrecProc && $proc->isRunning())
 					{
 						if ( $proc->isRunningSub() && $counter > 0)
 							break;
