@@ -15,16 +15,7 @@ class DBRecord  extends ModelBase
 		if ( $this->db === false )
 		{
 			self::$__settings = Settings::factory();
-			$this->setConnectionInfo(
-				array(
-					'type'   => 'mysql',
-					'host'   => self::$__settings->db_host,
-					'port'   => 3306,
-					'dbname' => self::$__settings->db_name,
-					'dbuser' => self::$__settings->db_user,
-					'dbpass' => self::$__settings->db_pass
-				)
-			);
+			$this->setConnectionInfo($__settings->getConnInfo());
 			$this->initDb();
 			if ( $this->db === false )
 				throw new exception( "construct:データベースに接続できない" );

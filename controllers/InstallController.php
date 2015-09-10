@@ -130,6 +130,7 @@ class InstallController extends CommonController
 		// DBテーブルの作成
 		try
 		{
+			include 'tableStruct.inc.php';
 			$rec = new DBRecord( RESERVE_TBL );
 			$rec->createTable( RESERVE_STRUCT );
 

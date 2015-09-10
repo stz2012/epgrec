@@ -121,14 +121,8 @@ class Settings extends SimpleXMLElement
 			if (defined("FILENAME_FORMAT")) $xml->filename_format = FILENAME_FORMAT;
 			else $xml->filename_format = "%TYPE%%CH%_%ST%_%ET%";
 			
-			if (defined("DB_TYPE")) $xml->db_type = DB_TYPE;
-			else $xml->db_type = "mysql";
-			
 			if (defined("DB_HOST")) $xml->db_host = DB_HOST;
 			else $xml->db_host = "localhost";
-			
-			if (defined("DB_PORT")) $xml->db_port = DB_PORT;
-			else $xml->db_port = 3306;
 			
 			if (defined("DB_NAME")) $xml->db_name = DB_NAME;
 			else $xml->db_name = "yourdbname";
@@ -171,8 +165,6 @@ class Settings extends SimpleXMLElement
 			// 1分あたりの高さ
 			$xml->height_per_hour = 120;
 			
-			// 8月14日版以降に追加した設定項目
-			
 			// キーワード自動録画の録画モード
 			$xml->autorec_mode = 0;
 			
@@ -196,6 +188,12 @@ class Settings extends SimpleXMLElement
 			
 			// シャットダウンコマンド
 			$xml->shutdown = "sudo /sbin/shutdown";
+			
+			// ＤＢタイプ
+			$xml->db_type = "mysql";
+			
+			// ＤＢポート
+			$xml->db_port = 3306;
 			
 			$xml->save();
 			
