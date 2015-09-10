@@ -1,8 +1,3 @@
-php_value mbstring.http_output pass
-php_value mbstring.internal_encoding UTF-8
-php_value mbstring.language Japanese
-php_value date.timezone "Asia/Tokyo"
-php_flag display_errors Off
 <IfModule mod_rewrite.c>
     RewriteEngine on
     RewriteBase /epgrec/

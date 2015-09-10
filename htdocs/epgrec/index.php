@@ -2,15 +2,15 @@
 	/**
 	 * epgrec - フロントエンド
 	 */
-	require_once 'config.php';
+	require_once dirname(dirname(dirname(__FILE__))).'/config.php';
 
 	/**
 	 * 共通変数
 	 */
 	define('CRYPT_KEY',    'WIchB266vMfXfueQP2YrgcfFBWxjOka0');
 	define('SESS_TIMEOUT', '+30 minutes');
-	define('ROOT_PATH',    dirname(__FILE__));
-	define('LOG_FILEPATH', dirname(dirname(__FILE__)).'/log/');
+	define('ROOT_PATH',    INSTALL_PATH);
+	define('LOG_FILEPATH', INSTALL_PATH.'/log/');
 	define('HOME_URL',     '/epgrec/');
 	define('BASE_URI',     '/epgrec/');
 
