@@ -85,32 +85,9 @@ if ( $settings->bs_tuners != 0 )
 // 終了を待つ
 $procMng->waitQueue();
 
-garbageClean();			//  不要プログラム削除
+garbageClean();			// 不要プログラム削除
 doKeywordReservation();	// キーワード予約
+doPowerReduce(true);	// 省電力
 
-if ( intval($settings->use_power_reduce) != 0 )
-{
-	if ( file_exists(INSTALL_PATH. "/settings/wakeupvars.xml") )
-	{
-		$wakeupvars_text = file_get_contents( INSTALL_PATH. "/settings/wakeupvars.xml" );
-		$wakeupvars = new SimpleXMLElement($wakeupvars_text);
-
-		// getepg終了時を書込み
-		$wakeupvars->getepg_time = time();
-		// 起動理由を調べる
-		if ( strcasecmp( "getepg", $wakeupvars->reason ) == 0 )
-		{
-			// 1時間以内に録画はないか？
-			$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < addtime( now(), '01:00:00') AND endtime > now()" );
-			if ( $count != 0 ) {	// 録画があるなら録画起動にして終了
-				$wakeupvars->reason = "reserve";
-			}
-			else {
-				exec( $settings->shutdown . " -h +".$settings->wakeup_before );
-			}
-		}
-		$wakeupvars->asXML(INSTALL_PATH. "/settings/wakeupvars.xml");
-	}
-}
 exit();
 ?>

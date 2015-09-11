@@ -83,7 +83,7 @@ class Settings extends SimpleXMLElement
 			else $xml->spool = "/video";
 			
 			if (defined("THUMBS") ) $xml->thumbs = THUMBS;
-			else $xml->thumbs = "/thumbs";
+			else $xml->thumbs = "/htdocs/epgrec/thumbs";
 			
 			if (defined("INSTALL_URL")) $xml->install_url = INSTALL_URL;
 			else $xml->install_url = "http://localhost/epgrec";

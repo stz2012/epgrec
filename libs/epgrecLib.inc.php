@@ -312,6 +312,51 @@ function doKeywordReservation()
 	}
 }
 
+// 省電力
+function doPowerReduce($isGetEpg = false)
+{
+	$settings = Settings::factory();
+	if ( intval($settings->use_power_reduce) != 0 )
+	{
+		if ( file_exists(INSTALL_PATH. "/settings/wakeupvars.xml") )
+		{
+			$wakeupvars_text = file_get_contents( INSTALL_PATH. "/settings/wakeupvars.xml" );
+			$wakeupvars = new SimpleXMLElement($wakeupvars_text);
+
+			// 起動理由を調べる
+			if ( strcasecmp( "getepg", $wakeupvars->reason ) == 0 )
+			{
+				// 1時間以内に録画はないか？
+				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < addtime( now(), '01:00:00') AND endtime > now()" );
+				if ( $count != 0 )
+				{	// 録画があるなら録画起動にして終了
+					$wakeupvars->reason = "reserve";
+				}
+				else
+				{
+					exec( $settings->shutdown . " -h +".$settings->wakeup_before );
+				}
+			}
+			else if ( strcasecmp( "reserve", $wakeupvars->reason ) == 0 )
+			{
+				// 1時間以内に録画はないか？
+				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < addtime( now(), '01:00:00') AND endtime > now()" );
+				if ( $count != 0 ) {	// 録画があるなら何もしない
+					exit();
+				}
+				exec( $settings->shutdown . " -h +".$settings->wakeup_before );
+			}
+
+			// getepg終了時を書込み
+			if ($isGetEpg)
+			{
+				$wakeupvars->getepg_time = time();
+				$wakeupvars->asXML(INSTALL_PATH. "/settings/wakeupvars.xml");
+			}
+		}
+	}
+}
+
 function filesize_n($path)
 {
 	$size = @filesize($path);

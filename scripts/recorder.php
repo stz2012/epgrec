@@ -174,23 +174,7 @@ catch( Exception $e )
 	reclog( "recorder:: ".$e->getMessage(), EPGREC_ERROR );
 }
 
-// 省電力
-if ( intval($settings->use_power_reduce) != 0 )
-{
-	// 起動した理由を調べる
-	if ( file_exists(INSTALL_PATH. "/settings/wakeupvars.xml") )
-	{
-		$wakeupvars_text = file_get_contents( INSTALL_PATH. "/settings/wakeupvars.xml" );
-		$wakeupvars = new SimpleXMLElement($wakeupvars_text);
-		if ( strcasecmp( "reserve", $wakeupvars->reason ) == 0 )
-		{
-			// 1時間以内に録画はないか？
-			$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < addtime( now(), '01:00:00') AND endtime > now()" );
-			if ( $count != 0 ) {	// 録画があるなら何もしない
-				exit();
-			}
-			exec( $settings->shutdown . " -h +".$settings->wakeup_before );
-		}
-	}
-}
+doPowerReduce();	// 省電力
+
+exit();
 ?>

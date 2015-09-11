@@ -15,10 +15,10 @@ class IndexController extends CommonController
 
 		// パラメータの処理
 		// 表示する長さ（時間）
-		$program_length = $this->setting->program_length;
+		$program_length = (int)$this->setting->program_length;
 		if ( $this->request->getQuery('length') )
 		{
-			$program_length = (int) $this->request->getQuery('length');
+			$program_length = (int)$this->request->getQuery('length');
 		}
 		// 地上=GR/BS=BS
 		$type = "GR";
