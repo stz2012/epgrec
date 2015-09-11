@@ -64,7 +64,7 @@ class ModelBase
 				// クエリのバッファリングを強制する
 				$this->db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 				// 自動コミットをOff
-				$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
+				//$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
 			}
 			else if (self::$connInfo['type'] == 'pgsql')
 			{
@@ -85,7 +85,7 @@ class ModelBase
 					return;
 				}
 				// 自動コミットをOff
-				$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
+				//$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
 			}
 			else if (self::$connInfo['type'] == 'sqlite')
 			{

@@ -10,7 +10,6 @@
 	define('CRYPT_KEY',    'WIchB266vMfXfueQP2YrgcfFBWxjOka0');
 	define('SESS_TIMEOUT', '+30 minutes');
 	define('ROOT_PATH',    INSTALL_PATH);
-	define('LOG_FILEPATH', INSTALL_PATH.'/log/');
 	define('HOME_URL',     '/epgrec/');
 	define('BASE_URI',     '/epgrec/');
 

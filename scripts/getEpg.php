@@ -7,8 +7,6 @@ include_once( dirname( $script_path ) . '/config.php');
 $settings = Settings::factory();
 
 $procMng = new EpgrecProcMng();
-if ( !$procMng->createDaemon() )
-	exit;
 
 // ユーザー/グループの切り替えを試みる
 if (intval($settings->use_power_reduce) != 0 )
@@ -19,12 +17,6 @@ if (intval($settings->use_power_reduce) != 0 )
 	posix_setgid( $groupinfo['gid'] );
 	posix_setuid( $userinfo['uid'] );
 }
-
-
-$bs_proc = false;
-$gr_procs = array();
-$cs1_proc = false;
-$cs2_proc = false;
 
 $temp_data_bs  = $settings->temp_data.".bs";
 $temp_data_cs1 = $settings->temp_data.".cs1";

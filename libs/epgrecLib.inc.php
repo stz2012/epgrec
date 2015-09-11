@@ -76,14 +76,15 @@ function parse_epgdump_file( $type, $xmlfile )
 {
 	$settings = Settings::factory();
 	$map = array();
-	
+
 	// XML parse
-  	$xml = @simplexml_load_file( $xmlfile );
+	$xml = @simplexml_load_file( $xmlfile );
 	if ( $xml === false )
 	{
 		reclog( "parse_epgdump_file:: 正常な".$xmlfile."が作成されなかった模様(放送間帯でないなら問題ありません)", EPGREC_WARN );
 		return;	// XMLが読み取れないなら何もしない
 	}
+
 	// channel抽出
 	foreach( $xml->channel as $ch )
 	{
@@ -104,8 +105,10 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->channel_disc = $disc;
 				$rec->name = $ch->{'display-name'};
 				$rec->sid = $sid;
+				$rec->update();
 			}
-			else {
+			else
+			{
 				// 存在した場合も、とりあえずチャンネル名は更新する
 				$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
 				$rec->name = $ch->{'display-name'};
@@ -115,6 +118,7 @@ function parse_epgdump_file( $type, $xmlfile )
 					$rec->channel = $map["$disc"];
 					$rec->sid = $sid;
 				}
+				$rec->update();
 			}
 		}
 		catch( Exception $e ) {
@@ -122,7 +126,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		}
 	}
 	// channel 終了
-	
+
 	// programme 取得
 	foreach( $xml->programme as $program )
 	{
@@ -153,7 +157,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		}
 		$program_disc = md5( $channel_disc . $starttime . $endtime );
 		// printf( "%s %s %s %s %s %s %s \n", $program_disc, $channel, $starttime, $endtime, $title, $desc, $cat_ja );
-		
+
 		// カテゴリ登録
 		$cat_rec = null;
 		try
@@ -178,7 +182,7 @@ function parse_epgdump_file( $type, $xmlfile )
 			reclog("parse_epgdump_file:: ".$e->getMessage()."" ,EPGREC_ERROR );
 			exit( $e->getMessage() );
 		}
-		
+
 		// プログラム登録
 		try
 		{
@@ -311,7 +315,8 @@ function doKeywordReservation()
 function filesize_n($path)
 {
 	$size = @filesize($path);
-	if( $size <= 0 ){
+	if ( $size <= 0 )
+	{
 		ob_start();
 		system('ls -al "'.$path.'" | awk \'BEGIN {FS=" "}{print $5}\'');
 		$size = ob_get_clean();

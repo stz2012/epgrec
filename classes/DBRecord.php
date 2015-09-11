@@ -97,7 +97,7 @@ class DBRecord  extends ModelBase
 		
 		if ( array_key_exists( $property, $this->__record_data ) )
 		{
-			$this->__record_data[$property] = $this->db->quote($value);
+			$this->__record_data[$property] = $value;
 			$this->__f_dirty = true;
 		}
 		else

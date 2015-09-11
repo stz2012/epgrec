@@ -183,7 +183,9 @@ class InstallController extends CommonController
 	 */
 	public function step5Action()
 	{
-		@system( GET_EPG_CMD.' &' );
+		$proc = new EpgrecProc( GET_EPG_CMD.' &' );
+		$proc->startCommand();
+
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "sitetitle", "インストール完了" );
 	}

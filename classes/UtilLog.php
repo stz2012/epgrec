@@ -58,7 +58,15 @@ class UtilLog
 			if ($fp)
 			{
 				flock($fp, LOCK_EX);			// データロック
-				fputs($fp, date("[Y-m-d H:i:s]") . "[" . $_SERVER['REMOTE_ADDR'] . "][" . ((isset($argv[0])) ? $argv[0] : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) . "]\n");
+				if (array_key_exists('REMOTE_ADDR', $_SERVER) && array_key_exists('REQUEST_URI', $_SERVER))
+					fputs($fp, date("[Y-m-d H:i:s]") . "[{$_SERVER['REMOTE_ADDR']}][" . ((isset($argv[0])) ? $argv[0] : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) . "]\n");
+				else if (isset($argv[0]))
+					fputs($fp, date("[Y-m-d H:i:s]") . "[{$argv[0]}]\n");	// コマンドライン起動時
+				else
+				{
+					$dbg = debug_backtrace();
+					fputs($fp, date("[Y-m-d H:i:s]") . "[{$dbg[1]['function']}]\n");
+				}
 				fputs($fp, $msg . "\n");
 				flock($fp, LOCK_UN);			// データロック解除
 				fclose($fp);

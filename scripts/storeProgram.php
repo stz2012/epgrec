@@ -56,8 +56,5 @@ else
 
 if ( file_exists( $file ) ) @unlink( $file );
 
-/*
-garbageClean();			//  不要プログラム削除
-doKeywordReservation();	// キーワード予約
-*/
+exit();
 ?>
