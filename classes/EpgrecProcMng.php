@@ -10,18 +10,19 @@ class EpgrecProcMng
 		return $p->startCommand();
 	}
 
+	// コマンドキュー追加
 	public function addQueue( $proc )
 	{
 		if ( $proc instanceof EpgrecProc )
 			$this->procQueue[] = $proc;
 	}
 
+	// コマンドキュー待ち
 	public function waitQueue()
 	{
 		$counter = 0;
 		do
 		{
-			sleep(1);
 			$counter = 0;
 			if ( count($this->procQueue) != 0 )
 			{
@@ -35,6 +36,7 @@ class EpgrecProcMng
 					}
 				}
 			}
+			sleep(1);
 		}
 		while( $counter != 0 );
 	}
