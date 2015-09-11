@@ -208,6 +208,7 @@ class IndexController extends CommonController
 
 		// GETパラメタ（リセット）
 		$get_param['type'] = $type;
+		unset($get_param['length']);
 
 		// 日付選択
 		$days = array();
