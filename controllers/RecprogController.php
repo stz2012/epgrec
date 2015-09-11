@@ -113,8 +113,8 @@ class RecprogController extends CommonController
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 
-		if ( ! $this->request->getPost('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
-		$reserve_id = $this->request->getPost('reserve_id');
+		if ( ! $this->request->getQuery('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
+		$reserve_id = $this->request->getQuery('reserve_id');
 
 		try
 		{
@@ -168,8 +168,8 @@ class RecprogController extends CommonController
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 
-		if ( ! $this->request->getPost('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
-		$reserve_id = $this->request->getPost('reserve_id');
+		if ( ! $this->request->getQuery('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
+		$reserve_id = $this->request->getQuery('reserve_id');
 
 		try
 		{

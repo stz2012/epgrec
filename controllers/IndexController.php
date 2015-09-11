@@ -7,27 +7,6 @@
 class IndexController extends CommonController
 {
 	/**
-	 * 前処理
-	 */
-	public function preAction()
-	{
-		// 基底クラスの処理を呼出
-		parent::preAction();
-		
-		// 設定ファイルの有無を検査する
-		if ( ! file_exists( INSTALL_PATH."/settings/config.xml") )
-		{
-			$this->setNextPage('install');
-			return;
-		}
-		else if ( ! ModelBase::isConnect() )
-		{
-			$this->setNextPage('install', 'step2');
-			return;
-		}
-	}
-	
-	/**
 	 * デフォルト表示
 	 */
 	public function indexAction()
@@ -37,21 +16,21 @@ class IndexController extends CommonController
 		// パラメータの処理
 		// 表示する長さ（時間）
 		$program_length = $this->setting->program_length;
-		if ( $this->request->getPost('length') )
+		if ( $this->request->getQuery('length') )
 		{
-			$program_length = (int) $this->request->getPost('length');
+			$program_length = (int) $this->request->getQuery('length');
 		}
 		// 地上=GR/BS=BS
 		$type = "GR";
-		if ( $this->request->getPost('type') )
+		if ( $this->request->getQuery('type') )
 		{
-			$type = $this->request->getPost('type');
+			$type = $this->request->getQuery('type');
 		}
 		// 現在の時間
 		$top_time = mktime( date("H"), 0 , 0 );
-		if ( $this->request->getPost('time') )
+		if ( $this->request->getQuery('time') )
 		{
-			if ( sscanf( $this->request->getPost('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 )
+			if ( sscanf( $this->request->getQuery('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 )
 			{
 				$tmp_time = mktime( $h, 0, 0, $mon, $day, $y );
 				if ( ($tmp_time < ($top_time + 3600 * 24 * 8)) && ($tmp_time > ($top_time - 3600 * 24 * 8)) )
