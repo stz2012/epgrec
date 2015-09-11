@@ -264,9 +264,9 @@ class SearchController extends CommonController
 	 */
 	public function deleteAction()
 	{
-		if ( $this->request->getQuery('keyword_id') ) {
+		if ( $this->request->getPost('keyword_id') ) {
 			try {
-				$rec = new Keyword( "id", $this->request->getQuery('keyword_id') );
+				$rec = new Keyword( "id", $this->request->getPost('keyword_id') );
 				$rec->delete();
 			}
 			catch( Exception $e ) {

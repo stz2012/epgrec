@@ -1,6 +1,6 @@
 var PRG = {
 	rec:function(id){
-		$.get(INISet.prgCancelURL, { reserve_id: id } ,function(data){
+		$.post(INISet.prgCancelURL, { reserve_id: id } ,function(data){
 			$('#eraseDialog').html('キャンセル中......');
 			$('#eraseDialog').dialog('open','center');
 			if(data.match(/^error/i)){

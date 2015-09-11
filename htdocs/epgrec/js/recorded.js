@@ -15,7 +15,7 @@ var PRG = {
 		$('#floatBox4Dialog').dialog('close');
 		$('#floatBox4Dialog').html('削除中.......');
 		$('#floatBox4Dialog').dialog('open', 'center');
-		$.get(INISet.prgCancelURL, { reserve_id: id, delete_file: df } ,function(data){
+		$.post(INISet.prgCancelURL, { reserve_id: id, delete_file: df } ,function(data){
 			if(data.match(/^error/i)){
 				$('#floatBox4Dialog').dialog('close');
 				alert(data);

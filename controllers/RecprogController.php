@@ -36,10 +36,12 @@ class RecprogController extends CommonController
 		$station = ($this->request->getPost('station')) ? $this->request->getPost('station') : 0;
 
 		$records = array();
-		$rvs = $this->model->getRecordedData($this->request->getQuery(), $this->request->getPost());
+		$rvs = $this->model->getRecordedData($this->request->getPost());
 		foreach( $rvs as $r )
 		{
-			$r['asf'] = $this->getCurrentUri(false)."/viewer?reserve_id=".$r['id'];
+			$param = array();
+			$param['reserve_id'] = $r['id'];
+			$r['asf'] = $this->getCurrentUri(false)."/viewer?".UtilString::buildQueryString($param);
 			$r['title'] = htmlspecialchars($r['title'], ENT_QUOTES);
 			$r['description'] = htmlspecialchars($r['description'], ENT_QUOTES);
 			$r['thumb'] = "<img src=\"".$this->setting->install_url.$this->setting->thumbs."/".htmlentities($r['path'], ENT_QUOTES,"UTF-8").".jpg\" />";
@@ -69,7 +71,8 @@ class RecprogController extends CommonController
 		$cats[0]['id'] = 0;
 		$cats[0]['name'] = "すべて";
 		$cats[0]['selected'] = ($category_id == 0) ? "selected" : "";
-		foreach( $crecs as $c ) {
+		foreach( $crecs as $c )
+		{
 			$arr = array();
 			$arr['id'] = $c['id'];
 			$arr['name'] = $c['name_jp'];
@@ -82,7 +85,8 @@ class RecprogController extends CommonController
 		$stations[0]['id'] = 0;
 		$stations[0]['name'] = "すべて";
 		$stations[0]['selected'] = ($station == 0) ? "selected" : "";
-		foreach( $crecs as $c ) {
+		foreach( $crecs as $c )
+		{
 			$arr = array();
 			$arr['id'] = $c['id'];
 			$arr['name'] = $c['name'];
@@ -109,8 +113,8 @@ class RecprogController extends CommonController
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 
-		if ( ! $this->request->getQuery('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
-		$reserve_id = $this->request->getQuery('reserve_id');
+		if ( ! $this->request->getPost('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
+		$reserve_id = $this->request->getPost('reserve_id');
 
 		try
 		{
@@ -134,7 +138,12 @@ class RecprogController extends CommonController
 			echo "<ASX version = \"3.0\">";
 			echo "<PARAM NAME = \"Encoding\" VALUE = \"UTF-8\" />";
 			echo "<ENTRY>";
-			if ( ! $rrec->complete ) echo "<REF HREF=\"".$this->getCurrentUri(false)."/sendstream?reserve_id=".$rrec->id ."\" />";
+			if ( ! $rrec->complete )
+			{
+				$param = array();
+				$param['reserve_id'] = $rrec->id;
+				echo "<REF HREF=\"".$this->getCurrentUri(false)."/sendstream?".UtilString::buildQueryString($param)."\" />";
+			}
 			echo "<REF HREF=\"".$this->setting->install_url.$this->setting->spool."/".$rrec->path ."\" />";
 			echo "<TITLE>".$title."</TITLE>";
 			echo "<ABSTRACT>".$abstract."</ABSTRACT>";
@@ -159,8 +168,8 @@ class RecprogController extends CommonController
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 
-		if ( ! $this->request->getQuery('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
-		$reserve_id = $this->request->getQuery('reserve_id');
+		if ( ! $this->request->getPost('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
+		$reserve_id = $this->request->getPost('reserve_id');
 
 		try
 		{

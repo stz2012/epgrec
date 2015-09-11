@@ -37,21 +37,21 @@ class IndexController extends CommonController
 		// パラメータの処理
 		// 表示する長さ（時間）
 		$program_length = $this->setting->program_length;
-		if ( $this->request->getQuery('length') )
+		if ( $this->request->getPost('length') )
 		{
-			$program_length = (int) $this->request->getQuery('length');
+			$program_length = (int) $this->request->getPost('length');
 		}
 		// 地上=GR/BS=BS
 		$type = "GR";
-		if ( $this->request->getQuery('type') )
+		if ( $this->request->getPost('type') )
 		{
-			$type = $this->request->getQuery('type');
+			$type = $this->request->getPost('type');
 		}
 		// 現在の時間
 		$top_time = mktime( date("H"), 0 , 0 );
-		if ( $this->request->getQuery('time') )
+		if ( $this->request->getPost('time') )
 		{
-			if ( sscanf( $this->request->getQuery('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 )
+			if ( sscanf( $this->request->getPost('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 )
 			{
 				$tmp_time = mktime( $h, 0, 0, $mon, $day, $y );
 				if ( ($tmp_time < ($top_time + 3600 * 24 * 8)) && ($tmp_time > ($top_time - 3600 * 24 * 8)) )
@@ -179,7 +179,10 @@ class IndexController extends CommonController
 		$chs_width = $ch_set_width * $num_ch;
 
 		// GETパラメタ
-		$get_param = $this->getCurrentUri() . "?type=".$type."&length=".$program_length."";
+		$get_param = array();
+		$get_param['type'] = $type;
+		$get_param['length'] = $program_length;
+		$get_param['time'] = date( "YmdH", $top_time);
 
 		// カテゴリ一覧
 		$crec = DBRecord::createRecords( CATEGORY_TBL );
@@ -199,7 +202,8 @@ class IndexController extends CommonController
 		if ( $this->setting->bs_tuners != 0 )
 		{
 			$types[$i]['selected'] = $type == "BS" ? 'class="selected"' : "";
-			$types[$i]['link'] = $this->getCurrentUri() . "?type=BS&length=".$program_length."&time=".date( "YmdH", $top_time);
+			$get_param['type'] = 'BS';
+			$types[$i]['link'] = UtilString::buildQueryString($get_param);
 			$types[$i]['name'] = "BS";
 			$i++;
 
@@ -207,7 +211,8 @@ class IndexController extends CommonController
 			if ($this->setting->cs_rec_flg != 0)
 			{
 				$types[$i]['selected'] = $type == "CS" ? 'class="selected"' : "";
-				$types[$i]['link'] = $this->getCurrentUri() . "?type=CS&length=".$program_length."&time=".date( "YmdH", $top_time);
+				$get_param['type'] = 'CS';
+				$types[$i]['link'] = UtilString::buildQueryString($get_param);
 				$types[$i]['name'] = "CS";
 				$i++;
 			}
@@ -215,30 +220,37 @@ class IndexController extends CommonController
 		if ( $this->setting->gr_tuners != 0 )
 		{
 			$types[$i]['selected'] = $type == "GR" ? 'class="selected"' : "";
-			$types[$i]['link'] = $this->getCurrentUri() . "?type=GR&length=".$program_length."&time=".date( "YmdH", $top_time);
+			$get_param['type'] = 'GR';
+			$types[$i]['link'] = UtilString::buildQueryString($get_param);
 			$types[$i]['name'] = "地上デジタル";
 			$i++;
 		}
 		$this->view->assign( "types", $types );
 
+		// GETパラメタ（リセット）
+		$get_param['type'] = $type;
+
 		// 日付選択
 		$days = array();
 		$day = array();
 		$day['d'] = "昨日";
-		$day['link'] = $get_param . "&time=". date( "YmdH", time() - 3600 *24 );
+		$get_param['time'] = date( "YmdH", time() - 3600 *24 );
+		$day['link'] = UtilString::buildQueryString($get_param);
 		$day['ofweek'] = "";
 		$day['selected'] = $top_time < mktime( 0, 0 , 0) ? 'class="selected"' : '';
 
 		array_push( $days , $day );
 		$day['d'] = "現在";
-		$day['link'] = $get_param;
+		unset($get_param['time']);
+		$day['link'] = UtilString::buildQueryString($get_param);
 		$day['ofweek'] = "";
 		$day['selected'] = "";
 		array_push( $days, $day );
 		for( $i = 0 ; $i < 8 ; $i++ )
 		{
 			$day['d'] = "".date("d", time() + 24 * 3600 * $i ) . "日";
-			$day['link'] = $get_param . "&time=".date( "Ymd", time() + 24 * 3600 * $i) . date("H" , $top_time );
+			$get_param['time'] = date( "Ymd", time() + 24 * 3600 * $i) . date("H" , $top_time );
+			$day['link'] = UtilString::buildQueryString($get_param);
 			$day['ofweek'] = $DAY_OF_WEEK[(int)date( "w", time() + 24 * 3600 * $i )];
 			$day['selected'] = date("d", $top_time) == date("d", time() + 24 * 3600 * $i ) ? 'class="selected"' : '';
 			array_push( $days, $day );
@@ -251,7 +263,8 @@ class IndexController extends CommonController
 		{
 			$tmp = array();
 			$tmp['hour'] = sprintf( "%02d:00", $i );
-			$tmp['link'] = $get_param . "&time=".date("Ymd", $top_time ) . sprintf("%02d", $i );
+			$get_param['time'] = date("Ymd", $top_time ) . sprintf("%02d", $i );
+			$tmp['link'] = UtilString::buildQueryString($get_param);
 			array_push( $toptimes, $tmp );
 		}
 		$this->view->assign( "toptimes" , $toptimes );
@@ -298,8 +311,8 @@ class IndexController extends CommonController
 	public function reserveFormAction()
 	{
 		global $RECORD_MODE;
-		if ( ! $this->request->getQuery('program_id') ) exit("Error: 番組IDが指定されていません" );
-		$program_id = $this->request->getQuery('program_id');
+		if ( ! $this->request->getPost('program_id') ) exit("Error: 番組IDが指定されていません" );
+		$program_id = $this->request->getPost('program_id');
 		$record_modes = $RECORD_MODE;
 		$record_modes[(int)($this->setting->autorec_mode)]['selected'] = "selected";
 
@@ -355,8 +368,8 @@ class IndexController extends CommonController
 	 */
 	public function simpleAction()
 	{
-		if ( ! $this->request->getQuery('program_id') ) exit("Error: 番組が指定されていません" );
-		$program_id = $this->request->getQuery('program_id');
+		if ( ! $this->request->getPost('program_id') ) exit("Error: 番組が指定されていません" );
+		$program_id = $this->request->getPost('program_id');
 
 		try
 		{
@@ -445,21 +458,21 @@ class IndexController extends CommonController
 		$rec = null;
 		$path = "";
 
-		if ( $this->request->getQuery('program_id') )
+		if ( $this->request->getPost('program_id') )
 		{
-			$program_id = $this->request->getQuery('program_id');
+			$program_id = $this->request->getPost('program_id');
 		}
-		else if ( $this->request->getQuery('reserve_id') )
+		else if ( $this->request->getPost('reserve_id') )
 		{
-			$reserve_id = $this->request->getQuery('reserve_id');
+			$reserve_id = $this->request->getPost('reserve_id');
 			try
 			{
 				$rec = new DBRecord( RESERVE_TBL, "id" , $reserve_id );
 				$program_id = $rec->program_id;
 				
-				if ( $this->request->getQuery('delete_file') )
+				if ( $this->request->getPost('delete_file') )
 				{
-					if ( $this->request->getQuery('delete_file') == 1 )
+					if ( $this->request->getPost('delete_file') == 1 )
 					{
 						$path = INSTALL_PATH."/".$this->setting->spool."/".$rec->path;
 					}
@@ -489,9 +502,9 @@ class IndexController extends CommonController
 		try
 		{
 			Reservation::cancel( $reserve_id, $program_id );
-			if ( $this->request->getQuery('delete_file') )
+			if ( $this->request->getPost('delete_file') )
 			{
-				if ( $this->request->getQuery('delete_file') == 1 )
+				if ( $this->request->getPost('delete_file') == 1 )
 				{
 					// ファイルを削除
 					if ( file_exists( $path) )

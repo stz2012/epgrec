@@ -27,7 +27,7 @@
  <span class="title">放送波選択</span>
   <ul>
    {foreach from=$types item=type}
-     <li {$type.selected}><a  class="jump" href="{$type.link}">{$type.name}</a></li>
+     <li {$type.selected}><a  class="jump" href="{$this_class->getCurrentUri()}?{$type.link}">{$type.name}</a></li>
    {/foreach}
   </ul><br style="clear:left;" />
  </div>
@@ -36,7 +36,7 @@
  <span class="title">時間</span>
  <ul>
     {foreach from=$toptimes item=top}
-     <li><a class="jump" href="{$top.link}">{$top.hour}～</a></li>
+     <li><a class="jump" href="{$this_class->getCurrentUri()}?{$top.link}">{$top.hour}～</a></li>
     {/foreach}
   </ul><br style="clear:left;" />
  </div>
@@ -59,7 +59,7 @@
  <span class="title">日付</span>
   <ul>
     {foreach from=$days item=day}
-     <li {$day.selected}><a {if $day.d eq "現在"} class="jump-today" {else} class="jump" {/if} href="{$day.link}">{$day.d}{$day.ofweek}</a></li>
+     <li {$day.selected}><a {if $day.d eq "現在"} class="jump-today" {else} class="jump" {/if} href="{$this_class->getCurrentUri()}?{$day.link}">{$day.d}{$day.ofweek}</a></li>
     {/foreach}
   </ul><br style="clear:left;" />
  </div>

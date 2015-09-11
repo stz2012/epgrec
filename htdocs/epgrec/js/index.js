@@ -153,7 +153,7 @@ var PRG = {
 	},
 
 	rec:function(id){
-		$.get(INISet.prgRecordURL, { program_id: id } ,function(data){
+		$.post(INISet.prgRecordURL, { program_id: id } ,function(data){
 			if(data.match(/^error/i)){
 				alert(data);
 				$('#floatBox4Dialog').dialog('close');
@@ -166,7 +166,7 @@ var PRG = {
 
 	cancel:function(id){
 		$('#floatBox4Dialog').html('予約取り消し中....');
-		$.get(INISet.prgCancelURL, { program_id: id } ,function(data){
+		$.post(INISet.prgCancelURL, { program_id: id } ,function(data){
 			if(data.match(/^error/i)){
 				alert(data);
 				$('#floatBox4Dialog').dialog('close');
@@ -179,7 +179,7 @@ var PRG = {
 
 	customform:function(id) {
 		$('#floatBox4Dialog').dialog('close');
-		$.get(INISet.prgReservFormURL, { program_id: id }, function(data) {
+		$.post(INISet.prgReservFormURL, { program_id: id }, function(data) {
 			if(data.match(/^error/i)){
 				alert(data);
 			}

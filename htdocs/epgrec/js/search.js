@@ -1,6 +1,6 @@
 var PRG = {
 	rec: function(id){
-		$.get(INISet.prgRecordURL, { program_id: id } ,function(data){
+		$.post(INISet.prgRecordURL, { program_id: id } ,function(data){
 			if(data.match(/^error/i)){
 				alert(data);
 			}else{
@@ -11,7 +11,7 @@ var PRG = {
 
 	customform: function(id) {
 		$('#floatBox4Dialog').dialog('close');
-		$.get(INISet.prgReservFormURL, { program_id: id }, function(data) {
+		$.post(INISet.prgReservFormURL, { program_id: id }, function(data) {
 			if(data.match(/^error/i)){
 				alert(data);
 			}
@@ -78,7 +78,7 @@ var PRG = {
 	},
 
 	delkey:function(id){
-		$.get(INISet.prgDelKeyURL, { keyword_id: id } ,function(data){
+		$.post(INISet.prgDelKeyURL, { keyword_id: id } ,function(data){
 			if(data.match(/^error/i)){
 				alert(data);
 			}else{

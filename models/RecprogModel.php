@@ -30,7 +30,7 @@ class RecprogModel extends CommonModel
 	 * 録画済みデータ取得
 	 * @return array
 	 */
-	public function getRecordedData($GET_DATA, $POST_DATA)
+	public function getRecordedData($POST_DATA)
 	{
 		$recorded_data = array();
 		$sql = "SELECT a.*, b.name_en AS cat, c.name AS station_name";
@@ -40,7 +40,7 @@ class RecprogModel extends CommonModel
 		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}channelTbl c";
 		$sql .= "   ON a.channel_id = c.id";
 		$sql .= " WHERE starttime < :starttime";
-		if ($GET_DATA['key'] != "")
+		if ($POST_DATA['key'] != "")
 			$sql .= " AND autorec = :autorec";
 		if ($POST_DATA['do_search'] != "")
 		{
@@ -54,8 +54,8 @@ class RecprogModel extends CommonModel
 		$sql .= " ORDER BY starttime DESC";
 		$stmt = $this->db->prepare($sql);
 		$stmt->bindValue(':starttime', date('Y-m-d H:i:s'));
-		if ($GET_DATA['key'] != "")
-			$stmt->bindValue(':autorec', $GET_DATA['key']);
+		if ($POST_DATA['key'] != "")
+			$stmt->bindValue(':autorec', $POST_DATA['key']);
 		if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")
