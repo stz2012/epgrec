@@ -45,18 +45,83 @@ class IndexController extends CommonController
 			$tvtimes[$i] = date("H", $top_time + 3600 * $i );
 		}
 
-		// チャンネルマップ
+		// チャンネルマップ／番組表
 		$channel_map = array();
-		$tmprec = new DBRecord(CHANNEL_TBL);
-		$recarr = $tmprec->fetch_array( "type", $type, "id > 0 ORDER BY sid+0 ASC" );
-		foreach( $recarr as $val)
-		{
-			$channel_map["{$val['channel_disc']}"] = $val['channel'];
-		}
-
-		// 番組表
 		$programs = array();
-		$st = 0;
+		$num_ch = 0;
+		$st = -1;
+		$st_save = '';
+		$recprg = $this->model->getProgramData($type, top_time, $last_time);
+		foreach( $recprg as $prg )
+		{
+			$prev_end = $top_time;
+			if ($prg['sid'] != $st_save)
+			{
+				$channel_map["{$prg['ch_disc']}"] = $prg['ch_channel'];
+			 	// 空きを埋める
+				if ( $st >= 0 && ($last_time - $prev_end) > 0 )
+				{
+					$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
+					$programs[$st]['list'][$num]['category_name'] = "none";
+					$programs[$st]['list'][$num]['height'] = $height;
+					$programs[$st]['list'][$num]['title'] = "";
+					$programs[$st]['list'][$num]['starttime'] = "";
+					$programs[$st]['list'][$num]['description'] = "";
+					$num++;
+			 	}
+				$st_save = $prg['sid'];
+				$st++;
+				$programs[$st]["skip"] = $prg['skip'];
+				if ( $prg['skip'] == 0 ) $num_ch++;
+				$programs[$st]["channel_disc"] = $prg['ch_disc'];
+				$programs[$st]["station_name"]  = $prg['ch_name'];
+				$programs[$st]["sid"] = $prg['sid'];
+				$programs[$st]["ch_hash"] = md5($prg['ch_disc']);
+				$programs[$st]['list'] = array();
+				$num = 0;
+			}
+			if ($prg['id'] != '')
+			{
+				$programs[$st]['list'][$num] = $prg;
+				$prg_starttime = $start = strtotime($prg['starttime']);
+				$prg_endtime = strtotime($prg['endtime']);
+				// 前プログラムとの空きを調べる
+				if ( ($prg_starttime - $prev_end) > 0 )
+				{
+					$height = ($prg_starttime - $prev_end) * $this->setting->height_per_hour / 3600;
+					$programs[$st]['list'][$num]['category_name'] = "none";
+					$programs[$st]['list'][$num]['height'] = $height;
+					$programs[$st]['list'][$num]['title'] = "";
+					$programs[$st]['list'][$num]['starttime'] = "";
+					$programs[$st]['list'][$num]['description'] = "";
+					$num++;
+				}
+				$prev_end = $prg_endtime;
+				
+				$height = $prg_endtime - $prg_starttime;
+				// $top_time より早く始まっている番組
+				if ( $prg_starttime < $top_time )
+				{
+					$height = $prg_endtime - $top_time;
+				}
+				// $last_time より遅く終わる番組
+				if ( $prg_endtime > $last_time )
+				{
+					$height = $height - ($prg_endtime - $last_time);
+				}
+				$height = $height * $this->setting->height_per_hour / 3600;
+				
+				// プログラムを埋める
+				$programs[$st]['list'][$num]['height'] = $height;
+				$programs[$st]['list'][$num]['starttime'] = date("H:i", $start )."" ;
+				$programs[$st]['list'][$num]['prg_start'] = str_replace( "-", "/", $prg['starttime']);
+				$programs[$st]['list'][$num]['duration'] = "" . (toTimestamp($prg['endtime']) - toTimestamp($prg['starttime']));
+				$programs[$st]['list'][$num]['channel'] = ($prg['type'] == "GR" ? "地上D" : "BS" ) . ":". $prg['channel'] . "ch";
+				$programs[$st]['list'][$num]['rec'] = DBRecord::countRecords(RESERVE_TBL, "WHERE complete = '0' AND program_id = '".$prg['id']."'" );
+				$num++;
+			}
+		}
+/*
 		$prec = null;
 		try
 		{
@@ -151,7 +216,8 @@ class IndexController extends CommonController
 			$st++;
 		}
 		$prec = null;
-		 
+*/
+
 		// 局の幅
 		$ch_set_width = (int)($this->setting->ch_set_width);
 		// 全体の幅
