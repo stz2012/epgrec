@@ -70,13 +70,13 @@ class RecprogController extends CommonController
 		$cats = array();
 		$cats[0]['id'] = 0;
 		$cats[0]['name'] = "すべて";
-		$cats[0]['selected'] = ($category_id == 0) ? "selected" : "";
+		$cats[0]['selected'] = ($category_id == 0) ? 'selected="selected"' : '';
 		foreach( $crecs as $c )
 		{
 			$arr = array();
 			$arr['id'] = $c['id'];
 			$arr['name'] = $c['name_jp'];
-			$arr['selected'] = ($c['id'] == $category_id) ? "selected" : "";
+			$arr['selected'] = ($c['id'] == $category_id) ? 'selected="selected"' : '';
 			array_push( $cats, $arr );
 		}
 
@@ -84,13 +84,13 @@ class RecprogController extends CommonController
 		$stations = array();
 		$stations[0]['id'] = 0;
 		$stations[0]['name'] = "すべて";
-		$stations[0]['selected'] = ($station == 0) ? "selected" : "";
+		$stations[0]['selected'] = ($station == 0) ? 'selected="selected"' : '';
 		foreach( $crecs as $c )
 		{
 			$arr = array();
 			$arr['id'] = $c['id'];
 			$arr['name'] = $c['name'];
-			$arr['selected'] = ($station == $c['id']) ? "selected" : "";
+			$arr['selected'] = ($station == $c['id']) ? 'selected="selected"' : '';
 			array_push( $stations, $arr );
 		}
 

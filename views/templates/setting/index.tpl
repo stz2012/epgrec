@@ -30,8 +30,8 @@
 <div class="setting">
 <div class="caption">この設定を「行う」にするとCS放送を加味した動作となります。CS放送を使用しない方は「使わない」に設定してください。</div>
 <select name="cs_rec_flg" id="id_cs_rec_flg" >
-  <option value="0" {if $settings->cs_rec_flg == 0} selected {/if}>行わない</option>
-  <option value="1" {if $settings->cs_rec_flg == 1} selected {/if}>行う</option>
+  <option value="0" {if $settings->cs_rec_flg == 0} selected="selected"{/if}>行わない</option>
+  <option value="1" {if $settings->cs_rec_flg == 1} selected="selected"{/if}>行う</option>
 </select>
 </div>
 
@@ -40,7 +40,7 @@
 <h3>録画開始の余裕時間（秒）</h3>
 <div class="setting">
 <div class="caption">epgrecは番組開始時間より早く録画を開始します。どのくらい録画開始を早めるかを秒で設定してください。早める時間を短くしすぎると、番組冒頭がとぎれる恐れがあります。設定できる時間は0秒以上180秒未満です。</div>
-<input type="text" name="former_time" value="{$settings->former_time}" size="4" class="required digits" min="0" max="179" />
+<input type="text" name="former_time" value="{$settings->former_time}" size="4" class="required digits" /><!-- min="0" max="179" -->
 </div>
 
 <h3>録画時間を長めにする</h3>
@@ -52,16 +52,16 @@
 <h3>連続した番組の予約</h3>
 <div class="setting">
 <div class="caption">この設定を「行う」にするとepgrecが自動的に直前の時間に予約されている番組の録画時間を短縮して時間が連続している番組の予約を可能にします。録画時間を短縮する時間は「録画開始の余裕時間」＋「録画コマンドの切り替え時間」です。この機能を使って連続した番組を予約する場合、前の時間の番組の最後がとぎれる可能性がありますが、チューナーが1台しか無くてもキーワード自動録画による連続した番組の予約が可能になります。メリットとデメリットをよく考えて設定してください。</div>
-<select name="force_cont_rec" id="id_force_cont_rec" onChange="javascript:PRG.force_cont()" >
-  <option value="0" {if $settings->force_cont_rec == 0} selected {/if}>行わない</option>
-  <option value="1" {if $settings->force_cont_rec == 1} selected {/if}>行う</option>
+<select name="force_cont_rec" id="id_force_cont_rec" onchange="javascript:PRG.force_cont()" >
+  <option value="0" {if $settings->force_cont_rec == 0} selected="selected"{/if}>行わない</option>
+  <option value="1" {if $settings->force_cont_rec == 1} selected="selected"{/if}>行う</option>
 </select>
 </div>
 
 <h3>録画コマンドの切り替え時間</h3>
 <div class="setting">
 <div class="caption">連続した番組を予約するとき、録画が終了して次の録画を開始するまでの余裕時間（秒）を設定します。1以上の秒数を設定してください。設定する秒数が短いほど録画時間を短縮する時間が短くなりますが、この時間を短くしすぎると連続した番組の予約に失敗する恐れがあります。失敗するかどうかは使用している録画コマンドやチューナーに依存します。</div>
-<input type="text" name="rec_switch_time" id="id_rec_switch_time" value="{$settings->rec_switch_time}" size="4" class="required digits" min="1" />
+<input type="text" name="rec_switch_time" id="id_rec_switch_time" value="{$settings->rec_switch_time}" size="4" class="required digits" /><!-- min="1" -->
 </div>
 
 <h3>優先する録画モード</h3>
@@ -70,7 +70,7 @@
 </div>
 <select name="autorec_mode" id="id_autorec_mode" >
 {foreach from=$record_mode item=mode name=recmode}
-  <option value="{$smarty.foreach.recmode.index}" {if $settings->autorec_mode == $smarty.foreach.recmode.index} selected {/if}>{$mode.name}</option>
+  <option value="{$smarty.foreach.recmode.index}" {if $settings->autorec_mode == $smarty.foreach.recmode.index} selected="selected"{/if}>{$mode.name}</option>
 {/foreach}
 </select>
 </div>
@@ -80,8 +80,8 @@
 <div class="caption">この設定を「使う」にすると録画した番組のタイトルと概要をmediatombに反映させます。mediatombを使用していない方は「使わない」に設定してください。なお、この設定を利用するにはmediatomb側の設定も必要になります。詳しくはドキュメントを参照してください。
 </div>
 <select name="mediatomb_update" id="id_mediatomb_update" >
-  <option value="0" {if $settings->mediatomb_update == 0} selected {/if}>使わない</option>
-  <option value="1" {if $settings->mediatomb_update == 1} selected {/if}>使う</option>
+  <option value="0" {if $settings->mediatomb_update == 0} selected="selected"{/if}>使わない</option>
+  <option value="1" {if $settings->mediatomb_update == 1} selected="selected"{/if}>使う</option>
 </select>
 </div>
 
@@ -124,19 +124,19 @@
 <h3>ページに表示する番組表の長さ（時間）</h3>
 <div class="setting">
 <div class="caption">1ページに表示する番組表の長さを時間で設定します。標準は8時間分です。</div>
-<input type="text" name="program_length" value="{$settings->program_length}" size="2" class="required digits" min="2" max="24" />
+<input type="text" name="program_length" value="{$settings->program_length}" size="2" class="required digits" /><!-- min="2" max="24" -->
 </div>
 
 <h3>1局あたりの幅</h3>
 <div class="setting">
 <div class="caption">番組表の1局当たりの幅をピクセル数で設定します。標準は150ピクセルです。</div>
-<input type="text" id="ch_set_width" name="ch_set_width" value="{$settings->ch_set_width}" size="4" class="required digits" min="20" />
+<input type="text" id="ch_set_width" name="ch_set_width" value="{$settings->ch_set_width}" size="4" class="required digits" /><!-- min="20" -->
 </div>
 
 <h3>1時間あたりの高さ</h3>
 <div class="setting">
 <div class="caption">番組表の1時間あたりの高さをピクセル数で設定します。標準は120ピクセルです。なお、60で割り切れないピクセル数を指定するとFirefoxを除くブラウザでは番組の高さが揃わなくなり見た目が悪くなるかもしれません。これはFirefox以外のブラウザでは実数のピクセルを正しくレンダリングしないためです。</div>
-<input type="text" id="height_per_hour" name="height_per_hour" value="{$settings->height_per_hour}" size="4" class="required digits" min="30" />
+<input type="text" id="height_per_hour" name="height_per_hour" value="{$settings->height_per_hour}" size="4" class="required digits" /><!-- min="30" -->
 </div>
 
 <input type="submit" value="設定を保存する" id="env_setting-submit" />

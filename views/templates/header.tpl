@@ -6,8 +6,8 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="content-script-type" content="text/javascript" />
 <title>EpgRec - {$sitetitle}</title>
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" type="text/css" />
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/start/jquery-ui.css" type="text/css" />
 <link rel="stylesheet" href="{$home_url}css/common.css" type="text/css" />
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>

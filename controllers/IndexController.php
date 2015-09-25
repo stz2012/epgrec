@@ -51,13 +51,14 @@ class IndexController extends CommonController
 		$num_ch = 0;
 		$st = -1;
 		$st_save = '';
-		$recprg = $this->model->getProgramData($type, top_time, $last_time);
+		$recprg = $this->model->getProgramData($type, $top_time, $last_time);
 		foreach( $recprg as $prg )
 		{
-			$prev_end = $top_time;
 			if ($prg['sid'] != $st_save)
 			{
+				// チャンネルマップ生成
 				$channel_map["{$prg['ch_disc']}"] = $prg['ch_channel'];
+
 			 	// 空きを埋める
 				if ( $st >= 0 && ($last_time - $prev_end) > 0 )
 				{
@@ -69,6 +70,8 @@ class IndexController extends CommonController
 					$programs[$st]['list'][$num]['description'] = "";
 					$num++;
 			 	}
+
+			 	// チャンネル毎のブレーク処理
 				$st_save = $prg['sid'];
 				$st++;
 				$programs[$st]["skip"] = $prg['skip'];
@@ -79,12 +82,13 @@ class IndexController extends CommonController
 				$programs[$st]["ch_hash"] = md5($prg['ch_disc']);
 				$programs[$st]['list'] = array();
 				$num = 0;
+				$prev_end = $top_time;
 			}
 			if ($prg['id'] != '')
 			{
-				$programs[$st]['list'][$num] = $prg;
 				$prg_starttime = $start = strtotime($prg['starttime']);
 				$prg_endtime = strtotime($prg['endtime']);
+
 				// 前プログラムとの空きを調べる
 				if ( ($prg_starttime - $prev_end) > 0 )
 				{
@@ -97,126 +101,46 @@ class IndexController extends CommonController
 					$num++;
 				}
 				$prev_end = $prg_endtime;
-				
+
+				// 番組表のプログラム毎の高さを生成
 				$height = $prg_endtime - $prg_starttime;
-				// $top_time より早く始まっている番組
 				if ( $prg_starttime < $top_time )
 				{
+					// $top_time より早く始まっている番組
 					$height = $prg_endtime - $top_time;
 				}
-				// $last_time より遅く終わる番組
 				if ( $prg_endtime > $last_time )
 				{
+					// $last_time より遅く終わる番組
 					$height = $height - ($prg_endtime - $last_time);
 				}
 				$height = $height * $this->setting->height_per_hour / 3600;
-				
+
 				// プログラムを埋める
-				$programs[$st]['list'][$num]['height'] = $height;
-				$programs[$st]['list'][$num]['starttime'] = date("H:i", $start )."" ;
-				$programs[$st]['list'][$num]['prg_start'] = str_replace( "-", "/", $prg['starttime']);
-				$programs[$st]['list'][$num]['duration'] = "" . (toTimestamp($prg['endtime']) - toTimestamp($prg['starttime']));
-				$programs[$st]['list'][$num]['channel'] = ($prg['type'] == "GR" ? "地上D" : "BS" ) . ":". $prg['channel'] . "ch";
-				$programs[$st]['list'][$num]['rec'] = DBRecord::countRecords(RESERVE_TBL, "WHERE complete = '0' AND program_id = '".$prg['id']."'" );
+				$programs[$st]['list'][$num]['category_name'] = $prg['cate_name'];
+				$programs[$st]['list'][$num]['height']        = $height;
+				$programs[$st]['list'][$num]['title']         = $prg['title'];
+				$programs[$st]['list'][$num]['starttime']     = date("H:i", $start )."" ;
+				$programs[$st]['list'][$num]['description']   = $prg['description'];
+				$programs[$st]['list'][$num]['prg_start']     = str_replace( "-", "/", $prg['starttime']);
+				$programs[$st]['list'][$num]['duration']      = "" . (toTimestamp($prg['endtime']) - toTimestamp($prg['starttime']));
+				$programs[$st]['list'][$num]['channel']       = ($prg['type'] == "GR" ? "地上D" : "BS" ) . ":". $prg['channel'] . "ch";
+				$programs[$st]['list'][$num]['id']            = $prg['id'];
+				$programs[$st]['list'][$num]['rec']           = $prg['rec'];
 				$num++;
 			}
 		}
-/*
-		$prec = null;
-		try
+	 	// 空きを埋める
+		if ( $st >= 0 && ($last_time - $prev_end) > 0 )
 		{
-			$prec = new DBRecord(PROGRAM_TBL);
-		}
-		catch( Exception $e )
-		{
-			exit('プログラムテーブルが存在しないようです。インストールをやり直してください.');
-		}
-		$num_ch = 0;
-		foreach( $channel_map as $channel_disc => $channel )
-		{
-			$prev_end = $top_time;
-		 	try
-		 	{
-				$crec = new DBRecord( CHANNEL_TBL, "channel_disc", $channel_disc );
-				$programs[$st]["skip"] = $crec->skip;
-				if ( $crec->skip == 0 ) $num_ch++;
-				$programs[$st]["channel_disc"] = $channel_disc;
-				$programs[$st]["station_name"]  = $crec->name;
-				$programs[$st]["sid"] = $crec->sid;
-				$programs[$st]["ch_hash"] = md5($channel_disc);
-				
-				$reca = $prec->fetch_array( "channel_disc", $channel_disc,
-				                                  "endtime > '".toDatetime($top_time)."' ".
-				                                  "AND starttime < '". toDatetime($last_time)."' ".
-				                                  "ORDER BY starttime ASC "
-				                               );
-				$programs[$st]['list'] = array();
-				$num = 0;
-				foreach( $reca as $prg )
-				{
-					$prg_starttime = $start = strtotime($prg['starttime']);
-					$prg_endtime = strtotime($prg['endtime']);
-					// 前プログラムとの空きを調べる
-					if ( ($prg_starttime - $prev_end) > 0 )
-					{
-						$height = ($prg_starttime-$prev_end) * $this->setting->height_per_hour / 3600;
-						$programs[$st]['list'][$num]['category_none'] = "none";
-						$programs[$st]['list'][$num]['height'] = $height;
-						$programs[$st]['list'][$num]['title'] = "";
-						$programs[$st]['list'][$num]['starttime'] = "";
-						$programs[$st]['list'][$num]['description'] = "";
-						$num++;
-					}
-					$prev_end = $prg_endtime;
-					
-					$height = $prg_endtime - $prg_starttime;
-					// $top_time より早く始まっている番組
-					if ( $prg_starttime < $top_time )
-					{
-						$height = $prg_endtime - $top_time;
-					}
-					// $last_time より遅く終わる番組
-					if ( $prg_endtime > $last_time )
-					{
-						$height = $height - ($prg_endtime - $last_time);
-					}
-					$height = $height * $this->setting->height_per_hour / 3600;
-					
-					// プログラムを埋める
-					$cat = new DBRecord( CATEGORY_TBL, "id", $prg['category_id'] );
-					$programs[$st]['list'][$num]['category_name'] = $cat->name_en;
-					$programs[$st]['list'][$num]['height'] = $height;
-					$programs[$st]['list'][$num]['title'] = $prg['title'];
-					$programs[$st]['list'][$num]['starttime'] = date("H:i", $start )."" ;
-					$programs[$st]['list'][$num]['description'] = $prg['description'];
-					$programs[$st]['list'][$num]['prg_start'] = str_replace( "-", "/", $prg['starttime']);
-					$programs[$st]['list'][$num]['duration'] = "" . (toTimestamp($prg['endtime']) - toTimestamp($prg['starttime']));
-					$programs[$st]['list'][$num]['channel'] = ($prg['type'] == "GR" ? "地上D" : "BS" ) . ":". $prg['channel'] . "ch";
-					$programs[$st]['list'][$num]['id'] = "" . ($prg['id']);
-					$programs[$st]['list'][$num]['rec'] = DBRecord::countRecords(RESERVE_TBL, "WHERE complete = '0' AND program_id = '".$prg['id']."'" );
-					$num++;
-				}
-			}
-			catch( exception $e )
-			{
-				$num_ch++;	// epgの無いチャンネル対応
-		 	}
-		 	// 空きを埋める
-			if ( ($last_time - $prev_end) > 0 )
-			{
-				$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
-				$height = $height;
-				$programs[$st]['list'][$num]['category_name'] = "none";
-				$programs[$st]['list'][$num]['height'] = $height;
-				$programs[$st]['list'][$num]['title'] = "";
-				$programs[$st]['list'][$num]['starttime'] = "";
-				$programs[$st]['list'][$num]['description'] = "";
-				$num++;
-		 	}
-			$st++;
-		}
-		$prec = null;
-*/
+			$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
+			$programs[$st]['list'][$num]['category_name'] = "none";
+			$programs[$st]['list'][$num]['height'] = $height;
+			$programs[$st]['list'][$num]['title'] = "";
+			$programs[$st]['list'][$num]['starttime'] = "";
+			$programs[$st]['list'][$num]['description'] = "";
+			$num++;
+	 	}
 
 		// 局の幅
 		$ch_set_width = (int)($this->setting->ch_set_width);
@@ -359,7 +283,7 @@ class IndexController extends CommonController
 		if ( ! $this->request->getPost('program_id') ) exit("Error: 番組IDが指定されていません" );
 		$program_id = $this->request->getPost('program_id');
 		$record_modes = $RECORD_MODE;
-		$record_modes[(int)($this->setting->autorec_mode)]['selected'] = "selected";
+		$record_modes[(int)($this->setting->autorec_mode)]['selected'] = 'selected="selected"';
 
 		try
 		{
@@ -375,7 +299,7 @@ class IndexController extends CommonController
 				$cat = array();
 				$cat['id'] = $crec->id;
 				$cat['name'] = $crec->name_jp;
-				$cat['selected'] = $prec->category_id == $cat['id'] ? "selected" : "";
+				$cat['selected'] = $prec->category_id == $cat['id'] ? 'selected="selected"' : '';
 				
 				array_push( $cats , $cat );
 			}

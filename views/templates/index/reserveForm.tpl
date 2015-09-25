@@ -24,7 +24,7 @@
 <span class="labelLeft">録画モード</span>
     <select name="record_mode" id="id_record_mode">
         {foreach from=$record_mode item=mode name=recmode}
-           <option value="{$smarty.foreach.recmode.index}" {$mode.selected} >{$mode.name}</option>
+           <option value="{$smarty.foreach.recmode.index}" {$mode.selected}>{$mode.name}</option>
         {/foreach}
         </select>
      </div>

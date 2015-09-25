@@ -73,9 +73,9 @@
 <h3>サムネールの使用</h3>
 <div class="setting">
 <div class="caption">録画済み一覧にサムネールを入れるかどうかを設定します。サムネールを利用するにはffmpegが必要です。ffmpegをお持ちでない方は「使用しない」を設定してください。</div>
-<select name="use_thumbs" id="id_use_thumbs" onChange="javascript:PRG.thumbs()" >
-  <option value="0" {if $settings->use_thumbs == 0} selected {/if}>使用しない</option>
-  <option value="1" {if $settings->use_thumbs == 1} selected {/if}>使用する</option>
+<select name="use_thumbs" id="id_use_thumbs" onchange="javascript:PRG.thumbs()" >
+  <option value="0" {if $settings->use_thumbs == 0} selected="selected"{/if}>使用しない</option>
+  <option value="1" {if $settings->use_thumbs == 1} selected="selected"{/if}>使用する</option>
 </select>
 </div>
 
@@ -111,22 +111,22 @@
 <h3>省電力の設定</h3>
 <div class="setting">
 <div class="caption">シャットダウンからの復帰および起動をACPIタイマーを使って行い録画機の消費電力を低減させます。この機能を使うためには、お使いのLinux機がACPIタイマーでシャットダウン状態から確実に復帰できる必要があるので注意してください。ACPIタイマーが使えないPCで設定を行った場合、録画は正常に行えません。また、ACPIタイマーの動作が不確実なPCでは録画の失敗の確率が高くなります。詳しくはドキュメントを参照してください。</div>
-<select name="use_power_reduce" id="id_use_power_reduce" onChange="javascript:PRG.power_reduce()" >
-  <option value="0" {if $settings->use_power_reduce == 0} selected {/if}>使用しない</option>
-  <option value="1" {if $settings->use_power_reduce == 1} selected {/if}>使用する</option>
+<select name="use_power_reduce" id="id_use_power_reduce" onchange="javascript:PRG.power_reduce()" >
+  <option value="0" {if $settings->use_power_reduce == 0} selected="selected"{/if}>使用しない</option>
+  <option value="1" {if $settings->use_power_reduce == 1} selected="selected"{/if}>使用する</option>
 </select>
 </div>
 
 <h3>録画スタート前に起動させる時間（分）</h3>
 <div class="setting">
 <div class="caption">録画開始より前に起動させる時間を分単位で設定します。5分以上の値を設定したほうが無難でしょう。省電力が有効なときに使う値です。</div>
-<input type="text" name="wakeup_before" id="id_wakeup_before" value="{$settings->wakeup_before}" size="2" class="required digits" min="5" max="60" />
+<input type="text" name="wakeup_before" id="id_wakeup_before" value="{$settings->wakeup_before}" size="2" class="required digits" /><!-- min="5" max="60" --> 
 </div>
 
 <h3>EPGを取得する間隔（時間）</h3>
 <div class="setting">
 <div class="caption">EPGを取得する間隔を時間単位で設定します。省電力が有効なときに使う値です。</div>
-<input type="text" name="getepg_timer" id="id_getepg_timer" value="{$settings->getepg_timer}" size="2" class="required digits" min="2" max="24" />
+<input type="text" name="getepg_timer" id="id_getepg_timer" value="{$settings->getepg_timer}" size="2" class="required digits" /><!-- min="2" max="24" -->
 </div>
 
 <h3>Webサーバーのユーザーおよびグループ名</h3>

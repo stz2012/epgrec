@@ -28,7 +28,7 @@ class SearchController extends CommonController
 
 
 		$autorec_modes = $RECORD_MODE;
-		$autorec_modes[(int)($this->setting->autorec_mode)]['selected'] = "selected";
+		$autorec_modes[(int)($this->setting->autorec_mode)]['selected'] = 'selected="selected"';
 
 		$search = "";
 		$use_regexp = 0;
@@ -93,12 +93,12 @@ class SearchController extends CommonController
 			$cats = array();
 			$cats[0]['id'] = 0;
 			$cats[0]['name'] = "すべて";
-			$cats[0]['selected'] = $category_id == 0 ? "selected" : "";
+			$cats[0]['selected'] = $category_id == 0 ? 'selected="selected"' : '';
 			foreach( $crecs as $c ) {
 				$arr = array();
 				$arr['id'] = $c->id;
 				$arr['name'] = $c->name_jp;
-				$arr['selected'] = $c->id == $category_id ? "selected" : "";
+				$arr['selected'] = $c->id == $category_id ? 'selected="selected"' : '';
 				if ( $c->id == $category_id ) $k_category_name = $c->name_jp;
 				array_push( $cats, $arr );
 			}
@@ -106,19 +106,19 @@ class SearchController extends CommonController
 			$types = array();
 			$types[0]['name'] = "すべて";
 			$types[0]['value'] = "*";
-			$types[0]['selected'] = $type == "*" ? "selected" : "";
+			$types[0]['selected'] = $type == "*" ? 'selected="selected"' : '';
 			if ( $this->setting->gr_tuners != 0 ) {
 				$arr = array();
 				$arr['name'] = "GR";
 				$arr['value'] = "GR";
-				$arr['selected'] = $type == "GR" ? "selected" : "";
+				$arr['selected'] = $type == "GR" ? 'selected="selected"' : '';
 				array_push( $types, $arr );
 			}
 			if ( $this->setting->bs_tuners != 0 ) {
 				$arr = array();
 				$arr['name'] = "BS";
 				$arr['value'] = "BS";
-				$arr['selected'] = $type == "BS" ? "selected" : "";
+				$arr['selected'] = $type == "BS" ? 'selected="selected"' : '';
 				array_push( $types, $arr );
 
 				// CS
@@ -126,7 +126,7 @@ class SearchController extends CommonController
 					$arr = array();
 					$arr['name'] = "CS";
 					$arr['value'] = "CS";
-					$arr['selected'] = $type == "CS" ? "selected" : "";
+					$arr['selected'] = $type == "CS" ? 'selected="selected"' : '';
 					array_push( $types, $arr );
 				}
 			}
@@ -136,12 +136,12 @@ class SearchController extends CommonController
 			$stations = array();
 			$stations[0]['id'] = 0;
 			$stations[0]['name'] = "すべて";
-			$stations[0]['selected'] = (! $channel_id) ? "selected" : "";
+			$stations[0]['selected'] = (! $channel_id) ? 'selected="selected"' : '';
 			foreach( $crecs as $c ) {
 				$arr = array();
 				$arr['id'] = $c->id;
 				$arr['name'] = $c->name;
-				$arr['selected'] = $channel_id == $c->id ? "selected" : "";
+				$arr['selected'] = $channel_id == $c->id ? 'selected="selected"' : '';
 				if ( $channel_id == $c->id ) $k_station_name = $c->name;
 				array_push( $stations, $arr );
 			}
@@ -153,7 +153,7 @@ class SearchController extends CommonController
 				array_push( $prgtimes, 
 					array(  "name" => ( $i == 24  ? "なし" : sprintf("%0d時～",$i) ),
 							"value" => $i,
-							"selected" =>  ( $i == $prgtime ? "selected" : "" ) )
+							"selected" =>  ( $i == $prgtime ? 'selected="selected"' : '' ) )
 				);
 			}
 

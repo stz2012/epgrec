@@ -67,25 +67,26 @@
 
 </div>
 <br style="clear:left;" />
-<div id="prg_info"><div class="dummy">test</div></div>
 </div>
 
 
 <!-- チャンネル局名 -->
 <div id="ch_title_bar" style="position:absolute;bottom:0;">
   <div class="tvtimeDM" style="float:left;">&nbsp;</div>
-  {foreach from=$programs item=program}{if isset($program.ch_hash)}
+{foreach from=$programs item=program}
+{if isset($program.ch_hash)}
   <div id="ch_title_{$program.ch_hash}"  class="ch_title{if $program.skip == 1} ch_title_skip{/if}" >
     <div class="ch_hash">{$program.ch_hash}</div>
     <div class="ch_disc">{$program.channel_disc}</div>
     <div class="ch_skip">{$program.skip}</div>
     <div class="ch_sid">{$program.sid}</div>
     <div class="ch_name">{$program.station_name}</div>
-    <div id="ch_title_str_{$program.ch_hash}" {if $program.skip == 1}class="ch_skip_color" {/if} style="cursor: pointer;" onClick="javascript:PRG.chdialog('{$program.ch_hash}')" >{$program.station_name}</div>
+    <div id="ch_title_str_{$program.ch_hash}" {if $program.skip == 1}class="ch_skip_color" {/if} style="cursor: pointer;" onclick="javascript:PRG.chdialog('{$program.ch_hash}')" >{$program.station_name}</div>
   </div>
-  {else}
+{else}
   <div class="ch_title"><div style="font-style:italic">no epg</div></div>
-  {/if}{/foreach}
+{/if}
+{/foreach}
 </div>
 
 <br style="clear:left;" />

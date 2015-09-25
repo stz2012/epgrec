@@ -177,7 +177,8 @@ function parse_epgdump_file( $type, $xmlfile )
 			else
 				$cat_rec = new DBRecord(CATEGORY_TBL, "category_disc" , $category_disc );
 		}
-		catch( Exception $e ) {
+		catch( Exception $e )
+		{
 			reclog("parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様", EPGREC_ERROR );
 			reclog("parse_epgdump_file:: ".$e->getMessage()."" ,EPGREC_ERROR );
 			exit( $e->getMessage() );
