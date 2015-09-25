@@ -1,45 +1,44 @@
 <?php
 include_once("XML/RPC2/Server.php");
 
-class EpgrecRpc {
-	
+class EpgrecRpc
+{
 	/**
 	 * Get channel types.
 	 *
 	 * @param none
 	 * @return array
 	 */
-	public static function getChannelType() {
-		
+	public static function getChannelType()
+	{
 		$settings = Settings::factory();
-		
+
 		$retval = array();
-		if($settings->gr_tuners != 0 ) {
+		if ($settings->gr_tuners != 0 )
 			array_push( $retval, XML_RPC2_Value::createFromNative("GR") );
-		}
-		if($settings->bs_tuners != 0 ) {
+		if ($settings->bs_tuners != 0 )
 			array_push( $retval, XML_RPC2_Value::createFromNative("BS") );
-		}
-		if($settings->cs_rec_flg != 0 ) {
+		if ($settings->cs_rec_flg != 0 )
 			array_push( $retval, XML_RPC2_Value::createFromNative("CS") );
-		}
-		
+
 		return XML_RPC2_Value::createFromNative( $retval, "array" );
 	}
-	
+
 	/**
 	 * Get channel lists.
 	 *
 	 * @param none
 	 * @return array
 	 */
-	public static function getChannelList() {
-		try {
-			
+	public static function getChannelList()
+	{
+		try
+		{
 			$arr = DBRecord::createRecords( CHANNEL_TBL, " WHERE skip <> '1'" );
-			
+
 			$retval = array();
-			foreach( $arr as $ch ) {
+			foreach ( $arr as $ch )
+			{
 				$r = array(
 					"channel_id" => XML_RPC2_Value::createFromNative((int)($ch->id),"int"),
 					"type" => XML_RPC2_Value::createFromNative($ch->type),
@@ -49,28 +48,31 @@ class EpgrecRpc {
 				$val = XML_RPC2_Value::createFromNative( $r, "struct" );
 				array_push( $retval, $val );
 			}
-			
+
 			return XML_RPC2_Value::createFromNative( $retval, "array" );
 		}
-		catch( Exception $e ) {
-			if( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
+		catch ( Exception $e )
+		{
+			if ( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
 			else throw new XML_RPC2_FaultException( $e->getMessage(),10 );
 		}
 	}
-	
+
 	/**
 	 * Get category lists.
 	 *
 	 * @param none
 	 * @return array
 	 */
-	public static function getCategoryList() {
-		try {
-			
+	public static function getCategoryList()
+	{
+		try
+		{
 			$arr = DBRecord::createRecords( CATEGORY_TBL );
-			
+
 			$retval = array();
-			foreach( $arr as $cat ) {
+			foreach ( $arr as $cat )
+			{
 				$r = array(
 					"cateogry_id" => XML_RPC2_Value::createFromNative((int)($cat->id),"int"),
 					"name_jp" => XML_RPC2_Value::createFromNative($cat->name_jp),
@@ -79,15 +81,16 @@ class EpgrecRpc {
 				$val = XML_RPC2_Value::createFromNative( $r, "struct" );
 				array_push( $retval, $val );
 			}
-			
+
 			return XML_RPC2_Value::createFromNative( $retval, "array" );
 		}
-		catch( Exception $e ) {
-			if( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
+		catch ( Exception $e )
+		{
+			if ( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
 			else throw new XML_RPC2_FaultException( $e->getMessage(),10 );
 		}
 	}
-	
+
 	/**
 	 * Search program.
 	 *
@@ -101,24 +104,29 @@ class EpgrecRpc {
 	 * @return array
 	 */
 	public static function searchProgram(
-									$keyword, 
-									$use_regexp = false,
-									$type = "*", 
-									$category_id = 0,
-									$channel_id = 0,
-									$weekofday = 7,
-									$prgtime = 24 ) {
-		if( $weekofday > 7 ) throw new XML_RPC2_FaultException("weekofday value is invalid");
-		if( $prgtime > 24 ) throw new XML_RPC2_FaultException("prgtime value is invalid" );
+		$keyword, 
+		$use_regexp = false,
+		$type = "*", 
+		$category_id = 0,
+		$channel_id = 0,
+		$weekofday = 7,
+		$prgtime = 24
+	) {
+		if ( $weekofday > 7 ) throw new XML_RPC2_FaultException("weekofday value is invalid");
+		if ( $prgtime > 24 ) throw new XML_RPC2_FaultException("prgtime value is invalid" );
 		
-		try {
+		try
+		{
 			$prgs = Keyword::search( $keyword, $use_regexp, $type, $category_id, $channel_id, $weekofday, $prgtime );
+
 			$retval = array();
-			foreach( $prgs as $prg ) {
+			foreach( $prgs as $prg )
+			{
 				$ch = new DBRecord( CHANNEL_TBL, "id", $prg->channel_id );
 				$num = DBRecord::countRecords( RESERVE_TBL, "WHERE program_id = '".$prg->id."'" );
 				$reserve_id = 0;
-				if( $num != 0 ) {
+				if ( $num != 0 )
+				{
 					$rec = new DBRecord( RESERVE_TBL, "program_id", $prg->id );
 					$reserve_id = $rec->id;
 				}
@@ -134,34 +142,39 @@ class EpgrecRpc {
 				);
 				array_push( $retval, XML_RPC2_Value::createFromNative( $r, "struct" ) );
 			}
+
 			return XML_RPC2_Value::createFromNative( $retval, "array" );
 		}
-		catch( Exception $e ) {
-			if( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
+		catch ( Exception $e )
+		{
+			if ( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
 			else throw new XML_RPC2_FaultException( $e->getMessage(),10 );
 		}
 	}
-	
+
 	/**
 	 * Reserve progarm recording .
 	 *
 	 * @param int	program_id
 	 * @return none
 	 */
-	 public static function reserveProgram( $program_id ) {
-		
-		try {
+	 public static function reserveProgram( $program_id )
+	 {
+		try
+		{
 			$settings = Settings::factory();
-			
+
 			$num = DBRecord::countRecords( PROGRAM_TBL, "id", $program_id );
-			if( $num < 1 ) throw new XML_RPC2_FaultException( "Can't find program" , 10 );
+			if ( $num < 1 )
+				throw new XML_RPC2_FaultException( "Can't find program" , 10 );
+
 			Reservation::simple( $program_id , 0, $settings->autorec_mode );
 		}
-		catch( Exception $e ) {
-			if( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
+		catch ( Exception $e )
+		{
+			if ( is_a( $e, "XML_RPC2_Exception" ) ) throw $e;
 			else throw new XML_RPC2_FaultException( $e->getMessage(),10 );
 		}
 	}
-	
 }
 ?>

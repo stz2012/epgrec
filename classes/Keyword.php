@@ -63,21 +63,6 @@ class Keyword extends DBRecord
 		return $recs;
 	}
 
-	private function getPrograms()
-	{
-		if ( $this->__id == 0 ) return false;
-
-		$recs = array();
-		try
-		{
-			 $recs = self::search( trim($this->keyword), $this->use_regexp, $this->type, $this->category_id, $this->channel_id, $this->weekofday, $this->prgtime );
-		}
-		catch( Exception $e ) {
-			throw $e;
-		}
-		return $recs;
-	}
-
 	public function reservation()
 	{
 		if ( $this->__id == 0 ) return;
@@ -85,7 +70,7 @@ class Keyword extends DBRecord
 		$precs = array();
 		try
 		{
-			$precs = $this->getPrograms();
+			$precs = $this->_getPrograms();
 		}
 		catch( Exception $e )
 		{
@@ -118,7 +103,7 @@ class Keyword extends DBRecord
 		$precs = array();
 		try
 		{
-			$precs = $this->getPrograms();
+			$precs = $this->_getPrograms();
 		}
 		catch( Exception $e )
 		{
@@ -152,6 +137,22 @@ class Keyword extends DBRecord
 		{
 			throw $e;
 		}
+	}
+
+	private function _getPrograms()
+	{
+		if ( $this->__id == 0 ) return false;
+
+		$recs = array();
+		try
+		{
+			 $recs = self::search( trim($this->keyword), $this->use_regexp, $this->type, $this->category_id, $this->channel_id, $this->weekofday, $this->prgtime );
+		}
+		catch( Exception $e )
+		{
+			throw $e;
+		}
+		return $recs;
 	}
 
 	public function __destruct()

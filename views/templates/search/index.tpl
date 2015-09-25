@@ -11,32 +11,11 @@
 <input type="hidden" name="do_search" value="1" />
 検索語句<input type="text" size="20" name="search" value="{$search}" /><br />
 正規表現使用<input type="checkbox" name="use_regexp" value="1" {if $use_regexp}checked{/if} />
-種別<select name="type">
-  {foreach from=$types item=type}
-  <option value="{$type.value}" {$type.selected}>{$type.name}</option>
-  {/foreach}
-</select>
-局<select name="station">
-  {foreach from=$stations item=st}
-    <option value="{$st.id}" {$st.selected}>{$st.name}</option>
-  {/foreach}
-  </select>
-カテゴリ<select name="category_id">
-  {foreach from=$cats item=cat}
-  <option value="{$cat.id}" {$cat.selected}>{$cat.name}</option>
-  {/foreach}
-  </select>
-開始時<select name="prgtime">
-  {foreach from=$prgtimes item=prgt}
-  <option value="{$prgt.value}" {$prgt.selected}>{$prgt.name}</option>
-  {/foreach}
-  </select>
-
-曜日<select name='weekofday'>
-  {foreach from=$weekofdays item=day}
-  <option value="{$day.id}" {$day.selected}>{$day.name}</option>
-  {/foreach}
-</select>
+種別{html_options name="type" options=$types selected=$sel_type}
+局{html_options name="station" options=$stations selected=$sel_station}
+カテゴリ{html_options name="category_id" options=$categorys selected=$sel_category}
+開始時{html_options name="prgtime" options=$prgtimes selected=$sel_prgtime}
+曜日{html_options name="weekofday" options=$weekofdays selected=$sel_weekofday}
 <input type="submit" value="絞り込む" />
 </form>
 </div>
@@ -65,8 +44,8 @@
   <td>{$program.endtime}</td>
   <td>{$program.title|escape}</td>
   <td>{$program.description|escape}</td>
-  <td><input type="button" value="録画" onClick="javascript:PRG.rec('{$program.id}')" /></td>
-  <td><input type="button" value="詳細" onClick="javascript:PRG.customform('{$program.id}')" /></td>
+  <td><input type="button" value="録画" onclick="javascript:PRG.rec('{$program.id}')" /></td>
+  <td><input type="button" value="詳細" onclick="javascript:PRG.customform('{$program.id}')" /></td>
  </tr>
 {/foreach}
 </tbody>
@@ -85,20 +64,20 @@
 <form method="post" action="{$this_class->getCurrentUri(false)}/keyword">
   <b>語句:</b>{$search|escape}
   <b>正規表現:</b>{if $use_regexp}使う{else}使わない{/if}
-  <b>種別:</b>{if $k_type == "*"}すべて{else}{$k_type}{/if}
-  <b>局:</b>{if $k_station == 0}すべて{else}{$k_station_name}{/if}
-  <b>カテゴリ:</b>{if $k_category == 0}すべて{else}{$k_category_name}{/if}
-  <b>曜日:</b>{if $weekofday == 7}なし{else}{$k_weekofday}曜{/if}
-  <b>時間:</b>{if $prgtime == 24}なし{else}{$prgtime}時～{/if}
+  <b>種別:</b>{$types[$sel_type]|escape}
+  <b>局:</b>{$stations[$sel_station]|escape}
+  <b>カテゴリ:</b>{$category[$sel_category]|escape}
+  <b>曜日:</b>{if $sel_weekofday == 7}なし{else}{$weekofdays[$sel_weekofday]|escape}曜{/if}
+  <b>時間:</b>{$prgtimes[$sel_prgtime]|escape}
   <b>件数:</b>{$programs|@count}
   <input type="hidden" name="add_keyword" value="{$do_keyword}" />
   <input type="hidden" name="k_use_regexp" value="{$use_regexp}" />
   <input type="hidden" name="k_search" value="{$search}" />
-  <input type="hidden" name="k_type" value="{$k_type}" />
-  <input type="hidden" name="k_category" value="{$k_category}" />
-  <input type="hidden" name="k_station" value="{$k_station}" />
-  <input type="hidden" name="k_weekofday" value={$weekofday} />
-  <input type="hidden" name="k_prgtime" value={$prgtime} />
+  <input type="hidden" name="k_type" value="{$sel_type}" />
+  <input type="hidden" name="k_category" value="{$sel_category}" />
+  <input type="hidden" name="k_station" value="{$sel_station}" />
+  <input type="hidden" name="k_weekofday" value={$sel_weekofday} />
+  <input type="hidden" name="k_prgtime" value={$sel_prgtime} />
   <b>録画モード:</b><select name="autorec_mode" >
   {foreach from=$autorec_modes item=mode name=recmode}
      <option value="{$smarty.foreach.recmode.index}" {$mode.selected} >{$mode.name}</option>

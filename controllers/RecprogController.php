@@ -15,7 +15,7 @@ class RecprogController extends CommonController
 		
 		$reservations = array();
 		$rvs = $this->model->getReserveData();
-		foreach( $rvs as $r )
+		foreach ( $rvs as $r )
 		{
 			$r['mode'] = $RECORD_MODE[$r['mode']]['name'];
 			array_push( $reservations, $r );
@@ -33,11 +33,11 @@ class RecprogController extends CommonController
 		global $RECORD_MODE;
 		$search = $this->request->getPost('search');
 		$category_id = ($this->request->getPost('category_id')) ? $this->request->getPost('category_id') : 0;
-		$station = ($this->request->getPost('station')) ? $this->request->getPost('station') : 0;
+		$channel_id = ($this->request->getPost('station')) ? $this->request->getPost('station') : 0;
 
 		$records = array();
 		$rvs = $this->model->getRecordedData($this->request->getPost());
-		foreach( $rvs as $r )
+		foreach ( $rvs as $r )
 		{
 			$param = array();
 			$param['reserve_id'] = $r['id'];
@@ -66,40 +66,14 @@ class RecprogController extends CommonController
 			array_push( $records, $r );
 		}
 
-		$crecs = $this->model->selectRow('*', "{$this->setting->tbl_prefix}".CATEGORY_TBL, '');
-		$cats = array();
-		$cats[0]['id'] = 0;
-		$cats[0]['name'] = "すべて";
-		$cats[0]['selected'] = ($category_id == 0) ? 'selected="selected"' : '';
-		foreach( $crecs as $c )
-		{
-			$arr = array();
-			$arr['id'] = $c['id'];
-			$arr['name'] = $c['name_jp'];
-			$arr['selected'] = ($c['id'] == $category_id) ? 'selected="selected"' : '';
-			array_push( $cats, $arr );
-		}
-
-		$crecs = $this->model->selectRow('*', "{$this->setting->tbl_prefix}".CHANNEL_TBL, '');
-		$stations = array();
-		$stations[0]['id'] = 0;
-		$stations[0]['name'] = "すべて";
-		$stations[0]['selected'] = ($station == 0) ? 'selected="selected"' : '';
-		foreach( $crecs as $c )
-		{
-			$arr = array();
-			$arr['id'] = $c['id'];
-			$arr['name'] = $c['name'];
-			$arr['selected'] = ($station == $c['id']) ? 'selected="selected"' : '';
-			array_push( $stations, $arr );
-		}
-
-		$this->view->assign( "sitetitle", "録画済一覧" );
-		$this->view->assign( "records", $records );
-		$this->view->assign( "search", $search );
-		$this->view->assign( "stations", $stations );
-		$this->view->assign( "cats", $cats );
-		$this->view->assign( "use_thumbs", $this->setting->use_thumbs );
+		$this->view->assign( "sitetitle",    "録画済一覧" );
+		$this->view->assign( "search",       $search );
+		$this->view->assign( "records",      $records );
+		$this->view->assign( "stations",     $this->model->getStationOptions() );
+		$this->view->assign( "sel_station",  $channel_id );
+		$this->view->assign( "categorys",    $this->model->getCategoryOptions() );
+		$this->view->assign( "sel_category", $category_id );
+		$this->view->assign( "use_thumbs",   $this->setting->use_thumbs );
 	}
 
 	/**
@@ -113,7 +87,8 @@ class RecprogController extends CommonController
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 
-		if ( ! $this->request->getQuery('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
+		if ( ! $this->request->getQuery('reserve_id') )
+			jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
 		$reserve_id = $this->request->getQuery('reserve_id');
 
 		try
@@ -152,7 +127,8 @@ class RecprogController extends CommonController
 			echo "</ENTRY>";
 			echo "</ASX>";
 		}
-		catch(exception $e ) {
+		catch(exception $e )
+		{
 			exit( $e->getMessage() );
 		}
 	}
@@ -168,7 +144,8 @@ class RecprogController extends CommonController
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 
-		if ( ! $this->request->getQuery('reserve_id') ) jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
+		if ( ! $this->request->getQuery('reserve_id') )
+			jdialog("予約番号が指定されていません", $this->getCurrentUri(false)."/recorded");
 		$reserve_id = $this->request->getQuery('reserve_id');
 
 		try
@@ -183,13 +160,14 @@ class RecprogController extends CommonController
 			header('Content-type: video/mpeg');
 			header('Content-Disposition: inline; filename="'.$rrec->path.'"');
 			header('Content-Length: ' . $size );
-			
 			ob_clean();
 			flush();
-			
+
 			$fp = @fopen( INSTALL_PATH.$this->setting->spool."/".$rrec->path, "r" );
-			if ( $fp !== false ) {
-				do {
+			if ( $fp !== false )
+			{
+				do
+				{
 					$start = microtime(true);
 					if ( feof( $fp ) ) break;
 					echo fread( $fp, 6292 );
@@ -199,7 +177,8 @@ class RecprogController extends CommonController
 			}
 			fclose($fp);
 		}
-		catch(exception $e ) {
+		catch(exception $e )
+		{
 			exit( $e->getMessage() );
 		}
 	}

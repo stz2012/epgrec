@@ -333,6 +333,7 @@ class Reservation
 				reclog( "Reservation::custom atの実行に失敗した模様", EPGREC_ERROR);
 				throw new Exception("AT実行エラー");
 			}
+
 			// job番号を取り出す
 			$rarr = array();
 			$tok = strtok( $rstring, " \n" );
@@ -351,6 +352,7 @@ class Reservation
 					return $rrec->job;			// 成功
 				}
 			}
+
 			// エラー
 			$rrec->delete();
 			reclog( "Reservation::custom job番号の取得に失敗",EPGREC_ERROR );

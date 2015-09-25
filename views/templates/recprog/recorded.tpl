@@ -10,16 +10,8 @@
 <form method="post" action="{$this_class->getCurrentUri()}">
 <input type="hidden" name="do_search" value="1" />
 検索語句<input type="text" size="20" name="search" value="{$search}" />
-局<select name="station">
-  {foreach from=$stations item=st}
-    <option value="{$st.id}" {$st.selected}>{$st.name}</option>
-  {/foreach}
-  </select>
-カテゴリ<select name="category_id">
-  {foreach from=$cats item=cat}
-  <option value="{$cat.id}" {$cat.selected}>{$cat.name}</option>
-  {/foreach}
-</select>
+局{html_options name="station" options=$stations selected=$sel_station}
+カテゴリ{html_options name="category_id" options=$categorys selected=$sel_category}
 <input type="submit" value="絞り込む" />
 </form>
 </div>
@@ -51,8 +43,8 @@
   <td><a href="{$rec.asf}" id="tid_{$rec.id}">{$rec.title}</a></td>
   <td><a href="{$rec.asf}" id="did_{$rec.id}">{$rec.description}</a></td>
   <td>{$rec.fsize}</td>
-  <td><input type="button" value="変更" onClick="javascript:PRG.editdialog('{$rec.id}')" /></td>
-  <td><input type="button" value="削除" onClick="javascript:PRG.dialog('{$rec.id}','{$rec.title|escape}')" /></td>
+  <td><input type="button" value="変更" onclick="javascript:PRG.editdialog('{$rec.id}')" /></td>
+  <td><input type="button" value="削除" onclick="javascript:PRG.dialog('{$rec.id}','{$rec.title|escape}')" /></td>
  </tr>
 {/foreach}
 <tbody>

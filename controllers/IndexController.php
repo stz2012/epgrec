@@ -40,7 +40,7 @@ class IndexController extends CommonController
 		$last_time = $top_time + 3600 * $program_length;
 
 		// 時刻欄
-		for( $i = 0 ; $i < $program_length; $i++ )
+		for ( $i = 0 ; $i < $program_length; $i++ )
 		{
 			$tvtimes[$i] = date("H", $top_time + 3600 * $i );
 		}
@@ -52,7 +52,7 @@ class IndexController extends CommonController
 		$st = -1;
 		$st_save = '';
 		$recprg = $this->model->getProgramData($type, $top_time, $last_time);
-		foreach( $recprg as $prg )
+		foreach ( $recprg as $prg )
 		{
 			if ($prg['sid'] != $st_save)
 			{
@@ -157,7 +157,7 @@ class IndexController extends CommonController
 		$crec = DBRecord::createRecords( CATEGORY_TBL );
 		$cats = array();
 		$num = 0;
-		foreach( $crec as $val )
+		foreach ( $crec as $val )
 		{
 			$cats[$num]['name_en'] = $val->name_en;
 			$cats[$num]['name_jp'] = $val->name_jp;
@@ -168,31 +168,31 @@ class IndexController extends CommonController
 		// タイプ選択
 		$types = array();
 		$i = 0;
+		if ( $this->setting->gr_tuners != 0 )
+		{
+			$types[$i]['selected'] = ( $type == "GR" ) ? 'class="selected"' : "";
+			$get_param['type'] = 'GR';
+			$types[$i]['link'] = UtilString::buildQueryString($get_param);
+			$types[$i]['name'] = "地上デジタル";
+			$i++;
+		}
 		if ( $this->setting->bs_tuners != 0 )
 		{
-			$types[$i]['selected'] = $type == "BS" ? 'class="selected"' : "";
+			$types[$i]['selected'] = ( $type == "BS" ) ? 'class="selected"' : "";
 			$get_param['type'] = 'BS';
 			$types[$i]['link'] = UtilString::buildQueryString($get_param);
 			$types[$i]['name'] = "BS";
 			$i++;
 
 			// CS
-			if ($this->setting->cs_rec_flg != 0)
+			if ( $this->setting->cs_rec_flg != 0 )
 			{
-				$types[$i]['selected'] = $type == "CS" ? 'class="selected"' : "";
+				$types[$i]['selected'] = ( $type == "CS" ) ? 'class="selected"' : "";
 				$get_param['type'] = 'CS';
 				$types[$i]['link'] = UtilString::buildQueryString($get_param);
 				$types[$i]['name'] = "CS";
 				$i++;
 			}
-		}
-		if ( $this->setting->gr_tuners != 0 )
-		{
-			$types[$i]['selected'] = $type == "GR" ? 'class="selected"' : "";
-			$get_param['type'] = 'GR';
-			$types[$i]['link'] = UtilString::buildQueryString($get_param);
-			$types[$i]['name'] = "地上デジタル";
-			$i++;
 		}
 		$this->view->assign( "types", $types );
 
@@ -206,7 +206,7 @@ class IndexController extends CommonController
 		$get_param['time'] = date( "YmdH", time() - 3600 *24 );
 		$day['link'] = UtilString::buildQueryString($get_param);
 		$day['ofweek'] = "";
-		$day['selected'] = $top_time < mktime( 0, 0 , 0) ? 'class="selected"' : '';
+		$day['selected'] = ( $top_time < mktime(0, 0, 0) ) ? 'class="selected"' : '';
 
 		array_push( $days , $day );
 		$day['d'] = "現在";
@@ -215,20 +215,20 @@ class IndexController extends CommonController
 		$day['ofweek'] = "";
 		$day['selected'] = "";
 		array_push( $days, $day );
-		for( $i = 0 ; $i < 8 ; $i++ )
+		for ( $i = 0 ; $i < 8 ; $i++ )
 		{
 			$day['d'] = "".date("d", time() + 24 * 3600 * $i ) . "日";
 			$get_param['time'] = date( "Ymd", time() + 24 * 3600 * $i) . date("H" , $top_time );
 			$day['link'] = UtilString::buildQueryString($get_param);
 			$day['ofweek'] = $DAY_OF_WEEK[(int)date( "w", time() + 24 * 3600 * $i )];
-			$day['selected'] = date("d", $top_time) == date("d", time() + 24 * 3600 * $i ) ? 'class="selected"' : '';
+			$day['selected'] = ( date("d", $top_time) == date("d", time() + 24 * 3600 * $i ) ) ? 'class="selected"' : '';
 			array_push( $days, $day );
 		}
 		$this->view->assign( "days" , $days );
 
 		// 時間選択
 		$toptimes = array();
-		for( $i = 0 ; $i < 24; $i+=4 )
+		for ( $i = 0 ; $i < 24; $i+=4 )
 		{
 			$tmp = array();
 			$tmp['hour'] = sprintf( "%02d:00", $i );
@@ -292,18 +292,6 @@ class IndexController extends CommonController
 			sscanf( $prec->starttime, "%4d-%2d-%2d %2d:%2d:%2d", $syear, $smonth, $sday, $shour, $smin, $ssec );
 			sscanf( $prec->endtime, "%4d-%2d-%2d %2d:%2d:%2d", $eyear, $emonth, $eday, $ehour, $emin, $esec );
 
-			$crecs = DBRecord::createRecords( CATEGORY_TBL );
-			$cats = array();
-			foreach( $crecs as $crec )
-			{
-				$cat = array();
-				$cat['id'] = $crec->id;
-				$cat['name'] = $crec->name_jp;
-				$cat['selected'] = $prec->category_id == $cat['id'] ? 'selected="selected"' : '';
-				
-				array_push( $cats , $cat );
-			}
-
 			$this->view->assign( "syear", $syear );
 			$this->view->assign( "smonth", $smonth );
 			$this->view->assign( "sday", $sday );
@@ -323,7 +311,8 @@ class IndexController extends CommonController
 			$this->view->assign( "title", $prec->title );
 			$this->view->assign( "description", $prec->description );
 
-			$this->view->assign( "cats" , $cats );
+			$this->view->assign( "categorys" , $this->model->getCategoryOptions() );
+			$this->view->assign( "sel_category", $prec->category_id );
 
 			$this->view->assign( "program_id", $prec->id );
 		}
@@ -355,7 +344,8 @@ class IndexController extends CommonController
 	public function customAction()
 	{
 		$program_id = 0;
-		if ( $this->request->getPost('program_id') ) $program_id = $this->request->getPost('program_id');
+		if ( $this->request->getPost('program_id') )
+			$program_id = $this->request->getPost('program_id');
 
 		if (!(
 		   $this->request->getPost('shour')       && 
@@ -471,16 +461,13 @@ class IndexController extends CommonController
 		try
 		{
 			Reservation::cancel( $reserve_id, $program_id );
-			if ( $this->request->getPost('delete_file') )
+			if ( $this->request->getPost('delete_file') == 1 )
 			{
-				if ( $this->request->getPost('delete_file') == 1 )
+				// ファイルを削除
+				if ( file_exists( $path) )
 				{
-					// ファイルを削除
-					if ( file_exists( $path) )
-					{
-						@unlink($path);
-						@unlink($path.".jpg");
-					}
+					@unlink($path);
+					@unlink($path.".jpg");
 				}
 			}
 		}
