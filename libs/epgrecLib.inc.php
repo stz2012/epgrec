@@ -283,17 +283,17 @@ function garbageClean()
 {
 	// 8日以上前のプログラムを消す
 	$arr = array();
-	$arr = DBRecord::createRecords(  PROGRAM_TBL, "WHERE endtime < subdate( now(), 8 )" );
+	$arr = DBRecord::createRecords( PROGRAM_TBL, "WHERE endtime < subdate( now(), 8 )" );
 	foreach( $arr as $val ) $val->delete();
 	
 	// 8日以上先のデータがあれば消す
 	$arr = array();
-	$arr = DBRecord::createRecords(  PROGRAM_TBL, "WHERE starttime  > adddate( now(), 8 ) ");
+	$arr = DBRecord::createRecords( PROGRAM_TBL, "WHERE starttime > adddate( now(), 8 ) ");
 	foreach( $arr as $val ) $val->delete();
 
 	// 10日以上前のログを消す
 	$arr = array();
-	$arr = DBRecord::createRecords(  LOG_TBL, "WHERE logtime < subdate( now(), 10 )" );
+	$arr = DBRecord::createRecords( LOG_TBL, "WHERE logtime < subdate( now(), 10 )" );
 	foreach( $arr as $val ) $val->delete();
 }
 
@@ -301,7 +301,7 @@ function garbageClean()
 function doKeywordReservation()
 {
  	$arr = array();
-	$arr = Keyword::createRecords( KEYWORD_TBL );
+	$arr = DBRecord::createRecords( KEYWORD_TBL );
 	foreach( $arr as $val )
 	{
 		try {

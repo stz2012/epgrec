@@ -1,12 +1,13 @@
 <?php
 // 予約クラス
-class Reservation
+class Reservation extends ModelBase
 {
 	// 簡易予約
 	public static function simple( $program_id , $autorec = 0, $mode = 0)
 	{
 		$settings = Settings::factory();
 		$rval = 0;
+
 		try
 		{
 			$prec = new DBRecord( PROGRAM_TBL, "id", $program_id );
@@ -19,11 +20,14 @@ class Reservation
 				$prec->category_id,
 				$program_id,
 				$autorec,
-				$mode );
+				$mode
+			);
 		}
-		catch( Exception $e ) {
+		catch ( Exception $e )
+		{
 			throw $e;
 		}
+
 		return $rval;
 	}
 
@@ -42,6 +46,7 @@ class Reservation
 	) {
 		global $RECORD_MODE;
 		$settings = Settings::factory();
+		$rrec = null;
 
 		// 時間を計算
 		$start_time = toTimestamp( $starttime );
@@ -61,7 +66,6 @@ class Reservation
 			throw new Exception( "終わりつつある/終わっている番組です" );
 		}
 
-		$rrec = null;
 		try
 		{
 			// 同一番組予約チェック
@@ -461,6 +465,93 @@ class Reservation
 			reclog("Reservation::cancel 予約キャンセルでDB接続またはアクセスに失敗した模様", EPGREC_ERROR );
 			throw $e;
 		}
+	}
+
+	/**
+	 * 番組検索データ取得
+	 * @return array
+	 */
+	public static function getSearchData(
+		$keyword = "", 
+		$use_regexp = false,
+		$tuner_type = "*", 
+		$channel_id = 0,
+		$category_id = 0,
+		$prgtime = 24,
+		$weekofday = 7,
+		$limit = 300
+	) {
+		$settings = Settings::factory();
+		$program_data = array();
+
+		try
+		{
+			$sql = "SELECT a.*, b.name AS station_name,";
+			$sql .= " c.name_en AS cat, COALESCE(d.rsv_cnt, 0) AS rec";
+			$sql .= "  FROM {$this->setting->tbl_prefix}".PROGRAM_TBL." a";
+			$sql .= "  LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." b";
+			$sql .= "    ON b.id = a.channel_id";
+			$sql .= "  LEFT JOIN {$this->setting->tbl_prefix}".CATEGORY_TBL." c";
+			$sql .= "    ON c.id = a.category_id";
+			$sql .= "  LEFT JOIN (";
+			$sql .= "    SELECT program_id, COUNT(*) AS rsv_cnt";
+			$sql .= "      FROM {$this->setting->tbl_prefix}".RESERVE_TBL;
+			$sql .= "  ) d";
+			$sql .= "    ON d.program_id = a.id";
+			$sql .= " WHERE starttime > :search_time";
+			if ( $keyword != "" )
+			{
+				if ( $use_regexp )
+					$sql .= " AND CONCAT(title,description) REGEXP :keyword";
+				else
+					$sql .= " AND CONCAT(title,description) LIKE :keyword";
+			}
+			if ( $tuner_type != "*" )
+				$sql .= " AND type = :tuner_type";
+			if ( $channel_id != 0 )
+				$sql .= " AND channel_id = :channel_id";
+			if ( $category_id != 0 )
+				$sql .= " AND category_id = :category_id";
+			if ( $prgtime != 24 )
+				$sql .= " AND TIME(starttime) BETWEEN CAST(:prgtime_from AS time) AND CAST(:prgtime_to AS time)";
+			if ( $weekofday != 7 )
+				$sql .= " AND WEEKDAY(starttime) = :weekofday";
+			$sql .= " ORDER BY starttime ASC";
+			$sql .= " LIMIT :search_limit";
+			$stmt = self::$connInst->prepare($sql);
+			$stmt->bindValue(':search_time', date("Y-m-d H:i:s", time() + $settings->padding_time + 60));
+			if ( $keyword != "" )
+			{
+				if ( $use_regexp )
+					$stmt->bindValue(':keyword', $keyword);
+				else
+					$stmt->bindValue(':keyword', "%{$keyword}%");
+			}
+			if ( $tuner_type != "*" )
+				$stmt->bindValue(':tuner_type', $tuner_type);
+			if ( $channel_id != 0 )
+				$stmt->bindValue(':channel_id', $channel_id, PDO::PARAM_INT);
+			if ( $category_id != 0 )
+				$stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
+			if ( $prgtime != 24 )
+			{
+				$stmt->bindValue(':prgtime_from', sprintf("%02d:00:00", $prgtime));
+				$stmt->bindValue(':prgtime_to',   sprintf("%02d:59:59", $prgtime));
+			}
+			if ( $weekofday != 7 )
+				$stmt->bindValue(':weekofday', $weekofday);
+			$stmt->bindValue(':search_limit', $limit, PDO::PARAM_INT);
+			$stmt->execute();
+			$program_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$stmt->closeCursor();
+		}
+		catch( Exception $e )
+		{
+			reclog("Reservation::cancel 予約キャンセルでDB接続またはアクセスに失敗した模様", EPGREC_ERROR );
+			throw $e;
+		}
+
+		return $program_data;
 	}
 
 	// マルチバイトstr_replace

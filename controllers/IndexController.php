@@ -268,8 +268,9 @@ class IndexController extends CommonController
 				$crec->sid = trim($this->request->getPost('sid'));
 				$crec->skip = (int)(trim($this->request->getPost('skip')));
 			}
-			catch( Exception $e ) {
-				exit("Error: チャンネル情報更新失敗" );
+			catch ( Exception $e )
+			{
+				exit( "Error: チャンネル情報更新失敗" );
 			}
 		}
 	}
@@ -290,33 +291,30 @@ class IndexController extends CommonController
 			$prec = new DBRecord( PROGRAM_TBL, "id", $program_id );
 
 			sscanf( $prec->starttime, "%4d-%2d-%2d %2d:%2d:%2d", $syear, $smonth, $sday, $shour, $smin, $ssec );
-			sscanf( $prec->endtime, "%4d-%2d-%2d %2d:%2d:%2d", $eyear, $emonth, $eday, $ehour, $emin, $esec );
-
-			$this->view->assign( "syear", $syear );
+			sscanf( $prec->endtime,   "%4d-%2d-%2d %2d:%2d:%2d", $eyear, $emonth, $eday, $ehour, $emin, $esec );
+			$this->view->assign( "syear",  $syear );
 			$this->view->assign( "smonth", $smonth );
-			$this->view->assign( "sday", $sday );
-			$this->view->assign( "shour", $shour );
-			$this->view->assign( "smin" ,$smin );
-			$this->view->assign( "eyear", $eyear );
+			$this->view->assign( "sday",   $sday );
+			$this->view->assign( "shour",  $shour );
+			$this->view->assign( "smin" ,  $smin );
+			$this->view->assign( "eyear",  $eyear );
 			$this->view->assign( "emonth", $emonth );
-			$this->view->assign( "eday", $eday );
-			$this->view->assign( "ehour", $ehour );
-			$this->view->assign( "emin" ,$emin );
+			$this->view->assign( "eday",   $eday );
+			$this->view->assign( "ehour",  $ehour );
+			$this->view->assign( "emin" ,  $emin );
 
-			$this->view->assign( "type", $prec->type );
-			$this->view->assign( "channel", $prec->channel );
-			$this->view->assign( "channel_id", $prec->channel_id );
+			$this->view->assign( "program_id",   $prec->id );
+			$this->view->assign( "type",         $prec->type );
+			$this->view->assign( "channel",      $prec->channel );
+			$this->view->assign( "channel_id",   $prec->channel_id );
 			$this->view->assign( "record_mode" , $record_modes );
-
-			$this->view->assign( "title", $prec->title );
-			$this->view->assign( "description", $prec->description );
-
-			$this->view->assign( "categorys" , $this->model->getCategoryOptions() );
+			$this->view->assign( "title",        $prec->title );
+			$this->view->assign( "description",  $prec->description );
+			$this->view->assign( "categorys" ,   $this->model->getCategoryOptions() );
 			$this->view->assign( "sel_category", $prec->category_id );
-
-			$this->view->assign( "program_id", $prec->id );
 		}
-		catch( exception $e ) {
+		catch ( exception $e )
+		{
 			exit( "Error:". $e->getMessage() );
 		}
 	}
@@ -333,7 +331,8 @@ class IndexController extends CommonController
 		{
 			Reservation::simple( $program_id , 0, $this->setting->autorec_mode);
 		}
-		catch( Exception $e ) {
+		catch ( Exception $e )
+		{
 			exit( "Error:". $e->getMessage() );
 		}
 	}
@@ -401,7 +400,7 @@ class IndexController extends CommonController
 				1		// ダーティフラグ
 			);
 		}
-		catch( Exception $e )
+		catch ( Exception $e )
 		{
 			exit( "Error:".$e->getMessage() );
 		}

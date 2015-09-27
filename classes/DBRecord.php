@@ -1,5 +1,5 @@
 <?php
-class DBRecord  extends ModelBase
+class DBRecord extends ModelBase
 {
 	public $__id;
 	protected $__table;

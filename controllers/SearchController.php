@@ -38,43 +38,16 @@ class SearchController extends CommonController
 				$channel_id = (int)($this->request->getPost('station'));
 			if ( $this->request->getPost('category_id') )
 				$category_id = (int)($this->request->getPost('category_id'));
-			if ( $this->request->getPost('weekofday') )
-				$weekofday = (int)($this->request->getPost('weekofday'));
 			if ( $this->request->getPost('prgtime') )
 				$prgtime = (int)($this->request->getPost('prgtime'));
+			if ( $this->request->getPost('weekofday') )
+				$weekofday = (int)($this->request->getPost('weekofday'));
 		}
 
 		$do_keyword = 0;
 		if ( ($search != "") || ($type != "*") || ($category_id != 0) || ($channel_id != 0) )
 			$do_keyword = 1;
-
-		try
-		{
-			$precs = Keyword::search( $search, $use_regexp, $type, $category_id, $channel_id, $weekofday, $prgtime );
-
-			$programs = array();
-			foreach ( $precs as $p )
-			{
-				$ch  = new DBRecord(CHANNEL_TBL, "id", $p->channel_id );
-				$cat = new DBRecord(CATEGORY_TBL, "id", $p->category_id );
-				$arr = array();
-				$arr['type'] = $p->type;
-				$arr['station_name'] = $ch->name;
-				$arr['starttime'] = $p->starttime;
-				$arr['endtime'] = $p->endtime;
-				$arr['title'] = $p->title;
-				$arr['description'] = $p->description;
-				$arr['id'] = $p->id;
-				$arr['cat'] = $cat->name_en;
-				$arr['rec'] = DBRecord::countRecords(RESERVE_TBL, "WHERE program_id='".$p->id."'");
-				
-				array_push( $programs, $arr );
-			}
-		}
-		catch( exception $e )
-		{
-			exit( $e->getMessage() );
-		}
+		$programs = $this->model->getProgramData( $search, $use_regexp, $type, $channel_id, $category_id, $prgtime, $weekofday );
 
 		$this->view->assign( "sitetitle",     "番組検索" );
 		$this->view->assign( "do_keyword",    $do_keyword );
@@ -100,6 +73,8 @@ class SearchController extends CommonController
 	public function keywordAction()
 	{
 		global $RECORD_MODE;
+		$stations = $this->model->getStationOptions();
+		$categorys = $this->model->getCategoryOptions();
 		$prgtimes = $this->_getPrgTimes();
 		$weekofdays = $this->_getWeekOfDays();
 
@@ -108,18 +83,43 @@ class SearchController extends CommonController
 		{
 			try
 			{
-				$rec = new Keyword();
-				$rec->keyword = $this->request->getPost('k_search');
-				$rec->type = $this->request->getPost('k_type');
-				$rec->category_id = $this->request->getPost('k_category');
-				$rec->channel_id = $this->request->getPost('k_station');
-				$rec->use_regexp = $this->request->getPost('k_use_regexp');
-				$rec->weekofday = $this->request->getPost('k_weekofday');
-				$rec->prgtime   = $this->request->getPost('k_prgtime');
+				$rec = new DBRecord( KEYWORD_TBL );
+				$rec->keyword      = $this->request->getPost('k_search');
+				$rec->use_regexp   = $this->request->getPost('k_use_regexp');
+				$rec->type         = $this->request->getPost('k_type');
+				$rec->channel_id   = $this->request->getPost('k_station');
+				$rec->category_id  = $this->request->getPost('k_category');
+				$rec->prgtime      = $this->request->getPost('k_prgtime');
+				$rec->weekofday    = $this->request->getPost('k_weekofday');
 				$rec->autorec_mode = $this->request->getPost('autorec_mode');
-				
-				// 録画予約実行
-				$rec->reservation();
+				$rec->update();
+
+				// 一気に録画予約
+				$programs = $this->model->getProgramData(
+					$rec->keyword,
+					$rec->use_regexp,
+					$rec->type,
+					$rec->channel_id,
+					$rec->category_id,
+					$rec->prgtime,
+					$rec->weekofday
+				);
+				foreach( $programs as $r )
+				{
+					try
+					{
+						if ( $r['autorec'] )
+						{
+							Reservation::simple( $r['id'], $rec->id, $rec->autorec_mode );
+							reclog( "Keyword.class::キーワードID".$rec->id."の録画が予約された");
+							usleep( 100 );		// あんまり時間を空けないのもどう?
+						}
+					}
+					catch( Exception $e )
+					{
+						// 無視
+					}
+				}
 			}
 			catch( Exception $e )
 			{
@@ -130,32 +130,19 @@ class SearchController extends CommonController
 		$keywords = array();
 		try
 		{
-			$recs = Keyword::createRecords(KEYWORD_TBL);
+			$recs = DBRecord::createRecords( KEYWORD_TBL );
 			foreach ( $recs as $rec )
 			{
 				$arr = array();
-				$arr['id'] = $rec->id;
-				$arr['keyword'] = $rec->keyword;
-				$arr['use_regexp'] = $rec->use_regexp;
-				$arr['type'] = $rec->type == "*" ? "すべて" : $rec->type;
-				if ( $rec->channel_id )
-				{
-					$crec = new DBRecord(CHANNEL_TBL, "id", $rec->channel_id );
-					$arr['channel'] = $crec->name;
-				}
-				else
-					$arr['channel'] = 'すべて';
-				if ( $rec->category_id )
-				{
-					$crec = new DBRecord(CATEGORY_TBL, "id", $rec->category_id );
-					$arr['category'] = $crec->name_jp;
-				}
-				else
-					$arr['category'] = 'すべて';
-				$arr['prgtime'] = $prgtimes["$rec->prgtime"];
-				$arr['weekofday'] = $weekofdays["$rec->weekofday"];
+				$arr['id']           = $rec->id;
+				$arr['keyword']      = $rec->keyword;
+				$arr['use_regexp']   = $rec->use_regexp;
+				$arr['type']         = ( $rec->type == "*" ) ? "すべて" : $rec->type;
+				$arr['channel']      = $stations["$rec->channel_id"];
+				$arr['category']     = $categorys["$rec->category_id"];
+				$arr['prgtime']      = $prgtimes["$rec->prgtime"];
+				$arr['weekofday']    = $weekofdays["$rec->weekofday"];
 				$arr['autorec_mode'] = $RECORD_MODE[(int)$rec->autorec_mode]['name'];
-				
 				array_push( $keywords, $arr );
 			}
 		}
@@ -177,7 +164,36 @@ class SearchController extends CommonController
 		{
 			try
 			{
-				$rec = new Keyword( "id", $this->request->getPost('keyword_id') );
+				$rec = new DBRecord( KEYWORD_TBL, "id", $this->request->getPost('keyword_id') );
+
+				// 一気にキャンセル
+				$programs = $this->model->getProgramData(
+					$rec->keyword,
+					$rec->use_regexp,
+					$rec->type,
+					$rec->channel_id,
+					$rec->category_id,
+					$rec->prgtime,
+					$rec->weekofday
+				);
+				foreach( $programs as $r )
+				{
+					try
+					{
+						$reserve = new DBRecord( RESERVE_TBL, "program_id", $r['id'] );
+						// 自動予約されたもののみ削除
+						if ( $reserve->autorec )
+						{
+							Reservation::cancel( $reserve->id );
+							usleep( 100 );		// あんまり時間を空けないのもどう?
+						}
+					}
+					catch( Exception $e )
+					{
+						// 無視
+					}
+				}
+
 				$rec->delete();
 			}
 			catch( Exception $e )
