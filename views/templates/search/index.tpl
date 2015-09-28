@@ -76,10 +76,10 @@
   <input type="hidden" name="k_type" value="{$sel_type}" />
   <input type="hidden" name="k_category" value="{$sel_category}" />
   <input type="hidden" name="k_station" value="{$sel_station}" />
-  <input type="hidden" name="k_weekofday" value={$sel_weekofday} />
-  <input type="hidden" name="k_prgtime" value={$sel_prgtime} />
+  <input type="hidden" name="k_weekofday" value="{$sel_weekofday}" />
+  <input type="hidden" name="k_prgtime" value="{$sel_prgtime}" />
   <b>録画モード:</b>{html_options name="autorec_mode" options=$record_mode selected=$sel_recmode}
-  <br><input type="submit" value="この絞り込みを自動録画キーワードに登録" />
+  <br /><input type="submit" value="この絞り込みを自動録画キーワードに登録" />
   </form>
 </div>
 {/if}

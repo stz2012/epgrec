@@ -40,7 +40,7 @@
 <h3>録画開始の余裕時間（秒）</h3>
 <div class="setting">
 <div class="caption">epgrecは番組開始時間より早く録画を開始します。どのくらい録画開始を早めるかを秒で設定してください。早める時間を短くしすぎると、番組冒頭がとぎれる恐れがあります。設定できる時間は0秒以上180秒未満です。</div>
-<input type="text" name="former_time" value="{$settings->former_time}" size="4" class="required digits" /><!-- min="0" max="179" -->
+<input type="text" name="former_time" value="{$settings->former_time}" size="4" class="required digits" />
 </div>
 
 <h3>録画時間を長めにする</h3>
@@ -61,7 +61,7 @@
 <h3>録画コマンドの切り替え時間</h3>
 <div class="setting">
 <div class="caption">連続した番組を予約するとき、録画が終了して次の録画を開始するまでの余裕時間（秒）を設定します。1以上の秒数を設定してください。設定する秒数が短いほど録画時間を短縮する時間が短くなりますが、この時間を短くしすぎると連続した番組の予約に失敗する恐れがあります。失敗するかどうかは使用している録画コマンドやチューナーに依存します。</div>
-<input type="text" name="rec_switch_time" id="id_rec_switch_time" value="{$settings->rec_switch_time}" size="4" class="required digits" /><!-- min="1" -->
+<input type="text" name="rec_switch_time" id="id_rec_switch_time" value="{$settings->rec_switch_time}" size="4" class="required digits" />
 </div>
 
 <h3>優先する録画モード</h3>
@@ -122,19 +122,19 @@
 <h3>ページに表示する番組表の長さ（時間）</h3>
 <div class="setting">
 <div class="caption">1ページに表示する番組表の長さを時間で設定します。標準は8時間分です。</div>
-<input type="text" name="program_length" value="{$settings->program_length}" size="2" class="required digits" /><!-- min="2" max="24" -->
+<input type="text" name="program_length" value="{$settings->program_length}" size="2" class="required digits" />
 </div>
 
 <h3>1局あたりの幅</h3>
 <div class="setting">
 <div class="caption">番組表の1局当たりの幅をピクセル数で設定します。標準は150ピクセルです。</div>
-<input type="text" id="ch_set_width" name="ch_set_width" value="{$settings->ch_set_width}" size="4" class="required digits" /><!-- min="20" -->
+<input type="text" id="ch_set_width" name="ch_set_width" value="{$settings->ch_set_width}" size="4" class="required digits" />
 </div>
 
 <h3>1時間あたりの高さ</h3>
 <div class="setting">
 <div class="caption">番組表の1時間あたりの高さをピクセル数で設定します。標準は120ピクセルです。なお、60で割り切れないピクセル数を指定するとFirefoxを除くブラウザでは番組の高さが揃わなくなり見た目が悪くなるかもしれません。これはFirefox以外のブラウザでは実数のピクセルを正しくレンダリングしないためです。</div>
-<input type="text" id="height_per_hour" name="height_per_hour" value="{$settings->height_per_hour}" size="4" class="required digits" /><!-- min="30" -->
+<input type="text" id="height_per_hour" name="height_per_hour" value="{$settings->height_per_hour}" size="4" class="required digits" />
 </div>
 
 <input type="submit" value="設定を保存する" id="env_setting-submit" />
@@ -145,7 +145,15 @@
 <!--
 {literal}
 $(document).ready(function(){
-	$("#env_setting").validate();
+	$("#env_setting").validate({
+		rules : {
+			former_time: { min: 0, max: 179 },
+			rec_switch_time: { min: 1 },
+			program_length: { min: 2, max: 24 },
+			ch_set_width: { min: 20 },
+			height_per_hour: { min: 30 }
+		}
+	});
 	PRG.force_cont();
 });
 {/literal}

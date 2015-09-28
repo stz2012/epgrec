@@ -86,7 +86,7 @@ div.tvtime {
 #tvtable div.ctg-hide, #category_select a.ctg-hide {background-color: #F8F8F8;color:#888;}
 #tvtable div.ctg-hide .prg_title, #category_select a.ctg-hide .prg_title{color:#666;}
 #tvtable div.prg_rec  {background-color: #F55;color:#FEE}
-#tvtable div.prg_rec .prg_title,#tvtable div.prg_hover .prg_title {color:white;}
+#tvtable div.prg_rec .prg_title, #tvtable div.prg_hover .prg_title {color:white;}
 #tvtable div.prg_hover  {background-color: #28D;color:#EFF}
 
 #float_titles { z-index:100}
@@ -142,6 +142,7 @@ table#reservation_table tr.ctg_drama, #category_select a.ctg_drama {background-c
 table#reservation_table tr.ctg_anime, #category_select a.ctg_anime {background-color: #FFE4C8;}
 table#reservation_table tr.ctg_variety, #category_select a.ctg_variety {background-color: #FFD2EB;}
 table#reservation_table tr.ctg_10, #category_select a.ctg_10 {background-color: #E4F4F4;}
+table#reservation_table tr.prg_rec {background-color: #F55;color:#FEE}
 
 table#log_table {
     width: 800px;

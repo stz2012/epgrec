@@ -120,13 +120,13 @@
 <h3>録画スタート前に起動させる時間（分）</h3>
 <div class="setting">
 <div class="caption">録画開始より前に起動させる時間を分単位で設定します。5分以上の値を設定したほうが無難でしょう。省電力が有効なときに使う値です。</div>
-<input type="text" name="wakeup_before" id="id_wakeup_before" value="{$settings->wakeup_before}" size="2" class="required digits" /><!-- min="5" max="60" --> 
+<input type="text" name="wakeup_before" id="id_wakeup_before" value="{$settings->wakeup_before}" size="2" class="required digits" />
 </div>
 
 <h3>EPGを取得する間隔（時間）</h3>
 <div class="setting">
 <div class="caption">EPGを取得する間隔を時間単位で設定します。省電力が有効なときに使う値です。</div>
-<input type="text" name="getepg_timer" id="id_getepg_timer" value="{$settings->getepg_timer}" size="2" class="required digits" /><!-- min="2" max="24" -->
+<input type="text" name="getepg_timer" id="id_getepg_timer" value="{$settings->getepg_timer}" size="2" class="required digits" />
 </div>
 
 <h3>Webサーバーのユーザーおよびグループ名</h3>
@@ -150,7 +150,12 @@
 <!--
 {literal}
 $(document).ready(function(){
-	$("#system_setting").validate();
+	$("#system_setting").validate({
+		rules : {
+			wakeup_before: { min: 5, max: 60 },
+			getepg_timer: { min: 2, max: 24 }
+		}
+	});
 	PRG.thumbs();
 	PRG.power_reduce();
 });

@@ -18,7 +18,7 @@ Debian/Ubuntu用の設定ファイルを参考に、適切にcronの設定を行
 設定ミスが疑われる場合、<a href="{$this_class->getCurrentUri(false)}/index">インストール設定</a>を実行し直してください。
 また、手動でEPGの受信を試みるのもひとつの方法です。コンソール上で、<br>
 <pre>
-$ {$install_path}/scripts/getepg.php [Enter]
+$ {$install_path}/scripts/getEpg.php [Enter]
 </pre>
 <br>
 と実行してください。</p>
