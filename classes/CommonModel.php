@@ -29,8 +29,8 @@ class CommonModel extends ModelBase
 		global $RECORD_MODE;
 		$modes = array();
 		foreach ( $RECORD_MODE as $key => $val )
-			$modes[$key] = $val['mode'];
-		return modes;
+			$modes[$key] = $val['name'];
+		return $modes;
 	}
 
 	/**

@@ -4,13 +4,14 @@ class EpgrecMsg
 	protected $reserve_id;
 	protected $msgh_r = null;		// 受信用メッセージハンドラ
 	protected $msgh_w = null;		// 送信用メッセージハンドラ
-	protected $logfile = INSTALL_PATH."/settings/recorder_".$reserve_id.".log";
+	protected $logfile = null;
 
 	// コンストラクタ
 	function __construct( $reserve_id )
 	{
 		$this->reserve_id = $reserve_id;
-		
+		$this->logfile = INSTALL_PATH."/settings/recorder_".$reserve_id.".log";
+
 		// メッセージハンドラを得る
 		$ipc_key = ftok( RECORDER_CMD, "R" );
 		$this->msgh_r = msg_get_queue( $ipc_key );
@@ -36,36 +37,40 @@ class EpgrecMsg
 	// 指定したプロセスハンドルを子プロセスを含め終了させる
 	public function termProcess( $p )
 	{
-		if ( DEBUG ) {
+		if ( DEBUG )
+		{
 			system( "ps ax >>".$this->logfile );
 			system( "echo ------- >>".$this->logfile );
 		}
 		$status = proc_get_status( $p );
 		$cpids = $this->_getChildProcess( $status['pid'] );
-		
-		if ( DEBUG ) {
-			 foreach ( $cpids as $cpid ) {
+
+		if ( DEBUG )
+		{
+			foreach ( $cpids as $cpid )
 				system( "echo ".$cpid." >>".$this->logfile );
-			}
 			system( "echo ------- >>".$this->logfile );
 		}
-		
+
 		// 親から止める
 		@proc_terminate( $p );
 		usleep(500*1000);
 		@proc_terminate( $p );	// 2度送る
-		
-		foreach ( $cpids as $cpid ) {
+
+		foreach ( $cpids as $cpid )
+		{
 			$ret = posix_kill( $cpid, SIGTERM );		// sigterm
 			usleep(100*1000);
-			if ( ! $ret ) posix_kill( $cpid, SIGKILL );	// sigkill
+			if ( ! $ret )
+				posix_kill( $cpid, SIGKILL );	// sigkill
 		}
-		
-		if ( DEBUG ) {
+
+		if ( DEBUG )
+		{
 			system( "ps ax >>".$this->logfile );
 			system( "echo ------- >>".$this->logfile );
 		}
-		
+
 		/* プロセスがしばらく居残る場合がある
 		foreach ( $cpids as $cpid ) {
 			$ret = posix_kill( $cpid, SIGTERM );	// sigterm
@@ -86,31 +91,34 @@ class EpgrecMsg
 				1 => array( 'pipe','w' ),
 				2 => array( 'file','/dev/null','w' ),
 		);
-		
+
 		$ps = proc_open( "/bin/ps -o pid,ppid ax" , $d, $pipes );
-		do {
+		do
+		{
 			$st = proc_get_status( $ps );
 		}
 		while ( $st['running'] );
-		
+
 		// 標準出力を読む
 		$cpids = array();
-		while ( ! feof( $pipes[1] ) ) {
+		while ( ! feof( $pipes[1] ) )
+		{
 			$line = trim(fgets( $pipes[1] ));
 			$pids = preg_split( "/[\s]+/", $line );
 			if ( ! isset( $pids[1]) ) continue;
-			if ( $pids[1] == $ppid ) {
+			if ( $pids[1] == $ppid )
+			{
 				array_push( $cpids, $pids[0] );
 			}
 		}
 		fclose( $pipes[1] );
 		proc_close( $ps );
-		
-		foreach ( $cpids as $p ) {
+
+		foreach ( $cpids as $p )
+		{
 			$ccpids = $this->_getChildProcess( $p );
-			foreach ( $ccpids as $ccpid ) {
+			foreach ( $ccpids as $ccpid )
 				array_push( $cpids, $ccpid );
-			}
 		}
 		return $cpids;
 	}
