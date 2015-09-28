@@ -47,7 +47,7 @@
   <td><input type="button" value="削除" onclick="javascript:PRG.dialog('{$rec.id}','{$rec.title|escape}')" /></td>
  </tr>
 {/foreach}
-<tbody>
+</tbody>
 </table>
 {else}
 <p>現在、録画済データはありません</p>
