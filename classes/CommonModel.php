@@ -21,6 +21,19 @@ class CommonModel extends ModelBase
 	}
 
 	/**
+	 * 録画モード一覧取得
+	 * @return array
+	 */
+	public function getRecModeOptions()
+	{
+		global $RECORD_MODE;
+		$modes = array();
+		foreach ( $RECORD_MODE as $key => $val )
+			$modes[$key] = $val['mode'];
+		return modes;
+	}
+
+	/**
 	 * チューナー種別一覧取得
 	 * @return array
 	 */

@@ -68,10 +68,8 @@
 <div class="setting">
 <div class="caption">キーワード自動録画や簡易録画を行う番組の録画モードを設定します。config.phpの$RECORD_MODEに複数の録画モードを登録し、do-record.shをカスタマイズているのであれば、その録画モードを優先して利用できます。キーワード自動録画はキーワード登録時に録画モードを設定することもできます。デフォルトはモード0です。
 </div>
-<select name="autorec_mode" id="id_autorec_mode" >
-{foreach from=$record_mode item=mode name=recmode}
-  <option value="{$smarty.foreach.recmode.index}" {if $settings->autorec_mode == $smarty.foreach.recmode.index} selected="selected"{/if}>{$mode.name}</option>
-{/foreach}
+<select name="autorec_mode" id="id_autorec_mode">
+{html_options options=$record_mode selected=$settings->autorec_mode}
 </select>
 </div>
 

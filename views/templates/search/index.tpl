@@ -66,7 +66,7 @@
   <b>正規表現:</b>{if $use_regexp}使う{else}使わない{/if}
   <b>種別:</b>{$types[$sel_type]|escape}
   <b>局:</b>{$stations[$sel_station]|escape}
-  <b>カテゴリ:</b>{$category[$sel_category]|escape}
+  <b>カテゴリ:</b>{$categorys[$sel_category]|escape}
   <b>曜日:</b>{if $sel_weekofday == 7}なし{else}{$weekofdays[$sel_weekofday]|escape}曜{/if}
   <b>時間:</b>{$prgtimes[$sel_prgtime]|escape}
   <b>件数:</b>{$programs|@count}
@@ -78,11 +78,7 @@
   <input type="hidden" name="k_station" value="{$sel_station}" />
   <input type="hidden" name="k_weekofday" value={$sel_weekofday} />
   <input type="hidden" name="k_prgtime" value={$sel_prgtime} />
-  <b>録画モード:</b><select name="autorec_mode" >
-  {foreach from=$autorec_modes item=mode name=recmode}
-     <option value="{$smarty.foreach.recmode.index}" {$mode.selected} >{$mode.name}</option>
-  {/foreach}
-   </select>
+  <b>録画モード:</b>{html_options name="autorec_mode" options=$record_mode selected=$sel_recmode}
   <br><input type="submit" value="この絞り込みを自動録画キーワードに登録" />
   </form>
 </div>

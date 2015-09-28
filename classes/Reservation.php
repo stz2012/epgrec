@@ -236,35 +236,35 @@ class Reservation extends ModelBase
 			$day_of_week = array( "日","月","火","水","木","金","土" );
 			$filename = $settings->filename_format;
 			// %TITLE%	番組タイトル
-			$filename = $this->_mb_str_replace("%TITLE%", trim($title), $filename);
+			$filename = self::_mb_str_replace("%TITLE%", trim($title), $filename);
 			// %ST%	開始日時
-			$filename = $this->_mb_str_replace("%ST%",date("YmdHis", $start_time), $filename );
+			$filename = self::_mb_str_replace("%ST%",date("YmdHis", $start_time), $filename );
 			// %ET%	終了日時
-			$filename = $this->_mb_str_replace("%ET%",date("YmdHis", $end_time), $filename );
+			$filename = self::_mb_str_replace("%ET%",date("YmdHis", $end_time), $filename );
 			// %TYPE%	GR/BS/CS
-			$filename = $this->_mb_str_replace("%TYPE%",$crec->type, $filename );
+			$filename = self::_mb_str_replace("%TYPE%",$crec->type, $filename );
 			// %CH%	チャンネル番号
-			$filename = $this->_mb_str_replace("%CH%","".$crec->channel, $filename );
+			$filename = self::_mb_str_replace("%CH%","".$crec->channel, $filename );
 			// %SID%	サービスID
-			$filename = $this->_mb_str_replace("%SID%","".$crec->sid, $filename );
+			$filename = self::_mb_str_replace("%SID%","".$crec->sid, $filename );
 			// %DOW%	曜日（Sun-Mon）
-			$filename = $this->_mb_str_replace("%DOW%",date("D", $start_time), $filename );
+			$filename = self::_mb_str_replace("%DOW%",date("D", $start_time), $filename );
 			// %DOWJ%	曜日（日-土）
-			$filename = $this->_mb_str_replace("%DOWJ%",$day_of_week[(int)date("w", $start_time)], $filename );
+			$filename = self::_mb_str_replace("%DOWJ%",$day_of_week[(int)date("w", $start_time)], $filename );
 			// %YEAR%	開始年
-			$filename = $this->_mb_str_replace("%YEAR%",date("Y", $start_time), $filename );
+			$filename = self::_mb_str_replace("%YEAR%",date("Y", $start_time), $filename );
 			// %MONTH%	開始月
-			$filename = $this->_mb_str_replace("%MONTH%",date("m", $start_time), $filename );
+			$filename = self::_mb_str_replace("%MONTH%",date("m", $start_time), $filename );
 			// %DAY%	開始日
-			$filename = $this->_mb_str_replace("%DAY%",date("d", $start_time), $filename );
+			$filename = self::_mb_str_replace("%DAY%",date("d", $start_time), $filename );
 			// %HOUR%	開始時
-			$filename = $this->_mb_str_replace("%HOUR%",date("H", $start_time), $filename );
+			$filename = self::_mb_str_replace("%HOUR%",date("H", $start_time), $filename );
 			// %MIN%	開始分
-			$filename = $this->_mb_str_replace("%MIN%",date("i", $start_time), $filename );
+			$filename = self::_mb_str_replace("%MIN%",date("i", $start_time), $filename );
 			// %SEC%	開始秒
-			$filename = $this->_mb_str_replace("%SEC%",date("s", $start_time), $filename );
+			$filename = self::_mb_str_replace("%SEC%",date("s", $start_time), $filename );
 			// %DURATION%	録画時間（秒）
-			$filename = $this->_mb_str_replace("%DURATION%","".$duration, $filename );
+			$filename = self::_mb_str_replace("%DURATION%","".$duration, $filename );
 			// あると面倒くさそうな文字を全部_に
 //			$filename = preg_replace("/[ \.\/\*:<>\?\\|()\'\"&]/u","_", trim($filename) );
 			// preg_replaceがUTF-8に対応できない環境があるようなのでmb_ereg_replaceに戻す
@@ -539,14 +539,14 @@ class Reservation extends ModelBase
 
 		$sql = "SELECT a.*, b.name AS station_name,";
 		$sql .= " c.name_en AS cat, COALESCE(d.rsv_cnt, 0) AS rec";
-		$sql .= "  FROM {$this->setting->tbl_prefix}".PROGRAM_TBL." a";
-		$sql .= "  LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." b";
+		$sql .= "  FROM {$settings->tbl_prefix}".PROGRAM_TBL." a";
+		$sql .= "  LEFT JOIN {$settings->tbl_prefix}".CHANNEL_TBL." b";
 		$sql .= "    ON b.id = a.channel_id";
-		$sql .= "  LEFT JOIN {$this->setting->tbl_prefix}".CATEGORY_TBL." c";
+		$sql .= "  LEFT JOIN {$settings->tbl_prefix}".CATEGORY_TBL." c";
 		$sql .= "    ON c.id = a.category_id";
 		$sql .= "  LEFT JOIN (";
 		$sql .= "    SELECT program_id, COUNT(*) AS rsv_cnt";
-		$sql .= "      FROM {$this->setting->tbl_prefix}".RESERVE_TBL;
+		$sql .= "      FROM {$settings->tbl_prefix}".RESERVE_TBL;
 		$sql .= "  ) d";
 		$sql .= "    ON d.program_id = a.id";
 		$sql .= " WHERE starttime > :search_time";
@@ -600,7 +600,7 @@ class Reservation extends ModelBase
 	}
 
 	// マルチバイトstr_replace
-	private function _mb_str_replace($search, $replace, $target, $encoding = "UTF-8" )
+	private static function _mb_str_replace($search, $replace, $target, $encoding = "UTF-8" )
 	{
 		$notArray = !is_array($target) ? TRUE : FALSE;
 		$target = $notArray ? array($target) : $target;

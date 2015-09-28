@@ -280,11 +280,8 @@ class IndexController extends CommonController
 	 */
 	public function reserveFormAction()
 	{
-		global $RECORD_MODE;
 		if ( ! $this->request->getPost('program_id') ) exit("Error: 番組IDが指定されていません" );
 		$program_id = $this->request->getPost('program_id');
-		$record_modes = $RECORD_MODE;
-		$record_modes[(int)($this->setting->autorec_mode)]['selected'] = 'selected="selected"';
 
 		try
 		{
@@ -307,11 +304,12 @@ class IndexController extends CommonController
 			$this->view->assign( "type",         $prec->type );
 			$this->view->assign( "channel",      $prec->channel );
 			$this->view->assign( "channel_id",   $prec->channel_id );
-			$this->view->assign( "record_mode" , $record_modes );
 			$this->view->assign( "title",        $prec->title );
 			$this->view->assign( "description",  $prec->description );
 			$this->view->assign( "categorys" ,   $this->model->getCategoryOptions() );
 			$this->view->assign( "sel_category", $prec->category_id );
+			$this->view->assign( "record_mode" , $this->model->getRecModeOptions() );
+			$this->view->assign( "sel_recmode",  $this->setting->autorec_mode );
 		}
 		catch ( exception $e )
 		{

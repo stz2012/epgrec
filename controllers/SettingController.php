@@ -11,12 +11,11 @@ class SettingController extends CommonController
 	 */
 	public function indexAction()
 	{
-		global $RECORD_MODE;
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "install_path", INSTALL_PATH );
 		$this->view->assign( "sitetitle", "環境設定" );
 		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/save" );
-		$this->view->assign( "record_mode", $RECORD_MODE );
+		$this->view->assign( "record_mode", $this->model->getRecModeOptions() );
 	}
 
 	/**

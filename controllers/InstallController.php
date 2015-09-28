@@ -115,7 +115,6 @@ class InstallController extends CommonController
 	 */
 	public function step3Action()
 	{
-		global $RECORD_MODE;
 		// 設定の保存
 		$this->setting->post($this->request->getPost());
 		$this->setting->save();
@@ -161,7 +160,7 @@ class InstallController extends CommonController
 		$this->view->assign( "sitetitle", "インストールステップ３" );
 		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step4" );
 		$this->view->assign( "message" , "環境設定を行います。これらの設定はデフォルトのままでも制限付きながら動作します。" );
-		$this->view->assign( "record_mode", $RECORD_MODE );
+		$this->view->assign( "record_mode" , $this->model->getRecModeOptions() );
 	}
 
 	/**

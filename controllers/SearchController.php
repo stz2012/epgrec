@@ -11,10 +11,6 @@ class SearchController extends CommonController
 	 */
 	public function indexAction()
 	{
-		global $RECORD_MODE;
-		$autorec_modes = $RECORD_MODE;
-		$autorec_modes[(int)($this->setting->autorec_mode)]['selected'] = 'selected="selected"';
-
 		$search = "";
 		$use_regexp = 0;
 		$type = "*";
@@ -64,7 +60,8 @@ class SearchController extends CommonController
 		$this->view->assign( "weekofdays",    $this->_getWeekOfDays() );
 		$this->view->assign( "sel_weekofday", $weekofday );
 		$this->view->assign( "programs",      $programs );
-		$this->view->assign( "autorec_modes", $autorec_modes );
+		$this->view->assign( "record_mode" ,  $this->model->getRecModeOptions() );
+		$this->view->assign( "sel_recmode",   $this->setting->autorec_mode );
 	}
 
 	/**

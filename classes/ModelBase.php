@@ -13,7 +13,7 @@ class ModelBase
 	/**
 	 * @var object 接続インスタンス
 	 */
-	private static $connInst = null;
+	protected static $connInst = null;
 
 	/**
 	 * @var object PDOインスタンス
