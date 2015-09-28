@@ -41,7 +41,7 @@ try
 		$rrec->delete();
 	}
 }
-catch( exception $e )
+catch ( exception $e )
 {
 	reclog( "recomplete:: 予約テーブルのアクセスに失敗した模様", EPGREC_ERROR );
 	reclog( "recomplete:: ".$e->getMessage()."" , EPGREC_ERROR );

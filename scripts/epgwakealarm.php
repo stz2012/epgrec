@@ -35,7 +35,7 @@
 		$wakeupvars->asXML(INSTALL_PATH. "/settings/wakeupvars.xml");
 		chmod(INSTALL_PATH. "/settings/wakeupvars.xml", 0666 );
 	}
-	catch( Exception $e ) {
+	catch ( Exception $e ) {
 		//
 	}
 	exit();
@@ -55,7 +55,7 @@
 		// 次の予約録画の開始時刻は？
 		$nextreserves = DBRecord::createRecords( RESERVE_TBL, " WHERE complete <> '1' ORDER BY starttime LIMIT 10" );
 		$next_rectime = 0;
-		foreach( $nextreserves as $reserve ) {
+		foreach ( $nextreserves as $reserve ) {
 			$next_rectime = toTimestamp($reserve->starttime);
 			if( $next_rectime > time() ) break;								// 現在より未来であるか？
 		}
@@ -93,7 +93,7 @@
 		fwrite($fp , "".$waketime );
 		fclose($fp);
  	}
- 	catch( Exception $e ) {
+ 	catch ( Exception $e ) {
 		//
  	}
  	exit();

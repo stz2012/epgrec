@@ -47,7 +47,7 @@ class SearchController extends CommonController
 		$do_keyword = 0;
 		if ( ($search != "") || ($type != "*") || ($category_id != 0) || ($channel_id != 0) )
 			$do_keyword = 1;
-		$programs = $this->model->getProgramData( $search, $use_regexp, $type, $channel_id, $category_id, $prgtime, $weekofday );
+		$programs = Reservation::getSearchData( $search, $use_regexp, $type, $channel_id, $category_id, $prgtime, $weekofday );
 
 		$this->view->assign( "sitetitle",     "番組検索" );
 		$this->view->assign( "do_keyword",    $do_keyword );
@@ -95,33 +95,9 @@ class SearchController extends CommonController
 				$rec->update();
 
 				// 一気に録画予約
-				$programs = $this->model->getProgramData(
-					$rec->keyword,
-					$rec->use_regexp,
-					$rec->type,
-					$rec->channel_id,
-					$rec->category_id,
-					$rec->prgtime,
-					$rec->weekofday
-				);
-				foreach( $programs as $r )
-				{
-					try
-					{
-						if ( $r['autorec'] )
-						{
-							Reservation::simple( $r['id'], $rec->id, $rec->autorec_mode );
-							reclog( "Keyword.class::キーワードID".$rec->id."の録画が予約された");
-							usleep( 100 );		// あんまり時間を空けないのもどう?
-						}
-					}
-					catch( Exception $e )
-					{
-						// 無視
-					}
-				}
+				Reservation::keyword( $rec->id );
 			}
-			catch( Exception $e )
+			catch ( Exception $e )
 			{
 				exit( $e->getMessage() );
 			}
@@ -146,7 +122,7 @@ class SearchController extends CommonController
 				array_push( $keywords, $arr );
 			}
 		}
-		catch( Exception $e )
+		catch ( Exception $e )
 		{
 			exit( $e->getMessage() );
 		}
@@ -167,36 +143,11 @@ class SearchController extends CommonController
 				$rec = new DBRecord( KEYWORD_TBL, "id", $this->request->getPost('keyword_id') );
 
 				// 一気にキャンセル
-				$programs = $this->model->getProgramData(
-					$rec->keyword,
-					$rec->use_regexp,
-					$rec->type,
-					$rec->channel_id,
-					$rec->category_id,
-					$rec->prgtime,
-					$rec->weekofday
-				);
-				foreach( $programs as $r )
-				{
-					try
-					{
-						$reserve = new DBRecord( RESERVE_TBL, "program_id", $r['id'] );
-						// 自動予約されたもののみ削除
-						if ( $reserve->autorec )
-						{
-							Reservation::cancel( $reserve->id );
-							usleep( 100 );		// あんまり時間を空けないのもどう?
-						}
-					}
-					catch( Exception $e )
-					{
-						// 無視
-					}
-				}
+				Reservation::keyword( $rec->id, true );
 
 				$rec->delete();
 			}
-			catch( Exception $e )
+			catch ( Exception $e )
 			{
 				exit( "Error:" . $e->getMessage() );
 			}

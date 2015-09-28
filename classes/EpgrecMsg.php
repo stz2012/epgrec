@@ -44,7 +44,7 @@ class EpgrecMsg
 		$cpids = $this->_getChildProcess( $status['pid'] );
 		
 		if ( DEBUG ) {
-			 foreach( $cpids as $cpid ) {
+			 foreach ( $cpids as $cpid ) {
 				system( "echo ".$cpid." >>".$this->logfile );
 			}
 			system( "echo ------- >>".$this->logfile );
@@ -55,7 +55,7 @@ class EpgrecMsg
 		usleep(500*1000);
 		@proc_terminate( $p );	// 2度送る
 		
-		foreach( $cpids as $cpid ) {
+		foreach ( $cpids as $cpid ) {
 			$ret = posix_kill( $cpid, SIGTERM );		// sigterm
 			usleep(100*1000);
 			if ( ! $ret ) posix_kill( $cpid, SIGKILL );	// sigkill
@@ -67,7 +67,7 @@ class EpgrecMsg
 		}
 		
 		/* プロセスがしばらく居残る場合がある
-		foreach( $cpids as $cpid ) {
+		foreach ( $cpids as $cpid ) {
 			$ret = posix_kill( $cpid, SIGTERM );	// sigterm
 			if ( $ret ) return false;				// 恐らくプロセスが存在するのでエラー
 		}
@@ -91,11 +91,11 @@ class EpgrecMsg
 		do {
 			$st = proc_get_status( $ps );
 		}
-		while( $st['running'] );
+		while ( $st['running'] );
 		
 		// 標準出力を読む
 		$cpids = array();
-		while( ! feof( $pipes[1] ) ) {
+		while ( ! feof( $pipes[1] ) ) {
 			$line = trim(fgets( $pipes[1] ));
 			$pids = preg_split( "/[\s]+/", $line );
 			if ( ! isset( $pids[1]) ) continue;
@@ -106,9 +106,9 @@ class EpgrecMsg
 		fclose( $pipes[1] );
 		proc_close( $ps );
 		
-		foreach( $cpids as $p ) {
+		foreach ( $cpids as $p ) {
 			$ccpids = $this->_getChildProcess( $p );
-			foreach( $ccpids as $ccpid ) {
+			foreach ( $ccpids as $ccpid ) {
 				array_push( $cpids, $ccpid );
 			}
 		}

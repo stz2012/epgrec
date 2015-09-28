@@ -117,10 +117,10 @@ class EpgrecRpc
 		
 		try
 		{
-			$prgs = Keyword::search( $keyword, $use_regexp, $type, $category_id, $channel_id, $weekofday, $prgtime );
+			$prgs = Reservation::getSearchData( $keyword, $use_regexp, $type, $channel_id, $category_id, $prgtime, $weekofday );
 
 			$retval = array();
-			foreach( $prgs as $prg )
+			foreach ( $prgs as $prg )
 			{
 				$ch = new DBRecord( CHANNEL_TBL, "id", $prg->channel_id );
 				$num = DBRecord::countRecords( RESERVE_TBL, "WHERE program_id = '".$prg->id."'" );

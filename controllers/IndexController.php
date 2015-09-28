@@ -436,7 +436,7 @@ class IndexController extends CommonController
 					}
 				}
 			}
-			catch( Exception $e )
+			catch ( Exception $e )
 			{
 				// 無視
 			}
@@ -450,7 +450,7 @@ class IndexController extends CommonController
 				$rec = new DBRecord(PROGRAM_TBL, "id", $program_id );
 				$rec->autorec = 0;
 			}
-			catch( Exception $e )
+			catch ( Exception $e )
 			{
 				// 無視
 			}
@@ -470,7 +470,7 @@ class IndexController extends CommonController
 				}
 			}
 		}
-		catch( Exception $e )
+		catch ( Exception $e )
 		{
 			exit( "Error" . $e->getMessage() );
 		}
@@ -523,7 +523,7 @@ class IndexController extends CommonController
 				}
 			}
 		}
-		catch( Exception $e )
+		catch ( Exception $e )
 		{
 			exit("Error: ". $e->getMessage());
 		}

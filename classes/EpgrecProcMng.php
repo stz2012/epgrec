@@ -26,7 +26,7 @@ class EpgrecProcMng
 			$counter = 0;
 			if ( count($this->procQueue) != 0 )
 			{
-				foreach( $this->procQueue as $proc )
+				foreach ( $this->procQueue as $proc )
 				{
 					if ( $proc instanceof EpgrecProc && $proc->isRunning() )
 					{
@@ -38,7 +38,7 @@ class EpgrecProcMng
 			}
 			sleep(1);
 		}
-		while( $counter != 0 );
+		while ( $counter != 0 );
 	}
 }
 ?>

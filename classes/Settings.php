@@ -222,7 +222,7 @@ class Settings extends SimpleXMLElement
 	{
 		if (!is_array($POST_DATA))
 			return;
-		foreach( $POST_DATA as $key => $value )
+		foreach ( $POST_DATA as $key => $value )
 		{
 			if ( $this->exists($key) )
 				$this->{$key} = trim($value);

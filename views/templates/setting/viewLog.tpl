@@ -6,6 +6,7 @@
 </div>
 
 <div class="container">
+{if count($logs)}
 <table id="log_table" class="table">
 <thead>
  <tr>
@@ -29,5 +30,8 @@
 {/foreach}
 </tbody>
 </table>
+{else}
+<p>該当するログはありません</p>
+{/if}
 </div>
 {include file='footer.tpl'}

@@ -193,7 +193,7 @@ abstract class ControllerBase
 			// 表示
 			$this->view->display($this->templateFile);
 		}
-		catch(PDOException $e)
+		catch (PDOException $e)
 		{
 			UtilLog::writeLog($e->getMessage());
 			$this->_displayErrorPage($e);

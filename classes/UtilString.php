@@ -117,7 +117,7 @@ class UtilString
 		if (is_array($param))
 		{
 			$ret_arr = array();
-			foreach($param as $key => $value)
+			foreach ($param as $key => $value)
 			{
 				if (is_array($value))
 					$ret_arr[$key] = self::getSanitizeData($value);
@@ -140,7 +140,7 @@ class UtilString
 		if (is_array($param))
 		{
 			$ret_arr = array();
-			foreach($param as $key => $value)
+			foreach ($param as $key => $value)
 			{
 				if (is_array($value))
 					$ret_arr[$key] = self::getUnsanitizeData($value);
@@ -164,7 +164,7 @@ class UtilString
 		if (is_array($param))
 		{
 			$ret_arr = array();
-			foreach($param as $key => $value)
+			foreach ($param as $key => $value)
 			{
 				if (is_array($value))
 					$ret_arr[$key] = self::getSjisString($value, $encode);
@@ -188,7 +188,7 @@ class UtilString
 		if (is_array($param))
 		{
 			$ret_arr = array();
-			foreach($param as $key => $value)
+			foreach ($param as $key => $value)
 			{
 				if (is_array($value))
 					$ret_arr[$key] = self::getUtf8String($value, $encode);

@@ -132,28 +132,6 @@ class DBRecord extends ModelBase
 		}
 	}
 
-	// countを実行する
-	static function countRecords( $table, $options = "" )
-	{
-		$retval = 0;
-		try
-		{
-			$tbl = new self( $table );
-			$sqlstr = "SELECT COUNT(*) FROM {$tbl->__table} {$options}";
-			$stmt = $tbl->db->prepare( $sqlstr );
-			if ( $stmt->execute() === false )
-				throw new exception("COUNT失敗");
-			$arr = $stmt->fetch(PDO::FETCH_NUM);
-			$retval = $arr[0];
-			$stmt->closeCursor();
-		}
-		catch( Exception $e )
-		{
-			throw $e;
-		}
-		return $retval;
-	}
-
 	// DBRecordオブジェクトを返すstaticなメソッド
 	static function createRecords( $table, $options = "" )
 	{
@@ -171,7 +149,46 @@ class DBRecord extends ModelBase
 			}
 			$stmt->closeCursor();
 		}
-		catch( Exception $e )
+		catch ( Exception $e )
+		{
+			throw $e;
+		}
+		return $retval;
+	}
+
+	// deleteを実行する
+	static function deleteRecords( $table, $options = "" )
+	{
+		try
+		{
+			$tbl = new self( $table );
+			$sqlstr = "DELETE FROM {$tbl->__table} {$options}";
+			$stmt = $tbl->db->prepare( $sqlstr );
+			if ( $stmt->execute() === false )
+				throw new exception("DELETE失敗");
+		}
+		catch ( Exception $e )
+		{
+			throw $e;
+		}
+	}
+
+	// countを実行する
+	static function countRecords( $table, $options = "" )
+	{
+		$retval = 0;
+		try
+		{
+			$tbl = new self( $table );
+			$sqlstr = "SELECT COUNT(*) FROM {$tbl->__table} {$options}";
+			$stmt = $tbl->db->prepare( $sqlstr );
+			if ( $stmt->execute() === false )
+				throw new exception("COUNT失敗");
+			$arr = $stmt->fetch(PDO::FETCH_NUM);
+			$retval = $arr[0];
+			$stmt->closeCursor();
+		}
+		catch ( Exception $e )
 		{
 			throw $e;
 		}

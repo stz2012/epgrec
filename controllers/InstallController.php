@@ -48,7 +48,7 @@ class InstallController extends CommonController
 		$contents .= "<br />";
 		$contents .= "<p><b>ディレクトリのパーミッションチェック（707）</b></p>";
 		$contents .= "<div>";
-		foreach($rw_dirs as $value )
+		foreach ($rw_dirs as $value )
 		{
 			$contents .= $value;
 			$perm = $this->_getPerm( $value );
@@ -65,7 +65,7 @@ class InstallController extends CommonController
 		$contents .= "<br />";
 		$contents .= "<p><b>ファイルのパーミッションチェック（705）</b></p>";
 		$contents .= "<div>";
-		foreach($exec_files as $value )
+		foreach ($exec_files as $value )
 		{
 			$contents .= $value;
 			$perm = $this->_getPerm( $value );
@@ -83,7 +83,7 @@ class InstallController extends CommonController
 		$contents .= "<p><b>地上デジタルチャンネルの設定確認</b></p>";
 		$contents .= "<div>現在、config.phpでは以下のチャンネルの受信が設定されています。受信不可能なチャンネルが混ざっていると番組表が表示できません。</div>";
 		$contents .= "<ul>";
-		foreach( $GR_CHANNEL_MAP as $key => $value )
+		foreach ( $GR_CHANNEL_MAP as $key => $value )
 		{
 			$contents .= "<li>物理チャンネル".$value."</li>";
 		}
@@ -150,7 +150,7 @@ class InstallController extends CommonController
 			$rec = new DBRecord( LOG_TBL );
 			$rec->createTable( LOG_STRUCT );
 		}
-		catch( Exception $e )
+		catch ( Exception $e )
 		{
 			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step2" );
 			exit();

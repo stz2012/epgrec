@@ -28,7 +28,7 @@ if ( file_exists( $settings->temp_data ) ) @unlink( $settings->temp_data );
 // 地上波を処理する
 if ( $settings->gr_tuners != 0 )
 {
-	foreach( $GR_CHANNEL_MAP as $value )
+	foreach ( $GR_CHANNEL_MAP as $value )
 	{
 		// 録画重複チェック
 		$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < addtime( now(), '00:01:10')" );

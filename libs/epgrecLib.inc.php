@@ -13,16 +13,16 @@ $PDO_DRIVER_MAP = array(
 
 function reclog( $message , $level = EPGREC_INFO )
 {
-	
-	try {
+	try
+	{
 		$log = new DBRecord( LOG_TBL );
-		
 		$log->logtime = date("Y-m-d H:i:s");
 		$log->level = $level;
 		$log->message = $message;
 	}
-	catch( Exception $e ) {
-		// 
+	catch ( Exception $e )
+	{
+		// 無視
 	}
 }
 
@@ -86,7 +86,7 @@ function parse_epgdump_file( $type, $xmlfile )
 	}
 
 	// channel抽出
-	foreach( $xml->channel as $ch )
+	foreach ( $xml->channel as $ch )
 	{
 		$disc = $ch['id'];
 		$tmp_arr = explode('_', $ch['id']);
@@ -121,36 +121,39 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->update();
 			}
 		}
-		catch( Exception $e ) {
+		catch ( Exception $e )
+		{
 			reclog( "parse_epgdump_file::DBの接続またはチャンネルテーブルの書き込みに失敗", EPGREC_ERROR );
 		}
 	}
 	// channel 終了
 
 	// programme 取得
-	foreach( $xml->programme as $program )
+	foreach ( $xml->programme as $program )
 	{
 		$channel_rec = null;
 		$channel_disc = $program['channel']; 
 		if ( ! array_key_exists( "$channel_disc", $map ) ) continue;
 		$channel = $map["$channel_disc"];
 		
-		try {
+		try
+		{
 			$channel_rec = new DBRecord(CHANNEL_TBL, "channel_disc", "$channel_disc" );
 		}
-		catch( Exception $e ) {
+		catch ( Exception $e )
+		{
 			reclog( "parse_epgdump_file::チャンネルレコード $channel_disc が発見できない", EPGREC_ERROR );
 		}
 		if ( $channel_rec == null ) continue;	// あり得ないことが起きた
 		if ( $channel_rec->skip == 1 ) continue;	// 受信しないチャンネル
-		
+
 		$starttime = str_replace(" +0900", '', $program['start'] );
 		$endtime = str_replace( " +0900", '', $program['stop'] );
 		$title = $program->title;
 		$desc = $program->desc;
 		$cat_ja = "";
 		$cat_en = "";
-		foreach( $program->category as $cat )
+		foreach ( $program->category as $cat )
 		{
 			if ( $cat['lang'] == "ja_JP" ) $cat_ja = $cat;
 			if ( $cat['lang'] == "en" ) $cat_en = $cat;
@@ -177,7 +180,7 @@ function parse_epgdump_file( $type, $xmlfile )
 			else
 				$cat_rec = new DBRecord(CATEGORY_TBL, "category_disc" , $category_disc );
 		}
-		catch( Exception $e )
+		catch ( Exception $e )
 		{
 			reclog("parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様", EPGREC_ERROR );
 			reclog("parse_epgdump_file:: ".$e->getMessage()."" ,EPGREC_ERROR );
@@ -200,7 +203,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				{
 					// 重複発生＝おそらく放映時間の変更
 					$records = DBRecord::createRecords(PROGRAM_TBL, $options);
-					foreach( $records as $rec )
+					foreach ( $records as $rec )
 					{
 						// 自動録画予約された番組は放映時間変更と同時にいったん削除する
 						try
@@ -220,7 +223,7 @@ function parse_epgdump_file( $type, $xmlfile )
 								}
 							}
 						}
-						catch( Exception $e ) {
+						catch ( Exception $e ) {
 							// 無視
 						}
 						// 番組削除
@@ -228,7 +231,7 @@ function parse_epgdump_file( $type, $xmlfile )
 						$rec->delete();
 					}
 				}
-				// //
+				// 番組内容登録
 				$rec = new DBRecord( PROGRAM_TBL );
 				$rec->channel_disc = $channel_disc;
 				$rec->channel_id = $channel_rec->id;
@@ -262,13 +265,13 @@ function parse_epgdump_file( $type, $xmlfile )
 						$reserve->update();
 					}
 				}
-				catch( Exception $e ) {
+				catch ( Exception $e ) {
 					// 無視する
 				}
 				// 書き込む
 			}
 		}
-		catch(Exception $e)
+		catch (Exception $e)
 		{
 			reclog( "parse_epgdump_file:: プログラムテーブルに問題が生じた模様", EPGREC_ERROR );
 			reclog( "parse_epgdump_file:: ".$e->getMessage()."" , EPGREC_ERROR);
@@ -282,32 +285,27 @@ function parse_epgdump_file( $type, $xmlfile )
 function garbageClean()
 {
 	// 8日以上前のプログラムを消す
-	$arr = array();
-	$arr = DBRecord::createRecords( PROGRAM_TBL, "WHERE endtime < subdate( now(), 8 )" );
-	foreach( $arr as $val ) $val->delete();
-	
+	DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < subdate( now(), 8 )" );
+
 	// 8日以上先のデータがあれば消す
-	$arr = array();
-	$arr = DBRecord::createRecords( PROGRAM_TBL, "WHERE starttime > adddate( now(), 8 ) ");
-	foreach( $arr as $val ) $val->delete();
+	DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > adddate( now(), 8 ) ");
 
 	// 10日以上前のログを消す
-	$arr = array();
-	$arr = DBRecord::createRecords( LOG_TBL, "WHERE logtime < subdate( now(), 10 )" );
-	foreach( $arr as $val ) $val->delete();
+	DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < subdate( now(), 10 )" );
 }
 
 // キーワード自動録画予約
 function doKeywordReservation()
 {
- 	$arr = array();
-	$arr = DBRecord::createRecords( KEYWORD_TBL );
-	foreach( $arr as $val )
+ 	$recs = array();
+	$recs = DBRecord::createRecords( KEYWORD_TBL );
+	foreach ( $recs as $rec )
 	{
-		try {
-			$val->reservation();
+		try
+		{
+			Reservation::keyword( $rec->id );
 		}
-		catch( Exception $e ) {
+		catch ( Exception $e ) {
 			// 無視
 		}
 	}

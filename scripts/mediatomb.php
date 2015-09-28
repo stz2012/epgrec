@@ -10,7 +10,7 @@ try
 {
 	$recs = DBRecord::createRecords( RESERVE_TBL );
 
-	foreach( $recs as $rec )
+	foreach ( $recs as $rec )
 	{
 		// タイトル更新
 		$title = $rec->title."(".date("Y/m/d", toTimestamp($rec->starttime)).")";
@@ -23,7 +23,7 @@ try
 													array('dc_title' => $rec->path));
 	}
 }
-catch( Exception $e )
+catch ( Exception $e )
 {
 	exit( $e->getMessage() );
 }

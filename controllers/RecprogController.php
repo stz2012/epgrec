@@ -127,7 +127,7 @@ class RecprogController extends CommonController
 			echo "</ENTRY>";
 			echo "</ASX>";
 		}
-		catch(exception $e )
+		catch (exception $e )
 		{
 			exit( $e->getMessage() );
 		}
@@ -173,11 +173,11 @@ class RecprogController extends CommonController
 					echo fread( $fp, 6292 );
 					@usleep( 2000 - (int)((microtime(true) - $start) * 1000 * 1000));
 				}
-				while( connection_aborted() == 0 );
+				while ( connection_aborted() == 0 );
 			}
 			fclose($fp);
 		}
-		catch(exception $e )
+		catch (exception $e )
 		{
 			exit( $e->getMessage() );
 		}

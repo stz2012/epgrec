@@ -92,7 +92,7 @@ class EpgrecProc
 			if ( count($this->procSub) != 0 )
 			{
 				$this->isRunSub = false;
-				foreach( $this->procSub as $proc )
+				foreach ( $this->procSub as $proc )
 				{
 					if ( $proc instanceof EpgrecProc && $proc->isRunning() )
 					{

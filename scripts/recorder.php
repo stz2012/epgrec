@@ -51,7 +51,7 @@ try
 	);
 	
 	// 録画開始まで待つ
-	while( time() < $starttime )
+	while ( time() < $starttime )
 	{
 		if ( ($message = $msg_obj->recvMessage() ) != null )
 		{
@@ -81,7 +81,7 @@ try
 		reclog("recorder:: 録画ID".$rrec->id .":".$rrec->type.$rrec->channel.$rrec->title."の録画開始" );
 		// 録画完了待ち
 		$rec_cont = true;
-		while( $rec_cont )
+		while ( $rec_cont )
 		{
 			$st = proc_get_status($proch);
 			if (! $st['running'] ) $rec_cont = false;    // 録画完了
@@ -169,7 +169,7 @@ try
 	
 	$msg_obj = null;
 }
-catch( Exception $e )
+catch ( Exception $e )
 {
 	reclog( "recorder:: ".$e->getMessage(), EPGREC_ERROR );
 }
