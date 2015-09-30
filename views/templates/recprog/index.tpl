@@ -5,7 +5,7 @@
 <a href="{$home_url}index">番組表に戻る</a>
 </div>
 
-<div class="container">
+<div class="container nonborderbox">
 {if count($reservations)}
 <table id="reservation_table" class="table">
 <thead>

@@ -16,7 +16,7 @@
 </form>
 </div>
 
-<div class="container">
+<div class="container nonborderbox">
 <p>タイトルや内容をクリックすると視聴できます（ブラウザの設定でASFとVLCを関連付けている必要があります）</p>
 {if count($records)}
 <table id="reservation_table" class="table">

@@ -5,7 +5,7 @@
 <a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting">環境設定へ</a>
 </div>
 
-<div class="container">
+<div class="container nonborderbox">
 {if count($logs)}
 <table id="log_table" class="table">
 <thead>

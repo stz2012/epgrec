@@ -5,7 +5,7 @@
 <a href="{$this_class->getCurrentUri(false)}">番組検索へ</a>/<a href="{$home_url}recprog">予約一覧へ</a>
 </div>
 
-<div class="container">
+<div class="container nonborderbox">
 {if count($keywords)}
 <table id="reservation_table" class="table">
 <thead>

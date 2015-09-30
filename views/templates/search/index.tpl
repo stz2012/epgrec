@@ -20,15 +20,15 @@
 </form>
 </div>
 
-<div class="container">
+<div class="container nonborderbox">
 {if count($programs)}
 <table id="reservation_table" class="table">
 <thead>
  <tr>
   <th>種別</th>
-  <th>局名</th>
-  <th>番組開始</th>
-  <th>番組終了</th>
+  <th>ch</th>
+  <th>開始</th>
+  <th>終了</th>
   <th>タイトル</th>
   <th>内容</th>
   <th>簡易録画</th>
