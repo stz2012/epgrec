@@ -951,7 +951,8 @@ ER_sub.RECORDED = {
 			i++;
 		});
 		$('#reservation_table tr:eq(0)').remove();
-		$('#reservation_table').prepend(ER_sub.tableMultiHead2);
+		$('#reservation_table').prepend(ER_sub.tableMultiHead);
+		$('#reservation_table thead tr').append('<th class="filesize">サイズ</th>');
 	// var T0 = new Date();
 		$tgs.each(function(){
 			$tg = $(this);
@@ -1476,7 +1477,6 @@ ER_sub.tableMultiFunc = function(php) {
 	return '<div id="tblMenu"><div id="tblSel" class="vsblN"><a href="javascript:ER_sub.'+php+'.unSel()" title="選択解除" id="mutiPrgCnt" class="iconW20 ic_chkCnt">&nbsp;</a><span style="color:#888;"><span id="selCount">0</span>番組選択 </span><a href="javascript:ER_sub.'+php+'.del()" class="btnB del" id="tblMenuBtn">'+btn+'</a>'+(php=='RECORDED'?'<a href="javascript:ER_sub.RECORDED.withF()" class="ezChk'+(ASSIST_INI.recorded_delete_with_file?' checked':'')+'" id="delWithFile" style="margin-left:1em;"><span><span class="WD90">録画</span>ファイルも削除<span class="WD90">する</span></span></a>':'')+'</div><div id="tblMes">&nbsp;</div></div>';
 }
 ER_sub.tableMultiHead = '<thead><tr class="th"><th class="" style="padding:0 5px;text-align:right;">&nbsp;</th><th class="date" colspan="2">日付</th><th class="ch" ></span><span class="WD100">チャンネル</span><span class="WD100N">Ch</span></th><th class="ctg" ><span class="WD100">カテゴリ</span><span class="WD100N">Ctg</span></th><th class="title" colspan="2">番組名／内容</th></tr></thead>';
-ER_sub.tableMultiHead2 = '<thead><tr class="th"><th class="" style="padding:0 5px;text-align:right;">&nbsp;</th><th class="date" colspan="2">日付</th><th class="ch" ></span><span class="WD100">チャンネル</span><span class="WD100N">Ch</span></th><th class="ctg" ><span class="WD100">カテゴリ</span><span class="WD100N">Ctg</span></th><th class="title" colspan="2">番組名／内容</th><th class="filesize">サイズ</th></tr></thead>';
 
 ER_sub.PLST = {
 	showM : function(op){
@@ -1530,14 +1530,15 @@ ER_sub.PROGRAMTBL = {
 		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
 		ER_sub.topMenu();
 
-		//this.reMake($tgs);
+		$('#reservation_table').addClass('PRGS_LIST_TABLE').wrap('<div id="twrap0" style="position:relative;"><div id="twrap1" style="overflow:auto;background:#181818;"></div></div>');
+		this.reMake($tgs);
 
 		var $th = $('#reservation_table>thead'),
 		$tb = $('#reservation_table>tbody');
 		$('#reservation_table>thead').css({position:'absolute',top:0,left:0});
 		$('#reservation_table tr:last-child').addClass('last');
 		this.reSize();
-		$(window).resize(ER_sub.RECORDED.reSize);
+		$(window).resize(ER_sub.PROGRAMTBL.reSize);
 
 		ER_sub.FRM.selectAssist();
 		ER_sub.FRM.chTypeAssist();
@@ -1585,14 +1586,20 @@ ER_sub.PROGRAMTBL = {
 		});
 		$('#reservation_table tr:eq(0)').remove();
 		$('#reservation_table').prepend(ER_sub.tableMultiHead);
+		$('#reservation_table thead tr th:eq(0)').remove();
+		$('#reservation_table thead tr').append('<th>&nbsp;</th>');
 		$tgs.each(function(){
 			$tg = $(this);
+			$tg.addClass('rsv unSel');
 			$tds = $tg.children();
+			// Id
+			Id = $tg.attr('id').match(/resid_([0-9]*)/)[1];
+			$tg.attr('data-resid',Id);
 			// チャンネル
 			$tg0 = $tds.eq(1);
 			$tg.attr('data-chtype', $tg0.html());
 			chn = $tg.attr('data-chname');
-			$tg0.html('<div class="ch_Box">'+ (chn?ER_sub.STR.toHan(chn):ER_sub.STR.toHan($tg0.html())+' '+$tds.eq(1).html())+'</div>');
+			$tg0.html('<div class="ch_Box">'+ (chn?ER_sub.STR.toHan(chn):ER_sub.STR.toHan($tg0.html()))+'</div>');
 			// カテゴリー
 			ctg = $tg.attr('class').match(/ctg_([a-z]*)/)[1];
 			$tds.eq(2).html('<span class="ctg_Box ctg_'+ctg+'"><span class="WD100">'+ER_sub.CTGS[ctg]+'</span><span class="WD100N">'+ctg.slice(0,3)+'</span></span>');
@@ -1601,10 +1608,8 @@ ER_sub.PROGRAMTBL = {
 			$tg.attr('data-dur',dur);
 			durTotal += dur;
 			// タイトル
-			href  = $tds.eq(4).find('>a').attr('href');
-			$tds.eq(5).addClass('title').attr('colspan',2).html('<div><span class="WD70N" style="color:#A00;">●</span><span class="img WD70 rsvicon'+(keyword?' auto':'')+'"><span>'+(keyword||'●')+'</span></span><span class="WD70"><span class="WD90N spblock mode">'+mode.slice(0,3)+'</span><span class="WD90 spblock mode">'+mode+'</span></span><span class="title">' + $tds.eq(6).text() + '</span><span class="desc">' + $tds.eq(7).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+mode+'</span></div><a href="javascript:ER_sub.RESERVED._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
-			$tds.eq(6).remove();
-			$tds.eq(7).remove();
+			$tds.eq(4).addClass('title').attr('colspan',2).html('<div><span class="title">' + $tds.eq(4).text() + '</span><span class="desc">' + $tds.eq(5).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+mode+'</span></div><a href="javascript:ER_sub.PROGRAMTBL._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
+			$tds.eq(5).remove();
 
 			// 日付
 			$tg0 = $tds.eq(0).addClass('date');
@@ -1643,8 +1648,13 @@ ER_sub.PROGRAMTBL = {
 			}
 			$tg0.html((LD==DSP?'<span class="vsblN hv" >':'')+Dstr + DFn.Day(DSP,'<span class="WD70">（</span>', '<span class="WD70">）</span>')+(LD==DSP?'</span>':''));
 			LD = DSP;
+			$tds.eq(3).remove();
 		});
-	}
+	},
+	_more : function(Id) {
+		$tg = $('#reservation_table tr[data-resid='+Id+']');
+		$tg.toggleClass('moreOpen').toggleClass('unSel');
+	},
 }
 // =============== チャンネルフォームアシスト
 ER_sub.FRM ={
