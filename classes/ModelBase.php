@@ -40,7 +40,7 @@ class ModelBase
 		}
 		else
 		{
-			if (self::$connInfo['type'] == 'mysql')
+			if (self::getDbType() == 'mysql')
 			{
 				$dsn = sprintf(
 					'mysql:host=%s;port=%s;dbname=%s',
@@ -59,6 +59,7 @@ class ModelBase
 				}
 				catch (Exception $e)
 				{
+					UtilLog::writeLog("PDOインスタンスの生成失敗: ".print_r($e, true));
 					return;
 				}
 				// クエリのバッファリングを強制する
@@ -66,28 +67,27 @@ class ModelBase
 				// 自動コミットをOff
 				//$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
 			}
-			else if (self::$connInfo['type'] == 'pgsql')
+			else if (self::getDbType() == 'pgsql')
 			{
 				$dsn = sprintf(
-					'pgsql:host=%s;port=%s;dbname=%s;username=%s;password=%s',
+					'pgsql:host=%s;port=%s;dbname=%s',
 					self::$connInfo['host'],
 					self::$connInfo['port'],
-					self::$connInfo['dbname'],
-					self::$connInfo['dbuser'],
-					self::$connInfo['dbpass']
+					self::$connInfo['dbname']
 				);
 				try
 				{
-					$this->db = new PDO($dsn);
+					$this->db = new PDO($dsn, self::$connInfo['dbuser'], self::$connInfo['dbpass']);
 				}
 				catch (Exception $e)
 				{
+					UtilLog::writeLog("PDOインスタンスの生成失敗: ".print_r($e, true));
 					return;
 				}
 				// 自動コミットをOff
 				//$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
 			}
-			else if (self::$connInfo['type'] == 'sqlite')
+			else if (self::getDbType() == 'sqlite')
 			{
 				$dsn = sprintf(
 					'sqlite:%s',
@@ -99,6 +99,7 @@ class ModelBase
 				}
 				catch (Exception $e)
 				{
+					UtilLog::writeLog("PDOインスタンスの生成失敗: ".print_r($e, true));
 					return;
 				}
 			}
@@ -132,6 +133,15 @@ class ModelBase
 	public static function isConnect()
 	{
 		return (self::$connInst != null);
+	}
+
+	/**
+	 * DB種別を取得
+	 * @return string
+	 */
+	public static function getDbType()
+	{
+		return self::$connInfo['type'];
 	}
 
 	/**

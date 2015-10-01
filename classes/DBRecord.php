@@ -46,8 +46,14 @@ class DBRecord extends ModelBase
 
 	function createTable( $tblstring )
 	{
-		$sqlstr = "CREATE TABLE IF NOT EXISTS {$this->__table}";
-		$sqlstr .= " ({$tblstring}) DEFAULT CHARACTER SET 'utf8'";
+		$sqlstr = "CREATE TABLE";
+		if (self::getDbType() == 'mysql')
+		{
+			$sqlstr .= " IF NOT EXISTS {$this->__table}";
+			$sqlstr .= " ({$tblstring}) DEFAULT CHARACTER SET 'utf8'";
+		}
+		else
+			$sqlstr .= " {$this->__table} ({$tblstring})";
 		$stmt = $this->db->prepare( $sqlstr );
 		if ( $stmt->execute() === false )
 			throw new exception( "createTable:テーブル作成失敗" );

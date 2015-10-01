@@ -20,7 +20,7 @@ class CommonController extends ControllerBase
 			$this->setNextPage('install');
 			return;
 		}
-		else if ( ! ModelBase::isConnect() )
+		else if ( ! ModelBase::isConnect()  && $this->getControllerName() != 'install')
 		{
 			$this->setNextPage('install', 'step2');
 			return;
