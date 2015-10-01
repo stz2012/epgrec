@@ -261,7 +261,7 @@ class DBRecord extends ModelBase
 				$sql .= " name varchar(512) not null default 'none',";					// 表示名
 				$sql .= " channel_disc varchar(128) not null default 'none',";			// 識別用hash
 				$sql .= " sid varchar(64) not null default 'hd',";						// サービスID用02/23/2010追加
-				$sql .= " skip boolean not null default '0'";							// チャンネルスキップ用03/13/2010追加
+				$sql .= " skip boolean not null default '0',";							// チャンネルスキップ用03/13/2010追加
 				$sql .= " primary key (id)";
 				break;
 
