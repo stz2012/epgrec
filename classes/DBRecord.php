@@ -224,8 +224,8 @@ class DBRecord extends ModelBase
 				$sql .= " title varchar(512) not null default 'none',";					// タイトル
 				$sql .= " description varchar(512) not null default 'none',";			// 説明 text->varchar
 				$sql .= " category_id integer not null default '0',";					// カテゴリID
-				$sql .= " starttime datetime not null default '1970-01-01 00:00:00',";	// 開始時刻
-				$sql .= " endtime datetime not null default '1970-01-01 00:00:00',";	// 終了時刻
+				$sql .= " starttime timestamp not null default '0',";					// 開始時刻
+				$sql .= " endtime timestamp not null default '0',";						// 終了時刻
 				$sql .= " job integer not null default '0',";							// job番号
 				$sql .= " path blob default null,";										// 録画ファイルパス
 				$sql .= " complete boolean not null default '0',";						// 完了フラグ
@@ -246,8 +246,8 @@ class DBRecord extends ModelBase
 				$sql .= " title varchar(512) not null default 'none',";					// タイトル
 				$sql .= " description varchar(512) not null default 'none',";			// 説明 text->varchar
 				$sql .= " category_id integer not null default '0',";					// カテゴリID
-				$sql .= " starttime datetime not null default '1970-01-01 00:00:00',";	// 開始時刻
-				$sql .= " endtime datetime not null default '1970-01-01 00:00:00',";	// 終了時刻
+				$sql .= " starttime timestamp not null default '0',";					// 開始時刻
+				$sql .= " endtime timestamp not null default '0',";						// 終了時刻
 				$sql .= " program_disc varchar(128) not null default 'none',";	 		// 識別用hash
 				$sql .= " autorec boolean not null default '1',";						// 自動録画有効無効
 				$sql .= " primary key (id)";
@@ -270,7 +270,7 @@ class DBRecord extends ModelBase
 				$sql .= " id {$auto_inc_type},";										// ID
 				$sql .= " name_jp varchar(512) not null default 'none',";				// 表示名
 				$sql .= " name_en varchar(512) not null default 'none',";				// 同上
-				$sql .= " category_disc varchar(128) not null default 'none',"			// 識別用hash
+				$sql .= " category_disc varchar(128) not null default 'none',";			// 識別用hash
 				$sql .= " primary key (id)";
 				break;
 
@@ -291,7 +291,7 @@ class DBRecord extends ModelBase
 			// ログテーブル
 			case self::$__settings->tbl_prefix.LOG_TBL:
 				$sql .= " id {$auto_inc_type},";										// ID
-				$sql .= " logtime  datetime not null default '1970-01-01 00:00:00',";	// 記録日時
+				$sql .= " logtime timestamp not null default '0',";						// 記録日時
 				$sql .= " level integer not null default '0',";							// エラーレベル
 				$sql .= " message varchar(512) not null default '',";					// メッセージ
 				$sql .= " primary key (id)";
