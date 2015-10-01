@@ -130,27 +130,27 @@ class InstallController extends CommonController
 		// DBテーブルの作成
 		try
 		{
-			include 'tableStruct.inc.php';
 			$rec = new DBRecord( RESERVE_TBL );
-			$rec->createTable( RESERVE_STRUCT );
+			$rec->createTable();
 
 			$rec = new DBRecord( PROGRAM_TBL );
-			$rec->createTable( PROGRAM_STRUCT );
+			$rec->createTable();
 
 			$rec = new DBRecord( CHANNEL_TBL );
-			$rec->createTable( CHANNEL_STRUCT );
+			$rec->createTable();
 
 			$rec = new DBRecord( CATEGORY_TBL );
-			$rec->createTable( CATEGORY_STRUCT );
+			$rec->createTable();
 
 			$rec = new DBRecord( KEYWORD_TBL );
-			$rec->createTable( KEYWORD_STRUCT );
+			$rec->createTable();
 
 			$rec = new DBRecord( LOG_TBL );
-			$rec->createTable( LOG_STRUCT );
+			$rec->createTable();
 		}
 		catch ( Exception $e )
 		{
+			UtilLog::writeLog("テーブルの作成失敗: ".print_r($e, true));
 			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step2" );
 			exit();
 		}

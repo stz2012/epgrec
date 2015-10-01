@@ -29,9 +29,9 @@ class DBRecord extends ModelBase
 		}
 		else
 		{
-			$sqlstr = "SELECT * FROM {$this->__table}";
-			$sqlstr .= " WHERE {$property} = ?";
-			$stmt = $this->db->prepare( $sqlstr );
+			$sql = "SELECT * FROM {$this->__table}";
+			$sql .= " WHERE {$property} = ?";
+			$stmt = $this->db->prepare( $sql );
 			$param = $this->defineParamType($value);
 			$stmt->bindValue(1, $value, $param);
 			if ($stmt->execute() !== false)
@@ -44,29 +44,30 @@ class DBRecord extends ModelBase
 		}
 	}
 
-	function createTable( $tblstring )
+	function createTable()
 	{
-		$sqlstr = "CREATE TABLE";
+		$sql = "CREATE TABLE";
 		if (self::getDbType() == 'mysql')
 		{
-			$sqlstr .= " IF NOT EXISTS {$this->__table}";
-			$sqlstr .= " ({$tblstring}) DEFAULT CHARACTER SET 'utf8'";
+			$sql .= " IF NOT EXISTS {$this->__table}";
+			$sql .= " ({$this->_getTableStruct()}) DEFAULT CHARACTER SET 'utf8'";
 		}
 		else
-			$sqlstr .= " {$this->__table} ({$tblstring})";
-		$stmt = $this->db->prepare( $sqlstr );
+			$sql .= " {$this->__table} ({$this->_getTableStruct()})";
+		$stmt = $this->db->prepare( $sql );
 		if ( $stmt->execute() === false )
 			throw new exception( "createTable:テーブル作成失敗" );
 		$stmt->closeCursor();
+		$this->_createIndex();
 	}
 
 	function fetch_array( $property , $value, $options = null )
 	{
 		$retval = array();
-		$sqlstr = "SELECT * FROM {$this->__table}";
-		$sqlstr .= " WHERE {$property} = ?";
-		if ( $options != null ) $sqlstr .= "AND {$options}";
-		$stmt = $this->db->prepare( $sqlstr );
+		$sql = "SELECT * FROM {$this->__table}";
+		$sql .= " WHERE {$property} = ?";
+		if ( $options != null ) $sql .= "AND {$options}";
+		$stmt = $this->db->prepare( $sql );
 		$param = $this->defineParamType($value);
 		$stmt->bindValue(1, $value, $param);
 		if ($stmt->execute() !== false)
@@ -81,17 +82,17 @@ class DBRecord extends ModelBase
 		// id = 0なら空の新規レコード作成
 		if ( $this->__id == 0 )
 		{
-			$sqlstr = "INSERT INTO ".$this->__table." VALUES ( )";
-			$stmt = $this->db->prepare( $sqlstr );
+			$sql = "INSERT INTO ".$this->__table." VALUES ( )";
+			$stmt = $this->db->prepare( $sql );
 			if ($stmt->execute() !== false)
 			{
 				$this->__id = $this->db->lastInsertId();
 				$stmt->closeCursor();
 				
 				// $this->__record_data読み出し 
-				$sqlstr = "SELECT * FROM {$this->__table}";
-				$sqlstr .= " WHERE id = ?";
-				$stmt = $this->db->prepare( $sqlstr );
+				$sql = "SELECT * FROM {$this->__table}";
+				$sql .= " WHERE id = ?";
+				$stmt = $this->db->prepare( $sql );
 				$stmt->bindValue(1, $this->__id, PDO::PARAM_INT);
 				if ($stmt->execute() !== false)
 					$this->__record_data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -145,8 +146,8 @@ class DBRecord extends ModelBase
 		try
 		{
 			$tbl = new self( $table );
-			$sqlstr = "SELECT * FROM {$tbl->__table} {$options}";
-			$stmt = $tbl->db->prepare( $sqlstr );
+			$sql = "SELECT * FROM {$tbl->__table} {$options}";
+			$stmt = $tbl->db->prepare( $sql );
 			if ( $stmt->execute() === false )
 				throw new exception("レコードが存在しません");
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
@@ -168,8 +169,8 @@ class DBRecord extends ModelBase
 		try
 		{
 			$tbl = new self( $table );
-			$sqlstr = "DELETE FROM {$tbl->__table} {$options}";
-			$stmt = $tbl->db->prepare( $sqlstr );
+			$sql = "DELETE FROM {$tbl->__table} {$options}";
+			$stmt = $tbl->db->prepare( $sql );
 			if ( $stmt->execute() === false )
 				throw new exception("DELETE失敗");
 		}
@@ -186,8 +187,8 @@ class DBRecord extends ModelBase
 		try
 		{
 			$tbl = new self( $table );
-			$sqlstr = "SELECT COUNT(*) FROM {$tbl->__table} {$options}";
-			$stmt = $tbl->db->prepare( $sqlstr );
+			$sql = "SELECT COUNT(*) FROM {$tbl->__table} {$options}";
+			$stmt = $tbl->db->prepare( $sql );
 			if ( $stmt->execute() === false )
 				throw new exception("COUNT失敗");
 			$arr = $stmt->fetch(PDO::FETCH_NUM);
@@ -199,6 +200,138 @@ class DBRecord extends ModelBase
 			throw $e;
 		}
 		return $retval;
+	}
+
+	private function _getTableStruct()
+	{
+		$sql = '';
+		if (self::getDbType() == 'mysql')
+			$auto_inc_type = 'integer not null auto_increment';
+		else if (self::getDbType() == 'sqlite')
+			$auto_inc_type = 'integer not null autoincrement';
+		else
+			$auto_inc_type = 'serial not null';
+		switch ($this->__table)
+		{
+			// 予約テーブル
+			case self::$__settings->tbl_prefix.RESERVE_TBL:
+				$sql .= " id {$auto_inc_type},";										// ID
+				$sql .= " channel_disc varchar(128) not null default 'none',";			// channel disc
+				$sql .= " channel_id integer not null  default '0',";					// channel ID
+				$sql .= " program_id integer not null default '0',";					// Program ID
+				$sql .= " type varchar(8) not null default 'GR',";						// 種別（GR/BS/CS）
+				$sql .= " channel varchar(10) not null default '0',";					// チャンネル
+				$sql .= " title varchar(512) not null default 'none',";					// タイトル
+				$sql .= " description varchar(512) not null default 'none',";			// 説明 text->varchar
+				$sql .= " category_id integer not null default '0',";					// カテゴリID
+				$sql .= " starttime datetime not null default '1970-01-01 00:00:00',";	// 開始時刻
+				$sql .= " endtime datetime not null default '1970-01-01 00:00:00',";	// 終了時刻
+				$sql .= " job integer not null default '0',";							// job番号
+				$sql .= " path blob default null,";										// 録画ファイルパス
+				$sql .= " complete boolean not null default '0',";						// 完了フラグ
+				$sql .= " reserve_disc varchar(128) not null default 'none',";			// 識別用hash
+				$sql .= " autorec integer not null default '0',";						// キーワードID
+				$sql .= " mode integer not null default '0',";							// 録画モード
+				$sql .= " dirty boolean not null default '0',";							// ダーティフラグ
+				$sql .= " primary key (id)";
+				break;
+
+			// 番組表テーブル
+			case self::$__settings->tbl_prefix.PROGRAM_TBL:
+				$sql .= " id {$auto_inc_type},";										// ID
+				$sql .= " channel_disc varchar(128) not null default 'none',";			// channel disc
+				$sql .= " channel_id integer not null default '0',";					// channel ID
+				$sql .= " type varchar(8) not null default 'GR',";						// 種別（GR/BS/CS）
+				$sql .= " channel varchar(10) not null default '0',";					// チャンネル
+				$sql .= " title varchar(512) not null default 'none',";					// タイトル
+				$sql .= " description varchar(512) not null default 'none',";			// 説明 text->varchar
+				$sql .= " category_id integer not null default '0',";					// カテゴリID
+				$sql .= " starttime datetime not null default '1970-01-01 00:00:00',";	// 開始時刻
+				$sql .= " endtime datetime not null default '1970-01-01 00:00:00',";	// 終了時刻
+				$sql .= " program_disc varchar(128) not null default 'none',";	 		// 識別用hash
+				$sql .= " autorec boolean not null default '1',";						// 自動録画有効無効
+				$sql .= " primary key (id)";
+				break;
+
+			// チャンネルテーブル
+			case self::$__settings->tbl_prefix.CHANNEL_TBL:
+				$sql .= " id {$auto_inc_type},";										// ID
+				$sql .= " type varchar(8) not null default 'GR',";						// 種別
+				$sql .= " channel varchar(10) not null default '0',";					// channel
+				$sql .= " name varchar(512) not null default 'none',";					// 表示名
+				$sql .= " channel_disc varchar(128) not null default 'none',";			// 識別用hash
+				$sql .= " sid varchar(64) not null default 'hd',";						// サービスID用02/23/2010追加
+				$sql .= " skip boolean not null default '0'";							// チャンネルスキップ用03/13/2010追加
+				$sql .= " primary key (id)";
+				break;
+
+			// カテゴリテーブル
+			case self::$__settings->tbl_prefix.CATEGORY_TBL:
+				$sql .= " id {$auto_inc_type},";										// ID
+				$sql .= " name_jp varchar(512) not null default 'none',";				// 表示名
+				$sql .= " name_en varchar(512) not null default 'none',";				// 同上
+				$sql .= " category_disc varchar(128) not null default 'none',"			// 識別用hash
+				$sql .= " primary key (id)";
+				break;
+
+			// キーワードテーブル
+			case self::$__settings->tbl_prefix.KEYWORD_TBL:
+				$sql .= " id {$auto_inc_type},";										// ID
+				$sql .= " keyword varchar(512) not null default '*',";					// 表示名
+				$sql .= " type varchar(8) not null default '*',";						// 種別
+				$sql .= " channel_id integer not null default '0',";					// channel ID
+				$sql .= " category_id integer not null default '0',";					// カテゴリID
+				$sql .= " use_regexp boolean not null default '0',";					// 正規表現を使用するなら1
+				$sql .= " autorec_mode integer not null default '0',";					// 自動録画のモード02/23/2010追加
+				$sql .= " weekofday varchar(1) not null default '7',";					// 曜日、同追加
+				$sql .= " prgtime varchar(2) not null default '24',";					// 時間　03/13/2010追加
+				$sql .= " primary key (id)";
+				break;
+
+			// ログテーブル
+			case self::$__settings->tbl_prefix.LOG_TBL:
+				$sql .= " id {$auto_inc_type},";										// ID
+				$sql .= " logtime  datetime not null default '1970-01-01 00:00:00',";	// 記録日時
+				$sql .= " level integer not null default '0',";							// エラーレベル
+				$sql .= " message varchar(512) not null default '',";					// メッセージ
+				$sql .= " primary key (id)";
+				break;
+		}
+		return $sql;
+	}
+
+	private function _createIndex()
+	{
+		switch ($this->__table)
+		{
+			// 予約テーブル
+			case self::$__settings->tbl_prefix.RESERVE_TBL:
+				$sql = "CREATE INDEX reserve_ch_idx ON {$this->__table}(channel_disc)";
+				$stmt = $this->db->prepare( $sql );
+				if ( $stmt->execute() === false )
+					throw new exception( "createIndex:インデックス作成失敗" );
+				$stmt->closeCursor();
+				$sql = "CREATE INDEX reserve_st_idx ON {$this->__table}(starttime)";
+				$stmt = $this->db->prepare( $sql );
+				if ( $stmt->execute() === false )
+					throw new exception( "createIndex:インデックス作成失敗" );
+				$stmt->closeCursor();
+				break;
+
+			// 番組表テーブル
+			case self::$__settings->tbl_prefix.PROGRAM_TBL:
+				$sql = "CREATE INDEX program_ch_idx ON {$this->__table}(channel_disc)";
+				$stmt = $this->db->prepare( $sql );
+				if ( $stmt->execute() === false )
+					throw new exception( "createIndex:インデックス作成失敗" );
+				$stmt->closeCursor();
+				$sql = "CREATE INDEX program_st_idx ON {$this->__table}(starttime)";
+				$stmt = $this->db->prepare( $sql );
+				if ( $stmt->execute() === false )
+					throw new exception( "createIndex:インデックス作成失敗" );
+				$stmt->closeCursor();
+				break;
+		}
 	}
 
 	// デストラクタ
