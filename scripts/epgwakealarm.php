@@ -20,8 +20,8 @@
   if( strcasecmp( $argv[1], "start" ) == 0 ) {
 	try {
 		// 規定時間以内に予約はあるか
-		$recstart_time = intval($settings->wakeup_before) + 5;
-		$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL {$recstart_time} MINUTE)" );
+		$recstart_time = "00:".sprintf("%02d", intval($settings->wakeup_before) + 5).":00";
+		$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + CAST('{$recstart_time}' AS TIME))" );
 		if( $count > 0 ) {
 			$wakeupvars->reason = "reserve";
 		}

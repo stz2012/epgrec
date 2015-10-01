@@ -326,7 +326,7 @@ function doPowerReduce($isGetEpg = false)
 			if ( strcasecmp( "getepg", $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
-				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < addtime( now(), '01:00:00') AND endtime > now()" );
+				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + CAST('01:00:00' AS TIME)) AND endtime > now()" );
 				if ( $count != 0 )
 				{	// 録画があるなら録画起動にして終了
 					$wakeupvars->reason = "reserve";
@@ -339,7 +339,7 @@ function doPowerReduce($isGetEpg = false)
 			else if ( strcasecmp( "reserve", $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
-				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < addtime( now(), '01:00:00') AND endtime > now()" );
+				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + CAST('01:00:00' AS TIME)) AND endtime > now()" );
 				if ( $count != 0 ) {	// 録画があるなら何もしない
 					exit();
 				}
