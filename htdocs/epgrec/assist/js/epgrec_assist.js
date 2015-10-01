@@ -1,7 +1,7 @@
 /*
  * 	epgrec assist
  *
- *		version 0.1.3.0
+ *		version 0.1.3.0 customized by stz2012
  *		2:43 2012/08/15
  *
  *		Auther : osamu / atelier TRUMPHOUSE
@@ -29,6 +29,15 @@ ASSIST_INI.index = 1;
 //	単位は秒、0で更新しない
 ASSIST_INI.index_nowbar_live = 10;
 
+// 番組検索で有効にする
+ASSIST_INI.search = 1;
+
+// キーワードで有効にする
+ASSIST_INI.keyword = 1;
+
+// 録画予約一覧で有効にする
+ASSIST_INI.reserved = 1;
+
 // 録画済一覧で有効にする
 ASSIST_INI.recorded = 1;
 // 録画済一覧、データ削除時ファイルも削除
@@ -36,6 +45,9 @@ ASSIST_INI.recorded_delete_with_file = 1;
 
 // 予約、録画済み一覧で番組選択後、選択された番組のみ表示
 ASSIST_INI.selv = 0;
+
+// 環境設定で有効にする
+ASSIST_INI.envsetting = 1;
 
 // ディスク残量を表示（ajax ver）
 ASSIST_INI.ext_diskinfo = 1;
@@ -876,7 +888,8 @@ ER_sub.PROGRAMTBL = {
 		// タイトル、リンク等を再構成
 		$('body>div:eq(0)>p').hide();
 		tmp = $('body>div:eq(1)>form');
-		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
+		tmp.parent().removeClass('container');
+		tmp.parent().addClass('fmBox').wrap('<div class="container" />').wrap('<div id="fmWrap"/>');
 		ER_sub.topMenu();
 
 		this.reMake($tgs);
@@ -985,7 +998,8 @@ ER_sub.RESERVED = {
 		// タイトル、リンク等を再構成
 		$('body>div:eq(0)>p').hide();
 		tmp = $('body>div:eq(1)>form');
-		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
+		tmp.parent().removeClass('container');
+		tmp.parent().addClass('fmBox').wrap('<div class="container" />').wrap('<div id="fmWrap"/>');
 		ER_sub.topMenu();
 
 		this.reMake($tgs);
@@ -1192,7 +1206,8 @@ ER_sub.RECORDED = {
 		// タイトル、リンク等を再構成
 		$('body>div:eq(0)>p').hide();
 		tmp = $('body>div:eq(1)>form');
-		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
+		tmp.parent().removeClass('container');
+		tmp.parent().addClass('fmBox').wrap('<div class="container" />').wrap('<div id="fmWrap"/>');
 		ER_sub.topMenu();
 		// 「タイトルや内容をクリックす…」を隠す
 		if ($('#reservation_table').length){
@@ -1415,7 +1430,7 @@ ER_sub.SETTING = {
 		// タイトル、リンク等を再構成
 		var tmp = $('body>div:eq(0)>p');
 		tmp.insertAfter($('body>div:eq(0)'));
-		tmp.wrap('<div class="container" />').wrap('<div class="fmBox" style="float:right;" />').wrap('<div id="fmWrap" />');
+		tmp.wrap('<div id="fmWrap" class="container" />').wrap('<div class="fmBox" style="float:right;" />');
 		ER_sub.topMenu();
 
 		if ($('#log_table').length) {
@@ -1890,16 +1905,25 @@ ASSIST_INI.index_new_top = 1;
 //	単位は秒、0で更新しない
 ASSIST_INI.index_nowbar_live = 10;
 
+// 番組検索で有効にする
+ASSIST_INI.search = 1;
+
+// キーワードで有効にする
+ASSIST_INI.keyword = 1;
+
+// 録画予約一覧で有効にする
+ASSIST_INI.reserved = 1;
+
 // 録画済み一覧で有効にする
 ASSIST_INI.recorded = 1;
 // 録画済み一覧、データ削除時ファイルも削除
 ASSIST_INI.recorded_delete_with_file = 1;
 
-// 録画予約一覧で有効にする
-ASSIST_INI.reserved = 1;
-
 // 予約、録画済み一覧で番組選択後、選択された番組のみ表示
 ASSIST_INI.selv = 0;
+
+// 環境設定で有効にする
+ASSIST_INI.envsetting = 1;
 
 // ディスク残量を表示（ajax ver）
 ASSIST_INI.ext_diskinfo = 1;
@@ -1927,11 +1951,11 @@ $(function(){
 		break;
 	case 'search' :
 		ER_sub.__PAGE = 'programtable';
-		ER_sub.PROGRAMTBL.ini();
+		if ( ASSIST_INI.search ) {ER_sub.PROGRAMTBL.ini();}
 		break;
 	case 'search_keyword' :
 		ER_sub.__PAGE = 'keywordtable';
-		ER_sub.KEYWORD.ini();
+		if ( ASSIST_INI.keyword ) {ER_sub.KEYWORD.ini();}
 		break;
 	case 'recprog' :
 	case 'recprog_index' :
@@ -1947,7 +1971,7 @@ $(function(){
 	case 'setting_system' :
 	case 'setting_viewlog' :
 		ER_sub.__PAGE = 'envsetting';
-		ER_sub.SETTING.ini();
+		if ( ASSIST_INI.envsetting ) {ER_sub.SETTING.ini();}
 		break;
 	}
 });
