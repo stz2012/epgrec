@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<a href="{$home_url}index">番組表に戻る</a>/<a href="{$this_class->getCurrentUri(false)}/keyword">自動録画キーワード管理へ</a>
+<p><a href="{$home_url}index">番組表に戻る</a>/<a href="{$this_class->getCurrentUri(false)}/keyword">自動録画キーワード管理へ</a></p>
 </div>
 
 <div class="container">
@@ -65,7 +65,7 @@
   <b>語句:</b>{$search|escape}
   <b>正規表現:</b>{if $use_regexp}使う{else}使わない{/if}
   <b>種別:</b>{$types[$sel_type]|escape}
-  <b>局:</b>{$stations[$sel_station]|escape}
+  <b>ch:</b>{$stations[$sel_station]|escape}
   <b>カテゴリ:</b>{$categorys[$sel_category]|escape}
   <b>曜日:</b>{if $sel_weekofday == 7}なし{else}{$weekofdays[$sel_weekofday]|escape}曜{/if}
   <b>時間:</b>{$prgtimes[$sel_prgtime]|escape}

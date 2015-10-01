@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<a href="{$this_class->getCurrentUri(false)}">番組検索へ</a>/<a href="{$home_url}recprog">予約一覧へ</a>
+<p><a href="{$this_class->getCurrentUri(false)}">番組検索へ</a>/<a href="{$home_url}recprog">予約一覧へ</a></p>
 </div>
 
 <div class="container nonborderbox">
@@ -14,7 +14,7 @@
   <th>検索語句</th>
   <th>正規表現</th>
   <th>種別</th>
-  <th>局</th>
+  <th>ch</th>
   <th>カテゴリ</th>
   <th>曜日</th>
   <th>開始時</ht>

@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting">環境設定へ</a>
+<p><a href="{$home_url}index">設定せずに番組表に戻る</a> / <a href="{$home_url}setting">環境設定へ</a> / <a href="{$home_url}setting/system">システム設定へ</a></p>
 </div>
 
 <div class="container nonborderbox">
@@ -34,4 +34,5 @@
 <p>該当するログはありません</p>
 {/if}
 </div>
+{include file='INISet.tpl'}
 {include file='footer.tpl'}

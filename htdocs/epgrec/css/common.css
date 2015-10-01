@@ -1,4 +1,5 @@
 a {text-decoration:none;}
+input, select {color:#444;}
 
 .bold {font-weight:bold;}
 .small {font-size:75%;}
@@ -167,7 +168,7 @@ table#log_table td {
     text-align: center;
 }
 
-table#log_table td.errorlevel0 {background-color: #FFFFFF;}
+table#log_table td.errorlevel0 {background-color: #FFF;}
 table#log_table td.errorlevel1 {background-color: yellow;}
 table#log_table td.errorlevel2 {background-color: red;}
 

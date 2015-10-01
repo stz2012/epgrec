@@ -5,7 +5,7 @@
 {if $message|default:'' != ''}
 {$message}
 {else}
-<a href="{$home_url}index">設定せずに番組表に戻る</a>/<a href="{$home_url}setting">環境設定へ</a>
+<p><a href="{$home_url}index">設定せずに番組表に戻る</a> / <a href="{$home_url}setting">環境設定へ</a> / <a href="{$home_url}setting/viewLog">動作ログを見る</a></p>
 {/if}
 </div>
 
@@ -145,6 +145,7 @@
 <input type="submit" value="設定を保存する" id="system_setting-submit" />
 </form>
 </div>
+{include file='INISet.tpl'}
 <script type="text/javascript" src="{$home_url}js/setting.js"></script>
 <script type="text/javascript">
 <!--

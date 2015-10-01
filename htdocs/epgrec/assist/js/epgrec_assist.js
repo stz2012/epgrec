@@ -13,7 +13,6 @@
 var ASSIST_INI = ASSIST_INI || {};
 
 $(function(){
-
 // ユーザー設定　================= ここから
 
 // epgrec_assistを有効にする
@@ -77,15 +76,11 @@ ASSIST_INI.ext_diskinfo_rsvBar_bitrates = {GR : 16.85 , BS : 26.1 ,CS : 26.1};
 	};
 })(jQuery);
 
-
 var ER_sub = ER_sub || {};
-
 ER_sub.__PAGE = 'index';
-
 ER_sub.INI = function() {
-	ER_sub.INDEX.ini();
+	$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.basic + ER_sub.STYLES.md_screen + ' --></style>');
 }
-
 
 // 共通メニュー
 ER_sub.topMenu = function(tg) {
@@ -98,6 +93,7 @@ ER_sub.topMenu = function(tg) {
 	$('#topMenu > a[data-page='+ER_sub.__PAGE+']').addClass('selected');
 };
 
+// CSSカスタマイズ
 ER_sub.STYLES = {
 	basic : 'body {background:#222;color:#EEE;padding:0;}.vsblN {visibility:hidden}.unSel{ -moz-user-select: none;-khtml-user-select: none;-webkit-user-select: none;-ms-user-select:none;user-select: none;cursor:default;}.btnB{color:#EEE;background:#333;display:inline-block;padding:0.6em 1.2em;margin:0.4em;letter-spacing:2px;line-height:1em;border:1px solid #666;border-radius:0.6em;}.btnB:hover{color:#FFF;background:#222;}'+
 	'.ezBtn{display:inline-block;padding:0.4em 0.8em !important;border-radius:0.6em;}.ezBtn.uTri:after{content:\'\';display:inline-block;overflow:hidden;position:relative;margin:0 0.2em;top:3px;width:0px;height:0px;border:5px solid transparent;border-top-color:#EEE;padding:0;}.ezBtn.selected{background:#27D;color:#FFF !important;}.ezChk{color:#CCC;}.ezChk:hover{color:#FFF;}.ezChk:before{content:\'\';display:inline-block;width:20px;height:20px;vertical-align:middle;margin-right:0.5em;background:url('+INISet.prgHomeURL+'assist/imgs/ic20.png) ;}.checked.ezChk:before{background-position:0px -20px;}.spblock {display:inline-block;border-radius:0.4em;font-size:85%;background:#555;padding:0 0.4em;margin:0 0.5em;}',
@@ -112,8 +108,7 @@ ER_sub.STYLES = {
 	'#tblMenu{position:relative;padding:0;} #tblMes{position:absolute;top:0;width:99%;text-align:center;display:none;padding:1em 0;z-index:5000;}#tblMes .Box{display:inline-block;position:relative;padding:0.3em 2em;text-align:left;border-radius:0.6em;background-color:#DDD;}#tblMes .Box div.title{color:#400;font-size:120%;border-bottom:2px solid #EEE;border-color:rgba(15,15,15,0.4);margin-bottom:0.6em;}#tblMes .Box .title{font-weight:bold;}#tblMes .Box .mesSplit {opacity:0.4;}#tblMes .Box.error{background:#F55;border:2px solid #F77;box-shadow:0 0 16px #000;padding:0.6em 1em 0.4em 34px;}#tblMes .Box.error:after{content:\'\';display:block;width:20px;height:20px;top:50%;left:6px;margin-top:-10px;position:absolute;background:url('+INISet.prgHomeURL+'assist/imgs/icon20_warning.png) no-repeat;opacity:0.6;}#tblMes .error .title{color:#800;font-size:110%;}#tblMes .Box.green{background:#086;}#tblMes .Box.orange{background:#E90;}.iconW20{display:inline-block;width:20px;height:20px;background:url('+INISet.prgHomeURL+'assist/imgs/ic20.png);margin:0 0.3em;}.iconW20.ic_chkCnt{background-position:0 20px;}.iconW20.ic_chkCnt.plus{background-positin:0 20;}.iconW20.ic_check{background-position:20px 0px }table tr:hover .iconW20.ic_check {background-position-x:0;}table tr.selected .iconW20.ic_check{background-position:0 60px;}'}
 }
 
-// ====================== index.php
-
+// ====================== 番組表
 // 番組再設定
 // ER_sub.rePRG.add(function($tg){})しておくと
 // 表示中の番組に対して初期処理する
@@ -192,7 +187,7 @@ ER_sub.INDEX = {
 		// 番組再設定
 		ER_sub.rePRG.ini();
 
-		$('body').append('<style type="text/css"><!-- '+ER_sub.STYLES.basic + ER_sub.STYLES.md_screen + this.style+this.fix_bug_style+' --></style>');
+		$('body').append('<style type="text/css"><!-- '+this.style+this.fix_bug_style+' --></style>');
 
 		ER_sub.SB.ini();
 		if (ASSIST_INI.index_prg_info ) {
@@ -550,7 +545,6 @@ ER_sub.prgWill = function($tg) {
 	return P;
 }
 
-
 // 番組情報の表示方法を無理やり変更
 ER_sub.TBLprg = {
 	infHtml : '<div id="prg_info_B" style="display:none;"><div class="dummy"><div id ="prg_info_B_title" class="title">&nbsp;</div><div id="prg_info_B_cont" class="content">&nbsp;</div><div id="prg_info_B_btns" class="btns"><a href="javascript:ER_sub.TBLprg.unselect()" class="btn">cancel</a></div></div></div>',
@@ -823,102 +817,33 @@ ER_sub.TBLprg = {
 	}
 };
 
-//  IE対策、角丸
+// IE対策、角丸
 ER_sub.TBL_IE = function() {
 	if($.browser.msie) {
 		$('#tv_chs div.prg').prepend('<div class="IErnd10l">&nbsp;</div><div class="IErnd10r">&nbsp;</div>');
 	}
-}
+};
 
-//	================== recordedtable.php
-
-ER_sub.RECORDED = {
-	style : '',
-	ini : function() {
-		var tmp, keyword = null, that = this, $tgs = $('#reservation_table tr:not(:eq(0))');
-		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.basic + ER_sub.STYLES.colorD + ER_sub.STYLES.table('reservation_table') + ER_sub.STYLES.md_screen + this.style+'</style>');
-
-		// タイトル、リンク等を再構成
-		$('body>div:eq(0)>a').hide();
-		tmp = $('body>div:eq(1)>form');
-		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
-		ER_sub.topMenu();
-		// 「タイトルや内容をクリックす…」を隠す
-		if ($('#reservation_table').length){
-			$('#reservation_table').prev().hide();
-		} else {
-			$('#floatBox4Dialog').prev().hide();
-		}
-		$('#reservation_table').addClass('PRGS_LIST_TABLE').before(ER_sub.tableMultiFunc('RECORDED')).wrap('<div id="twrap0" style="position:relative;"><div id="twrap1" style="overflow:auto;background:#181818;"></div></div>');
-
-		this.reMake($tgs);
-		var $th = $('#reservation_table>thead'),
-		$tb = $('#reservation_table>tbody');
-		$('#reservation_table>thead').css({position:'absolute',top:0,left:0});
-		$('#reservation_table tr:last-child').addClass('last');
+// スクロール可能テーブル作成
+ER_sub.TBL_SCROLLABLE = {
+	_id : null,
+	ini : function(id) {
+		this._id = id;
+		$('#'+this._id).addClass('PRGS_LIST_TABLE').wrap('<div id="twrap0" style="position:relative;"><div id="twrap1" style="overflow:auto;background:#181818;"></div></div>');
+		$('#'+this._id+'>thead').css({position:'absolute',top:0,left:0});
+		$('#'+this._id+' tr:last-child').addClass('last');
 		this.reSize();
-		$(window).resize(ER_sub.RECORDED.reSize);
-
-		//
-		$tgs.click(function(ev){
-			if (that.__work) { return; }
-			if (!ev.shiftKey) {
-				$('#reservation_table .selected').removeClass('selected');
-			}
-			$(this).addClass('selected');
-			that.selC();
-//			return false;
-		});
-		$('#reservation_table td.chkbox .ic_check').click(function(){
-			if (that.__work) { return; }
-			$(this).parents('tr').toggleClass('selected');
-			that.selC();
-			return false;
-		});
-		$('#reservation_table td.title a.moreBtn').click(function(){that._more($(this).attr('data-a'));return false;});
-		if (ASSIST_INI.ext_diskinfo) {
-			$('#tblMenu').before(ER_sub.DISKINF.html());
-			ER_sub.DISKINF.reDiskInfo();
-		} else if (INISet.disk_total && INISet.disk_free){
-			$('#tblMenu').before(ER_sub.DISKINF.html(INISet.disk_total, INISet.disk_free ));
-		}
-		ER_sub.SELV.ini();
-	},
-	withF : function() {
-		$('#delWithFile').toggleClass('checked');
-		$('#tblMenuBtn').html(this._rcdDelText());
-	},
-	_rcdDelText :function(op) {
-		if ($('#delWithFile').hasClass('checked') || op){
-			return 'ファイルと<span class="WD70">共に</span>削除';
-		} else {
-			return '<span class="WD70">記録</span>データのみ削除';
-		}
-	},	
-	selC : function() {
-		var $sel = $('#reservation_table .selected');
-		if ($sel.length){
-			$('#tblSel').removeClass('vsblN')
-			$('#selCount').html($sel.length);
-		} else {
-			$('#tblSel').addClass('vsblN');
-		}
-	},
-	unSel : function() {
-		if (this.__work) { return; }
-		$('#reservation_table tr.selected').removeClass('selected');
-		$('#tblSel').addClass('vsblN')
 	},
 	reSize : function() {
-		var h = i = w = 0, $th = $('#reservation_table>thead'),
-		$td = $('#reservation_table>tbody>tr:eq(0)>td:eq(0)');
+		var h = i = w = 0, $th = $('#'+this._id+'>thead'),
+		$td = $('#'+this._id+'>tbody>tr:eq(0)>td:eq(0)');
 		if (!$td.length) return false;
 		$('#twrap0').css({paddingTop:$th.height()});
 		h = $(window).height()-$td.offset().top+parseInt($td.css('padding-top'),10)-12;
 		if (parseInt($('#twrap1').height(),10) >  h ) {
 			$('#twrap1').css({height:h});
 		}
-		$('#reservation_table th').each(function(){
+		$('#'+this._id+' th').each(function(){
 			if ($(this).attr('colspan')){
 				var j = $(this).attr('colspan');
 				w = 0;
@@ -938,62 +863,52 @@ ER_sub.RECORDED = {
 			}
 			$(this).width(w-$(this).paddingW());
 		});
+	}
+};
+
+// ================== 番組検索
+ER_sub.PROGRAMTBL = {
+	style : '',
+	ini : function() {
+		var tmp, keyword = null, that = this, $tgs = $('#reservation_table tr:not(:eq(0))');
+		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.colorD + ER_sub.STYLES.table('reservation_table') + this.style+'</style>');
+
+		// タイトル、リンク等を再構成
+		$('body>div:eq(0)>p').hide();
+		tmp = $('body>div:eq(1)>form');
+		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
+		ER_sub.topMenu();
+
+		this.reMake($tgs);
+		ER_sub.TBL_SCROLLABLE.ini('reservation_table');
+		$(window).resize(ER_sub.TBL_SCROLLABLE.reSize);
+
+		ER_sub.FRM.selectAssist();
+		ER_sub.FRM.chTypeAssist();
 	},
 	reMake : function($tgs) {
-		var $tg, $tds, tg0, d, h, tm, dur, img, Lap, href = DSP = Dstr = LD = cls = '', odd = true, DFn = ER_sub.DATE, Id, mode;
+		var $tg, $tds, tg0, d, h, tm, dur, img, Lap, href = DSP = Dstr = LD = chn = ctg = '', odd = true, DFn = ER_sub.DATE, Id, mode, keyword, dur;
 		ToD = ER_sub.DATE.DateER(ER_sub.D),
 		YsD = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()-1))),
 		Tmr = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()+1)));
 
-		var i = 0,thcl = ['date','channel','mode','title','filesize','pBtns'];
-		$('#reservation_table th').each(function(){
-			$(this).addClass(thcl[i]||('th_'+i));
-			i++;
-		});
 		$('#reservation_table tr:eq(0)').remove();
 		$('#reservation_table').prepend(ER_sub.tableMultiHead);
-		$('#reservation_table thead tr').append('<th class="filesize">サイズ</th>');
-	// var T0 = new Date();
+		$('#reservation_table thead tr th:eq(0)').remove();
+		$('#reservation_table thead tr').append('<th colspan="2">&nbsp;</th>');
 		$tgs.each(function(){
 			$tg = $(this);
-			$tg.addClass('rcd unSel');
+			$tg.addClass('rsv unSel');
 			$tds = $tg.children();
-			// サムネイル
-			img = $tds.eq(3);
-			if (img.find('img').length) {
-				img = $tds.eq(3).html();
-				$tds.eq(3).remove();
-				$tds = $tg.children();
-			} else {
-				img = false;
-			}
-			//番組長
-			dur = $tg.attr('data-dur') || '';
-			// 編集、削除ボタンを無効化、隠す
-//			$tg.find('input').attr('disabled','disabled');
-			$tds.eq(6).hide().next().hide();
-			Id = $tg.attr('id').match(/[0-9]*$/)[0];
-			$tg.attr('data-rsvid',Id).addClass(odd?'odd':'even');odd = !odd;
-			$tg0 = $tds.eq(1);
-			// チャンネル
-			$tg0.html('<div class="ch_Box">'+ER_sub.STR.toHan($tg0.html())+'</div>');
-			// モード
-			mode = $tds.eq(2).html();
-			$tg.attr('data-mode', mode);
-			// カテゴリー
-			cls = $tg.attr('class').match(/ctg_([a-z]*)/)[1];
-			$tds.eq(2).html('<span class="ctg_Box ctg_'+cls+'"><span class="WD100">'+ER_sub.CTGS[cls]+'</span><span class="WD100N">'+cls.slice(0,3)+'</span></span>');
-			// タイトル
-			href  = $tds.eq(3).find('>a').attr('href');
-			$tds.eq(4).attr('colspan',img?1:2).addClass('title').html('<div><span class="WD70N" style="color:#0BD;">&gt;</span><span class="img play WD70"><a href="'+href+'" class="play">Play</a></span><span class="WD70"><span class="WD90N spblock mode">'+mode.slice(0,3)+'</span><span class="WD90 spblock mode">'+mode+'</span></span><a href="'+href+'" class="title">' + $tds.eq(3).text() + '</a><span class="desc">' + $tds.eq(4).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+mode+'</span></div><a href="javascript:ER_sub.RECORDED._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
-			if (img) {
-				$tds.eq(3).addClass('thumb').html(img);
-			} else {
-				$tds.eq(3).remove();
-			}
+			// Id
+			Id = $tg.attr('id').match(/resid_([0-9]*)/)[1];
+			$tg.attr('data-resid',Id);
+			// 番組長
+			dur = parseInt((new Date($tds.eq(3).html().replace(/-/g,'/')) - new Date($tds.eq(2).html().replace(/-/g,'/')))/1000,10);
+			$tg.attr('data-dur',dur);
 			// 日付
 			$tg0 = $tds.eq(0).addClass('date');
-			d = $tg0.html().replace(/-/g,'/');
+			d = $tds.eq(2).html().replace(/-/g,'/');
 			$tg.attr('data-date', d);
 			tm = ER_sub.DATE.AP(d.substr(11,5));
 			if ((d.slice(0,10)!=DSP) && DSP) {
@@ -1028,175 +943,54 @@ ER_sub.RECORDED = {
 			}
 			$tg0.html((LD==DSP?'<span class="vsblN hv" >':'')+Dstr + DFn.Day(DSP,'<span class="WD70">（</span>', '<span class="WD70">）</span>')+(LD==DSP?'</span>':''));
 			LD = DSP;
-			$tg.prepend('<td class="chkbox"><div class="iconW20 ic_check">&nbsp;</div></td>');
+			// チャンネル
+			$tds.eq(1).html('<div class="ch_Box">'+ (ER_sub.STR.toHan($tds.eq(1).html()))+'</div>');
+			// カテゴリー
+			ctg = $tg.attr('class').match(/ctg_([a-z]*)/)[1];
+			$tds.eq(2).html('<span class="ctg_Box ctg_'+ctg+'"><span class="WD100">'+ER_sub.CTGS[ctg]+'</span><span class="WD100N">'+ctg.slice(0,3)+'</span></span>');
+			// タイトル
+			$tds.eq(3).addClass('title').attr('colspan',2).html('<div><span class="title">' + $tds.eq(4).text() + '</span><span class="desc">' + $tds.eq(5).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+'</span></div><a href="javascript:ER_sub.PROGRAMTBL._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
+			$tds.eq(4).remove();
+			$tds.eq(5).remove();
 		});
 	},
 	_more : function(Id) {
-		$tg = $('#reservation_table tr[data-rsvid='+Id+']');
+		$tg = $('#reservation_table tr[data-resid='+Id+']');
 		$tg.toggleClass('moreOpen').toggleClass('unSel');
-	},
-	__work : null,
-	__wmode : '',
-	__mes : null,
-	_prginf : function(Id) {
-		$tg = $('#reservation_table tr[data-rsvid='+Id+']');
-		return $tg.attr('data-date')+' '+$tg.find('>td.title .title').text();
-	},
-	del : function() {
-		if (this.__work) { return; }
-		var that = this, $tgs;
-		$tgs = $('#reservation_table tr.selected');
-		if ($tgs.length > 0 ){
-			this.__work = $tgs.eq(0).attr('data-rsvid');
-			this.__wmode = '削除';
-		}
-		this.__mes = [];
-		this._del();
-	},
-	_del : function() {
-		var $tgs, that = this, delFile = $('#delWithFile').hasClass('checked')?1:0, er;
-		if(this.__work && this.__work != 'alert'){
-			ER_sub.PLST.showM({style:'orange',html:'<span><span style="font-weight:bold;font-size:120%;">'+$('#reservation_table tr.selected').length+'</span> 番組処理中</span>'});
-			$.post(INISet.prgCancelURL, { reserve_id: this.__work, delete_file: delFile } ,function(data){
-				if(data.match(/error/i)){
-					if(data.match(/^error/i)){
-						er = 'epgrecエラー：';
-					} else {
-						er = 'phpエラー：';
-						data = data.replace(/^<br \/>/,'');
-					}
-					that.__mes.push('<div>'+that._prginf(that.__work)+'</div><span class="title">'+er+'</span><span class="">'+data+'</span>');
-//					console.log(data);
-					$('#reservation_table tr[data-rsvid='+that.__work+']').addClass('error');
-				} else {
-					ER_sub.tableDelReSplit($('#reservation_table tr[data-rsvid='+that.__work+']'));
-				}
-				$tgs = $('#reservation_table tr.selected:not(.error)');
-				if ( $tgs.length > 0 ) {
-					that.__work = $tgs.eq(0).attr('data-rsvid');
-					that._del();
-				} else {
-					that.__work = null;
-					$('#tblSel').addClass('vsblN');
-					ER_sub.SELV.all();
-					if ($('#reservation_table tr.error').length) {
-						that.__work = 'alert';
-						$('#reservation_table tr.selected').removeClass('selected');
-						ER_sub.PLST.showM({style:'error',title:that.__mes.length+'番組の'+that.__wmode+'中にエラーが発生しました。'+that.__wmode+'処理が終了したかどうか確認できません',html:that.__mes.join('<hr class="mesSplit" />')});
-					} else {
-						// 正常終了
-						ER_sub.PLST.showM({html:that.__wmode+'が正常に終了しました'});
-						// ディス残量更新
-						ER_sub.DISKINF.reDiskInfo();
-						setTimeout( function(){ER_sub.PLST.hideM();},2000)
-					}
-				}
-			});
-		}
-	}
-};
-//	================== diskinfo
-
-ER_sub.DISKINF = {
-	_levels : null,
-	html : function(total, free) {
-		var per, level, loading = null;
-		if (!total && !free){
-			total = free = 1;
-			loading = 'Loading...';
-		}
-		this._levels = ASSIST_INI.ext_diskinfo_levels;
-		while (this._levels.length < 4) {
-			this._levels.push(0);
-		}
-		this._levels.sort();
-		per = ((total - free)*100 / total);
-		level = this._diskLevel(per);
-		return '<style type="text/css"><!-- -->#diskInfoBox {width:200px;height:26px;border-radius:0.6em;overflow:hidden;box-shadow:inset 0 1px 4px #420;background:#555;line-height:26px;}#diskInfoBar {height:26px;overflow:hidden;border-radius:0 0.6em 0.6em 0;box-shadow:inset 0 0 6px #28B,0 0 4px #000;background:#049;background:-webkit-gradient(linear, left top, left bottom, from(#05A),to(#238));background:-moz-linear-gradient(top, #05A, #238)}#diskInfoBox.lv1{background:#662;}#diskInfoBox.lv2{background:#970;}#diskInfoBox.lv3{background:#C60;}#diskInfoBox.lv4{background:#F20;}#diskInfoFreeText{font-size:120%;}@media screen and (max-width:900px) {#diskInfoBox,#diskInfoBar{height:20px;}#diskInfoBox{width:150px;line-height:20px;}#diskInfoFreeText{font-size:110%;}}</style><div style="position:absolute;margin-top:14px;right:2em;"><div id="diskInfoBox" class="lv'+level+'"  data-total="'+total+'" data-free="'+free+'"><div id="diskInfoBar" style="width:'+per+'%;" >&nbsp;</div><div style="position:absolute;top:0;width:100%;color:#DDD;font-weight:bold;font-family: arial,helvetica;text-align:right;">Free : <span id="diskInfoFreeText" style="color:#FFF;text-shadow:0 0 3px #000;padding-right:0.5em;">' + (loading?loading:ER_sub.filesize(free))+'</span></div></div></div>';
-	},
-	reDiskInfo : function(total, free) {
-		if (!ASSIST_INI.ext_diskinfo) { return; }
-		if (!total && !free)
-			this._getDiskInfo();
-		else 
-			this._reDiskInfo(total, free);
-	},
-	_reDiskInfo : function(total, free) {
-		var per = ((total - free)*100 / total);
-		$('#diskInfoBox').attr('data-total', total).attr('data-free', free).attr('class','').addClass('lv'+this._diskLevel(per));;
-		$('#diskInfoFreeText').html(ER_sub.filesize(free));
-		$('#diskInfoBar').animate({width: per +'%'},150);
-		if ($('#diskInfo_RSV').length){
-			this.rePlusBar(total);
-		}
-	},
-	_diskLevel : function(per) {
-		var level = 0, i, iMax;
-		for ( i=0,iMax=this._levels.length; i<iMax; i++) {
-			if (this._levels[i] <= per) { level = i+1}
-		}
-		return level;
-	},
-	_getDiskInfo : function() {
-		var that = this;
-		$.getJSON(INISet.prgHomeURL+'assist/tools/diskinfo.php',{},function(data){
-			that._reDiskInfo(data.disk_total, data.disk_free);
-		});
-	},
-	plusBar : function(size, Id) {
-		$('#diskInfoBox').attr('data-durtotal', size);
-		size = ER_sub.filesize(size);
-		if ($('#diskInfo_'+Id).length) {
-			$('#diskInfo_'+Id+' .text').html(size);
-		} else {
-			$('#diskInfoBox').after('<div id="diskInfo_'+Id+'" style="text-align:right;margin-top:4px;position:relative;z-index:300;line-height:14px;color:#888;"><span class="WD90">Reserve：</span><span class="text" style="color:#EEE;">'+size+'</span><span id="plusBar_'+Id+'" style="display:inline-block;width:1px;height:14px;background:#A20;border-radius:0.4em;margin-left:4px;">&nbsp;</span></div>');
-		}
-	},
-	rePlusBar : function(total, durTotal) {
-		if (!total) {
-			total = parseInt($('#diskInfoBox').attr('data-total'),10);
-		}
-		if  (durTotal==null) {
-			// durTotal = parseInt($('#diskInfoBox').attr('data-durtotal'),10);
-			durTotal = this.getDurTotal();
-		}
-		$('#diskInfo_RSV .text').html(ER_sub.filesize(durTotal));
-		per = ((durTotal) * 100 / total);
-		$('#plusBar_RSV').width(per+'%');
-	},
-	getDurTotal : function(){
-		// 予約容量更新
-		var durTotal = 0;
-		$('#reservation_table tr.rsv:visible').each(function(){
-			durTotal += parseInt($(this).attr('data-dur'), 10)*131072*ASSIST_INI.ext_diskinfo_rsvBar_bitrates[$(this).attr('data-chType')];
-		});
-		this.rePlusBar(parseInt($('#diskInfoBox').attr('data-total'),10), durTotal);
-		return durTotal;
 	}
 }
-//	================== reserved.php
 
+// ================== キーワード
+ER_sub.KEYWORD = {
+	style : '',
+	ini : function() {
+		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.colorD + ER_sub.STYLES.table('reservation_table') + this.style+'</style>');
+
+		// タイトル、リンク等を再構成
+		$('body>div:eq(0)>p').hide();
+		ER_sub.topMenu();
+
+		ER_sub.TBL_SCROLLABLE.ini('reservation_table');
+		$(window).resize(ER_sub.TBL_SCROLLABLE.reSize);
+	}
+}
+
+// ================== 録画予約一覧
 ER_sub.RESERVED = {
 	_durTotal : 0,
 	ini : function() {
 		var tmp, keyword = null, that = this, $tgs = $('#reservation_table tr:not(:eq(0))');
-		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.basic + ER_sub.STYLES.colorD + ER_sub.STYLES.table('reservation_table') + ER_sub.STYLES.md_screen + this.style+'</style>');
+		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.colorD + ER_sub.STYLES.table('reservation_table') + this.style+'</style>');
 
 		// タイトル、リンク等を再構成
-		$('body>div:eq(0)>a').hide();
+		$('body>div:eq(0)>p').hide();
 		tmp = $('body>div:eq(1)>form');
 		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
 		ER_sub.topMenu();
 
-		$('#reservation_table').addClass('PRGS_LIST_TABLE').before(ER_sub.tableMultiFunc('RESERVED')).wrap('<div id="twrap0" style="position:relative;"><div id="twrap1" style="overflow:auto;background:#181818;"></div></div>');
 		this.reMake($tgs);
-
-		var $th = $('#reservation_table>thead'),
-		$tb = $('#reservation_table>tbody');
-		$('#reservation_table>thead').css({position:'absolute',top:0,left:0});
-		$('#reservation_table tr:last-child').addClass('last');
-		this.reSize();
-		$(window).resize(ER_sub.RECORDED.reSize);
+		ER_sub.TBL_SCROLLABLE.ini('reservation_table');
+		$(window).resize(ER_sub.TBL_SCROLLABLE.reSize);
 
 		$tgs.click(function(ev){
 			if (that.__work) { return; }
@@ -1237,47 +1031,12 @@ ER_sub.RESERVED = {
 		$('#reservation_table tr.selected').removeClass('selected');
 		$('#tblSel').addClass('vsblN')
 	},
-	reSize : function() {
-		var h = i = w = 0, $th = $('#reservation_table>thead'),
-		$td = $('#reservation_table>tbody>tr:eq(0)>td:eq(0)');
-		if (!$td.length) return false;
-		$('#twrap0').css({paddingTop:$th.height()});
-		h = $(window).height()-$td.offset().top+parseInt($td.css('padding-top'),10)-12;
-		if (parseInt($('#twrap1').height(),10) >  h ) {
-			$('#twrap1').css({height:h});
-		}
-		$('#reservation_table th').each(function(){
-			if ($(this).attr('colspan')){
-				var j = $(this).attr('colspan');
-				w = 0;
-				while(j){
-					w += parseInt($td.innerWidth(),10);
-					k=parseInt($td.attr('colspan'),10);
-					if (k>1){
-						j=j-k;
-					} else {
-						j--;
-					}
-					$td = $td.next();
-				}
-			} else {
-				w = $td.innerWidth();
-				$td = $td.next();
-			}
-			$(this).width(w-$(this).paddingW());
-		});
-	},
 	reMake : function($tgs) {
 		var $tg, $tds, tg0, d, h, tm, dur, img, Lap, href = DSP = Dstr = LD = chn = ctg = '', odd = true, DFn = ER_sub.DATE, Id, mode, keyword, dur, durTotal = 0;
 		ToD = ER_sub.DATE.DateER(ER_sub.D),
 		YsD = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()-1))),
 		Tmr = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()+1)));
 
-		var i = 0,thcl = ['date','channel','mode','title','pBtns'];
-		$('#reservation_table th').each(function(){
-			$(this).addClass(thcl[i]||('th_'+i));
-			i++;
-		});
 		$('#reservation_table tr:eq(0)').remove();
 		$('#reservation_table').prepend(ER_sub.tableMultiHead);
 		$tgs.each(function(){
@@ -1296,8 +1055,7 @@ ER_sub.RESERVED = {
 			// チャンネル
 			$tg0 = $tds.eq(1);
 			$tg.attr('data-chtype', $tg0.html());
-			chn = $tg.attr('data-chname');
-			$tg0.html('<div class="ch_Box">'+ (chn?ER_sub.STR.toHan(chn):ER_sub.STR.toHan($tg0.html())+' '+$tds.eq(2).html())+'</div>');
+			$tg0.html('<div class="ch_Box">'+ (ER_sub.STR.toHan($tds.eq(2).html()))+'</div>');
 			// カテゴリー
 			ctg = $tg.attr('class').match(/ctg_([a-z]*)/)[1];
 			$tds.eq(2).html('<span class="ctg_Box ctg_'+ctg+'"><span class="WD100">'+ER_sub.CTGS[ctg]+'</span><span class="WD100N">'+ctg.slice(0,3)+'</span></span>');
@@ -1424,6 +1182,328 @@ ER_sub.RESERVED = {
 	}
 }
 
+// ================== 録画済一覧
+ER_sub.RECORDED = {
+	style : '',
+	ini : function() {
+		var tmp, keyword = null, that = this, $tgs = $('#reservation_table tr:not(:eq(0))');
+		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.basic + ER_sub.STYLES.colorD + ER_sub.STYLES.table('reservation_table') + ER_sub.STYLES.md_screen + this.style+'</style>');
+
+		// タイトル、リンク等を再構成
+		$('body>div:eq(0)>p').hide();
+		tmp = $('body>div:eq(1)>form');
+		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
+		ER_sub.topMenu();
+		// 「タイトルや内容をクリックす…」を隠す
+		if ($('#reservation_table').length){
+			$('#reservation_table').prev().hide();
+		} else {
+			$('#floatBox4Dialog').prev().hide();
+		}
+
+		this.reMake($tgs);
+		ER_sub.TBL_SCROLLABLE.ini('reservation_table');
+		$(window).resize(ER_sub.TBL_SCROLLABLE.reSize);
+
+		//
+		$tgs.click(function(ev){
+			if (that.__work) { return; }
+			if (!ev.shiftKey) {
+				$('#reservation_table .selected').removeClass('selected');
+			}
+			$(this).addClass('selected');
+			that.selC();
+//			return false;
+		});
+		$('#reservation_table td.chkbox .ic_check').click(function(){
+			if (that.__work) { return; }
+			$(this).parents('tr').toggleClass('selected');
+			that.selC();
+			return false;
+		});
+		$('#reservation_table td.title a.moreBtn').click(function(){that._more($(this).attr('data-a'));return false;});
+		if (ASSIST_INI.ext_diskinfo) {
+			$('#tblMenu').before(ER_sub.DISKINF.html());
+			ER_sub.DISKINF.reDiskInfo();
+		} else if (INISet.disk_total && INISet.disk_free){
+			$('#tblMenu').before(ER_sub.DISKINF.html(INISet.disk_total, INISet.disk_free ));
+		}
+		ER_sub.SELV.ini();
+	},
+	withF : function() {
+		$('#delWithFile').toggleClass('checked');
+		$('#tblMenuBtn').html(this._rcdDelText());
+	},
+	_rcdDelText :function(op) {
+		if ($('#delWithFile').hasClass('checked') || op){
+			return 'ファイルと<span class="WD70">共に</span>削除';
+		} else {
+			return '<span class="WD70">記録</span>データのみ削除';
+		}
+	},	
+	selC : function() {
+		var $sel = $('#reservation_table .selected');
+		if ($sel.length){
+			$('#tblSel').removeClass('vsblN')
+			$('#selCount').html($sel.length);
+		} else {
+			$('#tblSel').addClass('vsblN');
+		}
+	},
+	unSel : function() {
+		if (this.__work) { return; }
+		$('#reservation_table tr.selected').removeClass('selected');
+		$('#tblSel').addClass('vsblN')
+	},
+	reMake : function($tgs) {
+		var $tg, $tds, tg0, d, h, tm, dur, img, Lap, href = DSP = Dstr = LD = cls = '', odd = true, DFn = ER_sub.DATE, Id, mode;
+		ToD = ER_sub.DATE.DateER(ER_sub.D),
+		YsD = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()-1))),
+		Tmr = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()+1)));
+
+		$('#reservation_table tr:eq(0)').remove();
+		$('#reservation_table').prepend(ER_sub.tableMultiHead);
+		$('#reservation_table thead tr').append('<th class="filesize">サイズ</th>');
+	// var T0 = new Date();
+		$tgs.each(function(){
+			$tg = $(this);
+			$tg.addClass('rcd unSel');
+			$tds = $tg.children();
+			// サムネイル
+			img = $tds.eq(3);
+			if (img.find('img').length) {
+				img = $tds.eq(3).html();
+				$tds.eq(3).remove();
+				$tds = $tg.children();
+			} else {
+				img = false;
+			}
+			//番組長
+			dur = $tg.attr('data-dur') || '';
+			// 編集、削除ボタンを無効化、隠す
+//			$tg.find('input').attr('disabled','disabled');
+			$tds.eq(6).hide().next().hide();
+			Id = $tg.attr('id').match(/[0-9]*$/)[0];
+			$tg.attr('data-rsvid',Id).addClass(odd?'odd':'even');odd = !odd;
+			// チャンネル
+			$tds.eq(1).html('<div class="ch_Box">'+ (ER_sub.STR.toHan($tds.eq(1).html()))+'</div>');
+			// モード
+			mode = $tds.eq(2).html();
+			$tg.attr('data-mode', mode);
+			// カテゴリー
+			cls = $tg.attr('class').match(/ctg_([a-z]*)/)[1];
+			$tds.eq(2).html('<span class="ctg_Box ctg_'+cls+'"><span class="WD100">'+ER_sub.CTGS[cls]+'</span><span class="WD100N">'+cls.slice(0,3)+'</span></span>');
+			// タイトル
+			href  = $tds.eq(3).find('>a').attr('href');
+			$tds.eq(4).attr('colspan',img?1:2).addClass('title').html('<div><span class="WD70N" style="color:#0BD;">&gt;</span><span class="img play WD70"><a href="'+href+'" class="play">Play</a></span><span class="WD70"><span class="WD90N spblock mode">'+mode.slice(0,3)+'</span><span class="WD90 spblock mode">'+mode+'</span></span><a href="'+href+'" class="title">' + $tds.eq(3).text() + '</a><span class="desc">' + $tds.eq(4).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+mode+'</span></div><a href="javascript:ER_sub.RECORDED._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
+			if (img) {
+				$tds.eq(3).addClass('thumb').html(img);
+			} else {
+				$tds.eq(3).remove();
+			}
+			// 日付
+			$tg0 = $tds.eq(0).addClass('date');
+			d = $tg0.html().replace(/-/g,'/');
+			$tg.attr('data-date', d);
+			tm = ER_sub.DATE.AP(d.substr(11,5));
+			if ((d.slice(0,10)!=DSP) && DSP) {
+				Lap = false;
+				if (d.slice(0,7)!=DSP.slice(0,7)) {
+					if (d.slice(0,4)!=DSP.slice(0,4)){
+						$tg.before('<tr class="ySplit split" data-split="6"><td colspan="2" class="year">'+DFn.Year(d)+'</td><td colspan="5">&nbsp;</td></tr>');
+					} else {
+						$tg.before('<tr class="mSplit split" data-split="4"><td colspan="7"></td></tr>');
+					}
+				} else {
+					$tg.before('<tr class="dSplit split" data-split="2"><td colspan="7"></td></tr>');
+				}
+			}
+			$tg0.after('<td class="time">'+(ASSIST_INI.time_ap?'<span class="WD70"><span class="ap ap_'+tm.ap+((Lap&&tm.ap==Lap)?' vsblN hv':'')+'">'+tm.ap+'</span>'+tm.html+'</span><span class="WD70N">'+tm._24+'</span>':tm._24)+(dur?'<span class="WD70"><span style="color:#555;padding:0 0.4em;">+</span><span class="durTxt">'+ER_sub.DATE.durToHm(dur)+'</span></span>':'')+'</td>');
+			Lap = tm.ap;
+			DSP = d.slice(0,10);
+			Dstr = '';
+			switch(DSP) {
+			case ToD :
+				Dstr = '<span class="dString">今日</span>';break;
+			case YsD :
+				Dstr = '<span class="dString">昨日</span>';break;
+			case Tmr :
+				Dstr = '<span class="dString">明日</span>';break;
+			default :
+				if (DSP.slice(0,7) == LD.slice(0,7)) {
+					Dstr = '<span class="month vsblN hv">'+DFn.Month(DSP)+'</span>'+DFn.Date(DSP);
+				} else {
+					Dstr = '<span class="month">'+DFn.Month(DSP)  + '</span>' + DFn.Date(DSP);
+				}
+			}
+			$tg0.html((LD==DSP?'<span class="vsblN hv" >':'')+Dstr + DFn.Day(DSP,'<span class="WD70">（</span>', '<span class="WD70">）</span>')+(LD==DSP?'</span>':''));
+			LD = DSP;
+			$tg.prepend('<td class="chkbox"><div class="iconW20 ic_check">&nbsp;</div></td>');
+		});
+	},
+	_more : function(Id) {
+		$tg = $('#reservation_table tr[data-rsvid='+Id+']');
+		$tg.toggleClass('moreOpen').toggleClass('unSel');
+	},
+	__work : null,
+	__wmode : '',
+	__mes : null,
+	_prginf : function(Id) {
+		$tg = $('#reservation_table tr[data-rsvid='+Id+']');
+		return $tg.attr('data-date')+' '+$tg.find('>td.title .title').text();
+	},
+	del : function() {
+		if (this.__work) { return; }
+		var that = this, $tgs;
+		$tgs = $('#reservation_table tr.selected');
+		if ($tgs.length > 0 ){
+			this.__work = $tgs.eq(0).attr('data-rsvid');
+			this.__wmode = '削除';
+		}
+		this.__mes = [];
+		this._del();
+	},
+	_del : function() {
+		var $tgs, that = this, delFile = $('#delWithFile').hasClass('checked')?1:0, er;
+		if(this.__work && this.__work != 'alert'){
+			ER_sub.PLST.showM({style:'orange',html:'<span><span style="font-weight:bold;font-size:120%;">'+$('#reservation_table tr.selected').length+'</span> 番組処理中</span>'});
+			$.post(INISet.prgCancelURL, { reserve_id: this.__work, delete_file: delFile } ,function(data){
+				if(data.match(/error/i)){
+					if(data.match(/^error/i)){
+						er = 'epgrecエラー：';
+					} else {
+						er = 'phpエラー：';
+						data = data.replace(/^<br \/>/,'');
+					}
+					that.__mes.push('<div>'+that._prginf(that.__work)+'</div><span class="title">'+er+'</span><span class="">'+data+'</span>');
+//					console.log(data);
+					$('#reservation_table tr[data-rsvid='+that.__work+']').addClass('error');
+				} else {
+					ER_sub.tableDelReSplit($('#reservation_table tr[data-rsvid='+that.__work+']'));
+				}
+				$tgs = $('#reservation_table tr.selected:not(.error)');
+				if ( $tgs.length > 0 ) {
+					that.__work = $tgs.eq(0).attr('data-rsvid');
+					that._del();
+				} else {
+					that.__work = null;
+					$('#tblSel').addClass('vsblN');
+					ER_sub.SELV.all();
+					if ($('#reservation_table tr.error').length) {
+						that.__work = 'alert';
+						$('#reservation_table tr.selected').removeClass('selected');
+						ER_sub.PLST.showM({style:'error',title:that.__mes.length+'番組の'+that.__wmode+'中にエラーが発生しました。'+that.__wmode+'処理が終了したかどうか確認できません',html:that.__mes.join('<hr class="mesSplit" />')});
+					} else {
+						// 正常終了
+						ER_sub.PLST.showM({html:that.__wmode+'が正常に終了しました'});
+						// ディス残量更新
+						ER_sub.DISKINF.reDiskInfo();
+						setTimeout( function(){ER_sub.PLST.hideM();},2000)
+					}
+				}
+			});
+		}
+	}
+};
+
+// ================== 環境設定
+ER_sub.SETTING = {
+	style : 'table#log_table td.errorlevel0 {background-color:transparent;} table#log_table td.errorlevel1 {background-color:transparent;color:yellow;} table#log_table td.errorlevel2 {background-color:transparent;color:red;}',
+	ini : function() {
+		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.colorD + ER_sub.STYLES.table('log_table') + this.style+'</style>');
+
+		// タイトル、リンク等を再構成
+		var tmp = $('body>div:eq(0)>p');
+		tmp.insertAfter($('body>div:eq(0)'));
+		tmp.wrap('<div class="container" />').wrap('<div class="fmBox" style="float:right;" />').wrap('<div id="fmWrap" />');
+		ER_sub.topMenu();
+
+		if ($('#log_table').length) {
+			ER_sub.TBL_SCROLLABLE.ini('log_table');
+			$(window).resize(ER_sub.TBL_SCROLLABLE.reSize);
+		}
+	}
+};
+
+// ================== diskinfo
+ER_sub.DISKINF = {
+	_levels : null,
+	html : function(total, free) {
+		var per, level, loading = null;
+		if (!total && !free){
+			total = free = 1;
+			loading = 'Loading...';
+		}
+		this._levels = ASSIST_INI.ext_diskinfo_levels;
+		while (this._levels.length < 4) {
+			this._levels.push(0);
+		}
+		this._levels.sort();
+		per = ((total - free)*100 / total);
+		level = this._diskLevel(per);
+		return '<style type="text/css"><!-- -->#diskInfoBox {width:200px;height:26px;border-radius:0.6em;overflow:hidden;box-shadow:inset 0 1px 4px #420;background:#555;line-height:26px;}#diskInfoBar {height:26px;overflow:hidden;border-radius:0 0.6em 0.6em 0;box-shadow:inset 0 0 6px #28B,0 0 4px #000;background:#049;background:-webkit-gradient(linear, left top, left bottom, from(#05A),to(#238));background:-moz-linear-gradient(top, #05A, #238)}#diskInfoBox.lv1{background:#662;}#diskInfoBox.lv2{background:#970;}#diskInfoBox.lv3{background:#C60;}#diskInfoBox.lv4{background:#F20;}#diskInfoFreeText{font-size:120%;}@media screen and (max-width:900px) {#diskInfoBox,#diskInfoBar{height:20px;}#diskInfoBox{width:150px;line-height:20px;}#diskInfoFreeText{font-size:110%;}}</style><div style="position:absolute;margin-top:14px;right:2em;"><div id="diskInfoBox" class="lv'+level+'"  data-total="'+total+'" data-free="'+free+'"><div id="diskInfoBar" style="width:'+per+'%;" >&nbsp;</div><div style="position:absolute;top:0;width:100%;color:#DDD;font-weight:bold;font-family: arial,helvetica;text-align:right;">Free : <span id="diskInfoFreeText" style="color:#FFF;text-shadow:0 0 3px #000;padding-right:0.5em;">' + (loading?loading:ER_sub.filesize(free))+'</span></div></div></div>';
+	},
+	reDiskInfo : function(total, free) {
+		if (!ASSIST_INI.ext_diskinfo) { return; }
+		if (!total && !free)
+			this._getDiskInfo();
+		else 
+			this._reDiskInfo(total, free);
+	},
+	_reDiskInfo : function(total, free) {
+		var per = ((total - free)*100 / total);
+		$('#diskInfoBox').attr('data-total', total).attr('data-free', free).attr('class','').addClass('lv'+this._diskLevel(per));;
+		$('#diskInfoFreeText').html(ER_sub.filesize(free));
+		$('#diskInfoBar').animate({width: per +'%'},150);
+		if ($('#diskInfo_RSV').length){
+			this.rePlusBar(total);
+		}
+	},
+	_diskLevel : function(per) {
+		var level = 0, i, iMax;
+		for ( i=0,iMax=this._levels.length; i<iMax; i++) {
+			if (this._levels[i] <= per) { level = i+1}
+		}
+		return level;
+	},
+	_getDiskInfo : function() {
+		var that = this;
+		$.getJSON(INISet.prgHomeURL+'assist/tools/diskinfo.php',{},function(data){
+			that._reDiskInfo(data.disk_total, data.disk_free);
+		});
+	},
+	plusBar : function(size, Id) {
+		$('#diskInfoBox').attr('data-durtotal', size);
+		size = ER_sub.filesize(size);
+		if ($('#diskInfo_'+Id).length) {
+			$('#diskInfo_'+Id+' .text').html(size);
+		} else {
+			$('#diskInfoBox').after('<div id="diskInfo_'+Id+'" style="text-align:right;margin-top:4px;position:relative;z-index:300;line-height:14px;color:#888;"><span class="WD90">Reserve：</span><span class="text" style="color:#EEE;">'+size+'</span><span id="plusBar_'+Id+'" style="display:inline-block;width:1px;height:14px;background:#A20;border-radius:0.4em;margin-left:4px;">&nbsp;</span></div>');
+		}
+	},
+	rePlusBar : function(total, durTotal) {
+		if (!total) {
+			total = parseInt($('#diskInfoBox').attr('data-total'),10);
+		}
+		if  (durTotal==null) {
+			// durTotal = parseInt($('#diskInfoBox').attr('data-durtotal'),10);
+			durTotal = this.getDurTotal();
+		}
+		$('#diskInfo_RSV .text').html(ER_sub.filesize(durTotal));
+		per = ((durTotal) * 100 / total);
+		$('#plusBar_RSV').width(per+'%');
+	},
+	getDurTotal : function(){
+		// 予約容量更新
+		var durTotal = 0;
+		$('#reservation_table tr.rsv:visible').each(function(){
+			durTotal += parseInt($(this).attr('data-dur'), 10)*131072*ASSIST_INI.ext_diskinfo_rsvBar_bitrates[$(this).attr('data-chType')];
+		});
+		this.rePlusBar(parseInt($('#diskInfoBox').attr('data-total'),10), durTotal);
+		return durTotal;
+	}
+}
+
 ER_sub.tableDelReSplit = function($tg) {
 	var $n = $tg.next(), $p = $tg.prev(), sp = '0';
 	if (!$p.length){
@@ -1517,145 +1597,6 @@ ER_sub.SELV = {
 	}
 };
 
-
-//	================== programtable.php
-ER_sub.PROGRAMTBL = {
-	ini : function() {
-		var tmp, keyword = null, that = this, $tgs = $('#reservation_table tr:not(:eq(0))');
-		$('body').append('<style type="text/css"><!-- ' + ER_sub.STYLES.basic + ER_sub.STYLES.colorD + ER_sub.STYLES.table('reservation_table') + ER_sub.STYLES.md_screen + this.style+'</style>');
-
-		// タイトル、リンク等を再構成
-		$('body>div:eq(0)>a').hide();
-		tmp = $('body>div:eq(1)>form');
-		tmp.parent().addClass('fmBox').wrap('<div id="fmWrap"/>');
-		ER_sub.topMenu();
-
-		$('#reservation_table').addClass('PRGS_LIST_TABLE').wrap('<div id="twrap0" style="position:relative;"><div id="twrap1" style="overflow:auto;background:#181818;"></div></div>');
-		this.reMake($tgs);
-
-		var $th = $('#reservation_table>thead'),
-		$tb = $('#reservation_table>tbody');
-		$('#reservation_table>thead').css({position:'absolute',top:0,left:0});
-		$('#reservation_table tr:last-child').addClass('last');
-		this.reSize();
-		$(window).resize(ER_sub.PROGRAMTBL.reSize);
-
-		ER_sub.FRM.selectAssist();
-		ER_sub.FRM.chTypeAssist();
-	},
-	reSize : function() {
-		var h = i = w = 0, $th = $('#reservation_table>thead'),
-		$td = $('#reservation_table>tbody>tr:eq(0)>td:eq(0)');
-		if (!$td.length) return false;
-		$('#twrap0').css({paddingTop:$th.height()});
-		h = $(window).height()-$td.offset().top+parseInt($td.css('padding-top'),10)-12;
-		if (parseInt($('#twrap1').height(),10) >  h ) {
-			$('#twrap1').css({height:h});
-		}
-		$('#reservation_table th').each(function(){
-			if ($(this).attr('colspan')){
-				var j = $(this).attr('colspan');
-				w = 0;
-				while(j){
-					w += parseInt($td.innerWidth(),10);
-					k=parseInt($td.attr('colspan'),10);
-					if (k>1){
-						j=j-k;
-					} else {
-						j--;
-					}
-					$td = $td.next();
-				}
-			} else {
-				w = $td.innerWidth();
-				$td = $td.next();
-			}
-			$(this).width(w-$(this).paddingW());
-		});
-	},
-	reMake : function($tgs) {
-		var $tg, $tds, tg0, d, h, tm, dur, img, Lap, href = DSP = Dstr = LD = chn = ctg = '', odd = true, DFn = ER_sub.DATE, Id, mode, keyword, dur, durTotal = 0;
-		ToD = ER_sub.DATE.DateER(ER_sub.D),
-		YsD = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()-1))),
-		Tmr = ER_sub.DATE.DateER(new Date((new Date(ER_sub.D)).setDate(ER_sub.D.getDate()+1)));
-
-		var i = 0,thcl = ['date','channel','title','pBtns'];
-		$('#reservation_table th').each(function(){
-			$(this).addClass(thcl[i]||('th_'+i));
-			i++;
-		});
-		$('#reservation_table tr:eq(0)').remove();
-		$('#reservation_table').prepend(ER_sub.tableMultiHead);
-		$('#reservation_table thead tr th:eq(0)').remove();
-		$('#reservation_table thead tr').append('<th>&nbsp;</th>');
-		$tgs.each(function(){
-			$tg = $(this);
-			$tg.addClass('rsv unSel');
-			$tds = $tg.children();
-			// Id
-			Id = $tg.attr('id').match(/resid_([0-9]*)/)[1];
-			$tg.attr('data-resid',Id);
-			// チャンネル
-			$tg0 = $tds.eq(1);
-			$tg.attr('data-chtype', $tg0.html());
-			chn = $tg.attr('data-chname');
-			$tg0.html('<div class="ch_Box">'+ (chn?ER_sub.STR.toHan(chn):ER_sub.STR.toHan($tg0.html()))+'</div>');
-			// カテゴリー
-			ctg = $tg.attr('class').match(/ctg_([a-z]*)/)[1];
-			$tds.eq(2).html('<span class="ctg_Box ctg_'+ctg+'"><span class="WD100">'+ER_sub.CTGS[ctg]+'</span><span class="WD100N">'+ctg.slice(0,3)+'</span></span>');
-			// 番組長
-			dur = parseInt((new Date($tds.eq(3).html().replace(/-/g,'/')) - new Date($tds.eq(2).html().replace(/-/g,'/')))/1000,10);
-			$tg.attr('data-dur',dur);
-			durTotal += dur;
-			// タイトル
-			$tds.eq(4).addClass('title').attr('colspan',2).html('<div><span class="title">' + $tds.eq(4).text() + '</span><span class="desc">' + $tds.eq(5).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+mode+'</span></div><a href="javascript:ER_sub.PROGRAMTBL._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
-			$tds.eq(5).remove();
-
-			// 日付
-			$tg0 = $tds.eq(0).addClass('date');
-			d = $tds.eq(3).html().replace(/-/g,'/');
-			$tg.attr('data-date', d);
-			tm = ER_sub.DATE.AP(d.substr(11,5));
-			if ((d.slice(0,10)!=DSP) && DSP) {
-				Lap = false;
-				if (d.slice(0,7)!=DSP.slice(0,7)) {
-					if (d.slice(0,4)!=DSP.slice(0,4)){
-						$tg.before('<tr class="ySplit split" data-split="6"><td colspan="2" class="year">'+DFn.Year(d)+'</td><td colspan="5">&nbsp;</td></tr>');
-					} else {
-						$tg.before('<tr class="mSplit split" data-split="4"><td colspan="7"></td></tr>');
-					}
-				} else {
-					$tg.before('<tr class="dSplit split" data-split="2"><td colspan="7"></td></tr>');
-				}
-			}
-			$tg0.after('<td class="time">'+(ASSIST_INI.time_ap?'<span class="WD70"><span class="ap ap_'+tm.ap+((Lap&&tm.ap==Lap)?' vsblN hv':'')+'">'+tm.ap+'</span>'+tm.html+'</span><span class="WD70N">'+tm._24+'</span>':tm._24)+(dur?'<span class="WD70"><span style="color:#555;padding:0 0.4em;">+</span><span class="durTxt">'+ER_sub.DATE.durToHm(dur)+'</span></span>':'')+'</td>');
-			Lap = tm.ap;
-			DSP = d.slice(0,10);
-			Dstr = '';
-			switch(DSP) {
-			case ToD :
-				Dstr = '<span class="dString">今日</span>';break;
-			case YsD :
-				Dstr = '<span class="dString">昨日</span>';break;
-			case Tmr :
-				Dstr = '<span class="dString">明日</span>';break;
-			default :
-				if (DSP.slice(0,7) == LD.slice(0,7)) {
-					Dstr = '<span class="month vsblN hv">'+DFn.Month(DSP)+'</span>'+DFn.Date(DSP);
-				} else {
-					Dstr = '<span class="month">'+DFn.Month(DSP)  + '</span>' + DFn.Date(DSP);
-				}
-			}
-			$tg0.html((LD==DSP?'<span class="vsblN hv" >':'')+Dstr + DFn.Day(DSP,'<span class="WD70">（</span>', '<span class="WD70">）</span>')+(LD==DSP?'</span>':''));
-			LD = DSP;
-			$tds.eq(3).remove();
-		});
-	},
-	_more : function(Id) {
-		$tg = $('#reservation_table tr[data-resid='+Id+']');
-		$tg.toggleClass('moreOpen').toggleClass('unSel');
-	},
-}
 // =============== チャンネルフォームアシスト
 ER_sub.FRM ={
 	// ひらがなカタカタ
@@ -1972,27 +1913,41 @@ ASSIST_INI.ext_diskinfo_rsvBar_bitrates = {GR:16.85 , BS:26.1, CS:26.1};
 
 $(function(){
 	if (!ASSIST_INI.use_this ) {return;}
-	var reg = /epgrec\/([a-z/]+)[?]*/, php = document.URL.match(reg);
+	var reg = /epgrec\/([a-zA-Z/]+)[?]*/, php = document.URL.match(reg);
 	if ( !php ) {
 		php = 'index';
 	} else {
 		php = php[1].toLowerCase().replace('/', '_');
 	}
-	ER_sub.__PAGE = php;
+	ER_sub.INI();
 	switch(php) {
 	case 'index' :
 	case 'index_index' :
 		if ( ASSIST_INI.index ) {ER_sub.INDEX.ini();}
 		break;
+	case 'search' :
+		ER_sub.__PAGE = 'programtable';
+		ER_sub.PROGRAMTBL.ini();
+		break;
+	case 'search_keyword' :
+		ER_sub.__PAGE = 'keywordtable';
+		ER_sub.KEYWORD.ini();
+		break;
 	case 'recprog' :
 	case 'recprog_index' :
+		ER_sub.__PAGE = 'reservationtable';
 		if ( ASSIST_INI.reserved ) {ER_sub.RESERVED.ini();}
 		break;
 	case 'recprog_recorded' :
+		ER_sub.__PAGE = 'recordedtable';
 		if ( ASSIST_INI.recorded ) {ER_sub.RECORDED.ini();}
 		break;
-	default:
-		ER_sub.PROGRAMTBL.ini();
+	case 'setting' :
+	case 'setting_index' :
+	case 'setting_system' :
+	case 'setting_viewlog' :
+		ER_sub.__PAGE = 'envsetting';
+		ER_sub.SETTING.ini();
 		break;
 	}
 });

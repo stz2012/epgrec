@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<a href="{$home_url}index">番組表に戻る</a>
+<p><a href="{$home_url}index">番組表に戻る</a></p>
 </div>
 
 <div class="container nonborderbox">
@@ -27,7 +27,7 @@
  <tr id="resid_{$reserve.id}" class="ctg_{$reserve.cat}">
   <td>{$reserve.id}</td>
   <td>{$reserve.type}</td>
-  <td id="chid_{$reserve.id}">{$reserve.channel}</td>
+  <td id="chid_{$reserve.id}">{$reserve.station_name}</td>
   <td id="stid_{$reserve.id}">{$reserve.starttime}</td>
   <td>{$reserve.endtime}</td>
   <td>{$reserve.mode}</td>

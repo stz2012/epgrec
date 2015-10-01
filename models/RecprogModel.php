@@ -13,10 +13,12 @@ class RecprogModel extends CommonModel
 	public function getReserveData()
 	{
 		$reserve_data = array();
-		$sql = "SELECT a.*, b.name_en AS cat";
+		$sql = "SELECT a.*, b.name_en AS cat, c.name AS station_name";
 		$sql .= " FROM {$this->setting->tbl_prefix}".RESERVE_TBL." a";
 		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CATEGORY_TBL." b";
 		$sql .= "   ON a.category_id = b.id";
+		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." c";
+		$sql .= "   ON a.channel_id = c.id";
 		$sql .= " WHERE a.complete = '0'";
 		$sql .= " ORDER BY starttime ASC";
 		$stmt = $this->db->prepare($sql);
