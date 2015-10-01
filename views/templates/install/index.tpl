@@ -6,4 +6,5 @@
 {$contents}
 </div>
 
+{include file='INISet.tpl'}
 {include file='footer.tpl'}

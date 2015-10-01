@@ -26,4 +26,5 @@ $ {$install_path}/scripts/getEpg.php [Enter]
 <a href="{$this_class->getCurrentUri(false)}/step5">このリンクをクリックするとEPGの初回受信が始まります</a>
 </div>
 
+{include file='INISet.tpl'}
 {include file='footer.tpl'}
