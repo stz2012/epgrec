@@ -82,11 +82,17 @@ class DBRecord extends ModelBase
 		// id = 0なら空の新規レコード作成
 		if ( $this->__id == 0 )
 		{
-			$sql = "INSERT INTO ".$this->__table." VALUES ( )";
+			if (self::getDbType() == 'pgsql')
+				$sql = "INSERT INTO {$this->__table} (id) VALUES (nextval('{$this->__table}_id_seq'))";
+			else
+				$sql = "INSERT INTO {$this->__table} VALUES ( )";
 			$stmt = $this->db->prepare( $sql );
 			if ($stmt->execute() !== false)
 			{
-				$this->__id = $this->db->lastInsertId();
+				if (self::getDbType() == 'pgsql')
+					$this->__id = $this->db->lastInsertId("{$this->__table}_id_seq");
+				else
+					$this->__id = $this->db->lastInsertId();
 				$stmt->closeCursor();
 				
 				// $this->__record_data読み出し 
@@ -113,16 +119,21 @@ class DBRecord extends ModelBase
 
 	function __get( $property )
 	{
-		if ( $this->__id == 0 ) throw new exception( "get:無効なid" );
-		if ( $property === "id" ) return $this->__id;
-		if ( $this->__record_data === false ) throw new exception( "get: 無効なレコード" );
-		if ( ! array_key_exists( $property, $this->__record_data ) ) throw new exception( "get: $propertyは存在しません" );
+		if ( $this->__id == 0 )
+			throw new exception( "get:無効なid" );
+		if ( $property === "id" )
+			return $this->__id;
+		if ( $this->__record_data === false )
+			throw new exception( "get: 無効なレコード" );
+		if ( ! array_key_exists( $property, $this->__record_data ) )
+			throw new exception( "get: $propertyは存在しません" );
 		return stripslashes($this->__record_data[$property]);
 	}
 
 	function delete()
 	{
-		if ( $this->__id == 0 ) throw new exception( "delete:無効なid" );
+		if ( $this->__id == 0 )
+			throw new exception( "delete:無効なid" );
 		$this->deleteRow($this->__table, array('id' => $this->__id));
 		$this->__id = 0;
 		$this->__record_data = false;
@@ -134,7 +145,10 @@ class DBRecord extends ModelBase
 		if ( $this->__id != 0 )
 		{ 
 			if ( $this->__f_dirty )
+			{
+				//UtilLog::writeLog("レコード更新: ".print_r($this->__record_data, true), 'DEBUG');
 				$this->updateRow($this->__table, $this->__record_data, array('id' => $this->__id));
+			}
 			$this->__f_dirty = false;
 		}
 	}

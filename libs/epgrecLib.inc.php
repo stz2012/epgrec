@@ -22,7 +22,7 @@ function reclog( $message , $level = EPGREC_INFO )
 	}
 	catch ( Exception $e )
 	{
-		// 無視
+		UtilLog::writeLog("ログ出力失敗: ".print_r($e, true));
 	}
 }
 
@@ -88,10 +88,11 @@ function parse_epgdump_file( $type, $xmlfile )
 	// channel抽出
 	foreach ( $xml->channel as $ch )
 	{
-		$disc = $ch['id'];
-		$tmp_arr = explode('_', $ch['id']);
+		$map["$disc"] = (string)$ch['tp'];
+		$disc = (string)$ch['id'];
+		$ch_name = (string)$ch->{'display-name'};
+		$tmp_arr = explode('_', $disc);
 		$sid = $tmp_arr[1];
-		$map["$disc"] = $ch['tp'];
 		try
 		{
 			// チャンネルデータを探す
@@ -103,27 +104,27 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->type = $type;
 				$rec->channel = $map["$disc"];
 				$rec->channel_disc = $disc;
-				$rec->name = $ch->{'display-name'};
+				$rec->name = $ch_name;
 				$rec->sid = $sid;
-				$rec->update();
 			}
 			else
 			{
 				// 存在した場合も、とりあえずチャンネル名は更新する
 				$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
-				$rec->name = $ch->{'display-name'};
+				$rec->name = $ch_name;
 				// BS／CSの場合、チャンネル番号とSIDを更新
 				if ( $type == "BS" ||  $type == "CS" )
 				{
 					$rec->channel = $map["$disc"];
 					$rec->sid = $sid;
 				}
-				$rec->update();
 			}
 		}
 		catch ( Exception $e )
 		{
 			reclog( "parse_epgdump_file::DBの接続またはチャンネルテーブルの書き込みに失敗", EPGREC_ERROR );
+			reclog( "parse_epgdump_file:: ".$e->getMessage()."" , EPGREC_ERROR );
+			exit( $e->getMessage() );
 		}
 	}
 	// channel 終了
@@ -132,7 +133,7 @@ function parse_epgdump_file( $type, $xmlfile )
 	foreach ( $xml->programme as $program )
 	{
 		$channel_rec = null;
-		$channel_disc = $program['channel']; 
+		$channel_disc = (string)$program['channel']; 
 		if ( ! array_key_exists( "$channel_disc", $map ) ) continue;
 		$channel = $map["$channel_disc"];
 		
@@ -147,16 +148,16 @@ function parse_epgdump_file( $type, $xmlfile )
 		if ( $channel_rec == null ) continue;	// あり得ないことが起きた
 		if ( $channel_rec->skip == 1 ) continue;	// 受信しないチャンネル
 
-		$starttime = str_replace(" +0900", '', $program['start'] );
-		$endtime = str_replace( " +0900", '', $program['stop'] );
-		$title = $program->title;
-		$desc = $program->desc;
+		$starttime = str_replace(" +0900", '', (string)$program['start'] );
+		$endtime = str_replace( " +0900", '', (string)$program['stop'] );
+		$title = (string)$program->title;
+		$desc = (string)$program->desc;
 		$cat_ja = "";
 		$cat_en = "";
 		foreach ( $program->category as $cat )
 		{
-			if ( $cat['lang'] == "ja_JP" ) $cat_ja = $cat;
-			if ( $cat['lang'] == "en" ) $cat_en = $cat;
+			if ( (string)$cat['lang'] == "ja_JP" ) $cat_ja = (string)$cat;
+			if ( (string)$cat['lang'] == "en" ) $cat_en = (string)$cat;
 		}
 		$program_disc = md5( $channel_disc . $starttime . $endtime );
 		// printf( "%s %s %s %s %s %s %s \n", $program_disc, $channel, $starttime, $endtime, $title, $desc, $cat_ja );
@@ -183,7 +184,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		catch ( Exception $e )
 		{
 			reclog("parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様", EPGREC_ERROR );
-			reclog("parse_epgdump_file:: ".$e->getMessage()."" ,EPGREC_ERROR );
+			reclog("parse_epgdump_file:: ".$e->getMessage()."" , EPGREC_ERROR );
 			exit( $e->getMessage() );
 		}
 
