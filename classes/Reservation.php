@@ -71,7 +71,7 @@ class Reservation extends ModelBase
 			// 同一番組予約チェック
 			if ( $program_id )
 			{
-				$num = DBRecord::countRecords( RESERVE_TBL, "WHERE program_id = '".$program_id."'" );
+				$num = DBRecord::countRecords( RESERVE_TBL, "WHERE program_id = '{$program_id}'" );
 				if ( $num )
 					throw new Exception("同一の番組が録画予約されています");
 			}
@@ -80,13 +80,13 @@ class Reservation extends ModelBase
 
 			// 既存予約数 = TUNER番号
 			$tuners = ($crec->type == "GR") ? (int)($settings->gr_tuners) : (int)($settings->bs_tuners);
-			$type_str = ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS') ";
 
 			// 影響する予約情報を集める
-			$trecs = DBRecord::createRecords(RESERVE_TBL, "WHERE complete = '0' ".
-											"AND ".$type_str.
-											"AND starttime < '".toDatetime($end_time)."' ".
-											"AND endtime > '".toDatetime($rec_start)."'" );
+			$options = "WHERE complete = '0'";
+			$options .= " AND " . ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS')";
+			$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS TIMESTAMP)";
+			$options .= " AND endtime > CAST('".toDatetime($rec_start)."' AS TIMESTAMP)";
+			$trecs = DBRecord::createRecords(RESERVE_TBL, $options);
 			// 情報を配列に入れる
 			for ( $i = 0; $i < count($trecs) ; $i++ )
 			{
@@ -141,7 +141,7 @@ class Reservation extends ModelBase
 					}
 				}
 				if ( $mem_battings >= $tuners )
-				{ // 重複解消できない
+				{	// 重複解消できない
 					for ( $j = 0; $j < count($trecs) ; $j++ )
 					{
 						if ( ( $dim_start_time[$j] < $dim_end_time[$i] ) && ( $dim_end_time[$j] >= $dim_end_time[$i] ) )
@@ -159,15 +159,15 @@ class Reservation extends ModelBase
 
 			// ここまでくれば予約可能
 			for ( $i = 0; $i < $mi ; $i++ )
-			{ // 重複解消が必要なら実行する
+			{	// 重複解消が必要なら実行する
 				if ( $mem[$i] == count($trecs) )
-				{ // 変更すべきは新規予約
+				{	// 変更すべきは新規予約
 					$rec_start = $dim_start_time[$mem[$i]];
 					$end_time = $dim_end_time[$mem[$i]];
 					$duration = $end_time - $rec_start;	// durationを計算しなおす
 				}
 				else
-				{ // 変更すべきは既存予約
+				{	// 変更すべきは既存予約
 					// 予約修正に必要な情報を取り出す
 					$prev_id           = $trecs[$mem[$i]]->id;
 					$prev_program_id   = $trecs[$mem[$i]]->program_id;
@@ -201,7 +201,8 @@ class Reservation extends ModelBase
 							$prev_mode,
 							$prev_dirty );
 					}
-					catch ( Exception $e ) {
+					catch ( Exception $e )
+					{
 						throw new Exception( " 予約時刻変更(再予約)に失敗しました\n  「".$prev_title."」" );
 					}
 				}
@@ -211,7 +212,8 @@ class Reservation extends ModelBase
 			$tuner = $battings;
 
 			// 改めてdurationをチェックしなおす
-			if ( $duration < ($settings->former_time + 60) ) {	// 60秒以下の番組は弾く
+			if ( $duration < ($settings->former_time + 60) )
+			{	// 60秒以下の番組は弾く
 				throw new Exception( "終わりつつある/終わっている番組です" );
 			}
 
@@ -454,7 +456,7 @@ class Reservation extends ModelBase
 				if ( toTimestamp($rec->starttime) < (time() + PADDING_TIME + $settings->former_time) )
 				{
 					reclog("Reservation::cancel 実行中の予約ID".$rec->id."の取り消しが実行された" );
-					
+
 					// recorderとの通信を試みる
 					$ipc_key = ftok( RECORDER_CMD, "R" );
 					
@@ -472,7 +474,7 @@ class Reservation extends ModelBase
 						$msgh_r = msg_get_queue( $ipc_key );
 						$ipc_key = ftok( RECORDER_CMD, "W" );
 						$msgh_w = msg_get_queue( $ipc_key );
-						
+
 						// 終了を指示
 						msg_send( $msgh_r, (int)$rec->id, "terminate" );
 						sleep(1);

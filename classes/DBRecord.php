@@ -222,7 +222,7 @@ class DBRecord extends ModelBase
 		if (self::getDbType() == 'mysql')
 			$auto_inc_type = 'integer not null auto_increment';
 		else if (self::getDbType() == 'sqlite')
-			$auto_inc_type = 'integer not null autoincrement';
+			$auto_inc_type = 'integer not null';
 		else
 			$auto_inc_type = 'serial not null';
 		switch ($this->__table)
