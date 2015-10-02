@@ -584,6 +584,8 @@ class Reservation extends ModelBase
 		{
 			if (self::getDbType() == 'pgsql')
 				$sql .= " AND EXTRACT(dow from starttime) = :weekofday";
+			else if (self::getDbType() == 'sqlite')
+				$sql .= " AND CAST(strftime('%w', starttime) AS INTEGER) + 1 = :weekofday";
 			else
 				$sql .= " AND DAYOFWEEK(starttime) = :weekofday";
 		}

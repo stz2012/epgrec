@@ -291,26 +291,27 @@ function parse_epgdump_file( $type, $xmlfile )
 // 不要なプログラムの削除
 function garbageClean()
 {
+	$settings = Settings::factory();
 	// 8日以上前のプログラムを消す
-	if (DBRecord::getDbType() == 'pgsql')
+	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL '8 DAY')" );
-	else if (DBRecord::getDbType() == 'sqlite')
+	else if ($settings->db_type == 'sqlite')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < datetime('now', '-8 days')" );
 	else
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL 8 DAY)" );
 
 	// 8日以上先のデータがあれば消す
-	if (DBRecord::getDbType() == 'pgsql')
+	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL '8 DAY')" );
-	else if (DBRecord::getDbType() == 'sqlite')
+	else if ($settings->db_type == 'sqlite')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > datetime('now', '+8 days')" );
 	else
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL 8 DAY)" );
 
 	// 10日以上前のログを消す
-	if (DBRecord::getDbType() == 'pgsql')
+	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL '10 DAY')" );
-	else if (DBRecord::getDbType() == 'sqlite')
+	else if ($settings->db_type == 'sqlite')
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < datetime('now', '-10 days')" );
 	else
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
