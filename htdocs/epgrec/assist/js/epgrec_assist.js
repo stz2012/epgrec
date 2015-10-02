@@ -120,7 +120,7 @@ ER_sub.STYLES = {
 	'#tblMenu{position:relative;padding:0;} #tblMes{position:absolute;top:0;width:99%;text-align:center;display:none;padding:1em 0;z-index:5000;}#tblMes .Box{display:inline-block;position:relative;padding:0.3em 2em;text-align:left;border-radius:0.6em;background-color:#DDD;}#tblMes .Box div.title{color:#400;font-size:120%;border-bottom:2px solid #EEE;border-color:rgba(15,15,15,0.4);margin-bottom:0.6em;}#tblMes .Box .title{font-weight:bold;}#tblMes .Box .mesSplit {opacity:0.4;}#tblMes .Box.error{background:#F55;border:2px solid #F77;box-shadow:0 0 16px #000;padding:0.6em 1em 0.4em 34px;}#tblMes .Box.error:after{content:\'\';display:block;width:20px;height:20px;top:50%;left:6px;margin-top:-10px;position:absolute;background:url('+INISet.prgHomeURL+'assist/imgs/icon20_warning.png) no-repeat;opacity:0.6;}#tblMes .error .title{color:#800;font-size:110%;}#tblMes .Box.green{background:#086;}#tblMes .Box.orange{background:#E90;}.iconW20{display:inline-block;width:20px;height:20px;background:url('+INISet.prgHomeURL+'assist/imgs/ic20.png);margin:0 0.3em;}.iconW20.ic_chkCnt{background-position:0 20px;}.iconW20.ic_chkCnt.plus{background-positin:0 20;}.iconW20.ic_check{background-position:20px 0px }table tr:hover .iconW20.ic_check {background-position-x:0;}table tr.selected .iconW20.ic_check{background-position:0 60px;}'}
 }
 
-// ====================== 番組表
+// ================== 番組表
 // 番組再設定
 // ER_sub.rePRG.add(function($tg){})しておくと
 // 表示中の番組に対して初期処理する
@@ -1212,8 +1212,6 @@ ER_sub.RECORDED = {
 		// 「タイトルや内容をクリックす…」を隠す
 		if ($('#reservation_table').length){
 			$('#reservation_table').prev().hide();
-		} else {
-			$('#floatBox4Dialog').prev().hide();
 		}
 
 		this.reMake($tgs);
