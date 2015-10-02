@@ -297,7 +297,7 @@ class DBRecord extends ModelBase
 				$sql .= " category_id integer not null default '0',";					// カテゴリID
 				$sql .= " use_regexp boolean not null default '0',";					// 正規表現を使用するなら1
 				$sql .= " autorec_mode integer not null default '0',";					// 自動録画のモード02/23/2010追加
-				$sql .= " weekofday varchar(1) not null default '7',";					// 曜日、同追加
+				$sql .= " weekofday varchar(1) not null default '0',";					// 曜日、同追加
 				$sql .= " prgtime varchar(2) not null default '24',";					// 時間　03/13/2010追加
 				$sql .= " primary key (id)";
 				break;
