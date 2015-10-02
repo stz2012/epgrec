@@ -31,7 +31,10 @@ if ( $settings->gr_tuners != 0 )
 	foreach ( $GR_CHANNEL_MAP as $value )
 	{
 		// 録画重複チェック
-		$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < (now() + CAST('00:01:10' AS TIME))" );
+		if (DBRecord::getDbType() == 'mysql')
+			$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < (now() + INTERVAL 70 SECOND)" );
+		else
+			$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < (now() + INTERVAL '70 SECOND')" );
 		if ( ($num < $settings->gr_tuners) && check_epgdump_file($temp_data_gr.$value) )
 		{
 			$cmdline = "CHANNEL=".$value." DURATION=60 TYPE=GR TUNER=0 MODE=0 OUTPUT=".$temp_data_gr.$value." ".DO_RECORD . " >/dev/null 2>&1";
@@ -47,7 +50,10 @@ if ( $settings->gr_tuners != 0 )
 if ( $settings->bs_tuners != 0 )
 {
 	// 録画重複チェック
-	$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + CAST('00:03:05' AS TIME))" );
+	if (DBRecord::getDbType() == 'mysql')
+		$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL 185 SECOND)" );
+	else
+		$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL '185 SECOND')" );
 	if ( ($num < $settings->bs_tuners) && check_epgdump_file($temp_data_bs) )
 	{
 		$cmdline = "CHANNEL=".BS_EPG_CHANNEL." DURATION=180 TYPE=BS TUNER=0 MODE=0 OUTPUT=".$temp_data_bs." ".DO_RECORD . " >/dev/null 2>&1";
@@ -60,7 +66,10 @@ if ( $settings->bs_tuners != 0 )
 	// CS
 	if ($settings->cs_rec_flg != 0)
 	{
-		$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + CAST('00:03:05' AS TIME))" );
+		if (DBRecord::getDbType() == 'mysql')
+			$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL 185 SECOND)" );
+		else
+			$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL '185 SECOND')" );
 		if ( ($num < $settings->bs_tuners) && check_epgdump_file($temp_data_cs1) )
 		{
 			$cmdline = "CHANNEL=".CS1_EPG_CHANNEL." DURATION=120 TYPE=CS TUNER=0 MODE=0 OUTPUT=".$temp_data_cs1." ".DO_RECORD . " >/dev/null 2>&1";
@@ -70,7 +79,10 @@ if ( $settings->bs_tuners != 0 )
 			$procMng->addQueue( $procObj );
 		}
 
-		$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + CAST('00:03:05' AS TIME))" );
+		if (DBRecord::getDbType() == 'mysql')
+			$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL 185 SECOND)" );
+		else
+			$num = DBRecord::countRecords( RESERVE_TBL, "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL '185 SECOND')" );
 		if ( ($num < $settings->bs_tuners) && check_epgdump_file($temp_data_cs2) )
 		{
 			$cmdline = "CHANNEL=".CS2_EPG_CHANNEL." DURATION=120 TYPE=CS TUNER=0 MODE=0 OUTPUT=".$temp_data_cs2." ".DO_RECORD . " >/dev/null 2>&1";

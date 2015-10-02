@@ -41,7 +41,7 @@ class RecprogModel extends CommonModel
 		$sql .= "   ON a.category_id = b.id";
 		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." c";
 		$sql .= "   ON a.channel_id = c.id";
-		$sql .= " WHERE starttime < :starttime";
+		$sql .= " WHERE starttime < CAST(:starttime AS TIMESTAMP)";
 		if ($POST_DATA['key'] != "")
 			$sql .= " AND autorec = :autorec";
 		if ($POST_DATA['do_search'] != "")

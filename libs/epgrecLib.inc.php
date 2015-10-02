@@ -197,7 +197,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				// 新規番組
 				// 重複チェック 同時間帯にある番組
 				$options = "WHERE channel_disc = '".$channel_disc."' ".
-					"AND starttime < '". $endtime ."' AND endtime > '".$starttime."'";
+					"AND starttime < CAST('". $endtime ."' AS TIMESTAMP) AND endtime >  CAST('".$starttime."' AS TIMESTAMP)";
 				$battings = DBRecord::countRecords(PROGRAM_TBL, $options );
 				if ( $battings > 0 )
 				{
@@ -285,13 +285,22 @@ function parse_epgdump_file( $type, $xmlfile )
 function garbageClean()
 {
 	// 8日以上前のプログラムを消す
-	DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < subdate( now(), 8 )" );
+	if (DBRecord::getDbType() == 'mysql')
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL 8 DAY)" );
+	else
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL '8 DAY')" );
 
 	// 8日以上先のデータがあれば消す
-	DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > adddate( now(), 8 ) ");
+	if (DBRecord::getDbType() == 'mysql')
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL 8 DAY)" );
+	else
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL '8 DAY')" );
 
 	// 10日以上前のログを消す
-	DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < subdate( now(), 10 )" );
+	if (DBRecord::getDbType() == 'mysql')
+		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
+	else
+		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL '10 DAY')" );
 }
 
 // キーワード自動録画予約
@@ -326,7 +335,10 @@ function doPowerReduce($isGetEpg = false)
 			if ( strcasecmp( "getepg", $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
-				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + CAST('01:00:00' AS TIME)) AND endtime > now()" );
+				if (DBRecord::getDbType() == 'mysql')
+					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()" );
+				else
+					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()" );
 				if ( $count != 0 )
 				{	// 録画があるなら録画起動にして終了
 					$wakeupvars->reason = "reserve";
@@ -339,7 +351,10 @@ function doPowerReduce($isGetEpg = false)
 			else if ( strcasecmp( "reserve", $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
-				$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + CAST('01:00:00' AS TIME)) AND endtime > now()" );
+				if (DBRecord::getDbType() == 'mysql')
+					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()" );
+				else
+					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()" );
 				if ( $count != 0 ) {	// 録画があるなら何もしない
 					exit();
 				}

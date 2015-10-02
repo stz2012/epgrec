@@ -549,13 +549,25 @@ class Reservation extends ModelBase
 		$sql .= "      FROM {$settings->tbl_prefix}".RESERVE_TBL;
 		$sql .= "  ) d";
 		$sql .= "    ON d.program_id = a.id";
-		$sql .= " WHERE starttime > :search_time";
+		$sql .= " WHERE starttime > CAST(:search_time AS TIMESTAMP)";
 		if ( $keyword != "" )
 		{
 			if ( $use_regexp )
-				$sql .= " AND CONCAT(title,description) REGEXP :keyword";
+			{
+				if (self::getDbType() == 'pgsql')
+					$sql .= " AND title || description ~ :keyword";
+				else if (self::getDbType() == 'sqlite')
+					$sql .= " AND title || description REGEXP :keyword";
+				else
+					$sql .= " AND CONCAT(title,description) REGEXP :keyword";
+			}
 			else
-				$sql .= " AND CONCAT(title,description) LIKE :keyword";
+			{
+				if (self::getDbType() == 'mysql')
+					$sql .= " AND CONCAT(title,description) LIKE :keyword";
+				else
+					$sql .= " AND title || description LIKE :keyword";
+			}
 		}
 		if ( $tuner_type != "*" )
 			$sql .= " AND type = :tuner_type";
@@ -566,7 +578,12 @@ class Reservation extends ModelBase
 		if ( $prgtime != 24 )
 			$sql .= " AND TIME(starttime) BETWEEN CAST(:prgtime_from AS time) AND CAST(:prgtime_to AS time)";
 		if ( $weekofday != 7 )
-			$sql .= " AND WEEKDAY(starttime) = :weekofday";
+		{
+			if (self::getDbType() == 'pgsql')
+				$sql .= " AND EXTRACT(dow from starttime) = :weekofday";
+			else
+				$sql .= " AND WEEKDAY(starttime) = :weekofday";
+		}
 		$sql .= " ORDER BY starttime ASC";
 		$sql .= " LIMIT :search_limit";
 		$stmt = self::$connInst->prepare($sql);
