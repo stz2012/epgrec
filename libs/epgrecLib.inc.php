@@ -328,7 +328,8 @@ function doKeywordReservation()
 		{
 			Reservation::keyword( $rec->id );
 		}
-		catch ( Exception $e ) {
+		catch ( Exception $e )
+		{
 			// 無視
 		}
 	}
@@ -344,9 +345,9 @@ function doPowerReduce($isGetEpg = false)
 		{
 			$wakeupvars_text = file_get_contents( INSTALL_PATH. "/settings/wakeupvars.xml" );
 			$wakeupvars = new SimpleXMLElement($wakeupvars_text);
-			if (DBRecord::getDbType() == 'pgsql')
+			if ($settings->db_type == 'pgsql')
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()";
-			else if (DBRecord::getDbType() == 'sqlite')
+			else if ($settings->db_type == 'sqlite')
 				$options = "WHERE complete <> '1' AND starttime < datetime('now', '+1 days') AND endtime > datetime('now')";
 			else
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()";

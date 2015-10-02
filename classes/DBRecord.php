@@ -84,6 +84,8 @@ class DBRecord extends ModelBase
 		{
 			if (self::getDbType() == 'pgsql')
 				$sql = "INSERT INTO {$this->__table} (id) VALUES (nextval('{$this->__table}_id_seq'))";
+			else if (self::getDbType() == 'sqlite')
+				$sql = "INSERT INTO {$this->__table} DEFAULT VALUES";
 			else
 				$sql = "INSERT INTO {$this->__table} VALUES ( )";
 			$stmt = $this->db->prepare( $sql );
@@ -218,18 +220,16 @@ class DBRecord extends ModelBase
 
 	private function _getTableStruct()
 	{
-		$sql = '';
-		if (self::getDbType() == 'mysql')
-			$auto_inc_type = 'integer not null auto_increment';
+		if (self::getDbType() == 'pgsql')
+			$sql = 'id serial not null primary key,';
 		else if (self::getDbType() == 'sqlite')
-			$auto_inc_type = 'integer not null';
+			$sql = 'id integer not null primary key autoincrement,';
 		else
-			$auto_inc_type = 'serial not null';
+			$sql = 'id integer not null primary key auto_increment,';
 		switch ($this->__table)
 		{
 			// 予約テーブル
 			case self::$__settings->tbl_prefix.RESERVE_TBL:
-				$sql .= " id {$auto_inc_type},";										// ID
 				$sql .= " channel_disc varchar(128) not null default 'none',";			// channel disc
 				$sql .= " channel_id integer not null  default '0',";					// channel ID
 				$sql .= " program_id integer not null default '0',";					// Program ID
@@ -246,13 +246,11 @@ class DBRecord extends ModelBase
 				$sql .= " reserve_disc varchar(128) not null default 'none',";			// 識別用hash
 				$sql .= " autorec integer not null default '0',";						// キーワードID
 				$sql .= " mode integer not null default '0',";							// 録画モード
-				$sql .= " dirty boolean not null default '0',";							// ダーティフラグ
-				$sql .= " primary key (id)";
+				$sql .= " dirty boolean not null default '0'";							// ダーティフラグ
 				break;
 
 			// 番組表テーブル
 			case self::$__settings->tbl_prefix.PROGRAM_TBL:
-				$sql .= " id {$auto_inc_type},";										// ID
 				$sql .= " channel_disc varchar(128) not null default 'none',";			// channel disc
 				$sql .= " channel_id integer not null default '0',";					// channel ID
 				$sql .= " type varchar(8) not null default 'GR',";						// 種別（GR/BS/CS）
@@ -263,34 +261,28 @@ class DBRecord extends ModelBase
 				$sql .= " starttime timestamp not null default '1970-01-01 00:00:00',";	// 開始時刻
 				$sql .= " endtime timestamp not null default '1970-01-01 00:00:00',";	// 終了時刻
 				$sql .= " program_disc varchar(128) not null default 'none',";	 		// 識別用hash
-				$sql .= " autorec boolean not null default '1',";						// 自動録画有効無効
-				$sql .= " primary key (id)";
+				$sql .= " autorec boolean not null default '1'";						// 自動録画有効無効
 				break;
 
 			// チャンネルテーブル
 			case self::$__settings->tbl_prefix.CHANNEL_TBL:
-				$sql .= " id {$auto_inc_type},";										// ID
 				$sql .= " type varchar(8) not null default 'GR',";						// 種別
 				$sql .= " channel varchar(10) not null default '0',";					// channel
 				$sql .= " name varchar(512) not null default 'none',";					// 表示名
 				$sql .= " channel_disc varchar(128) not null default 'none',";			// 識別用hash
 				$sql .= " sid varchar(64) not null default 'hd',";						// サービスID用02/23/2010追加
-				$sql .= " skip boolean not null default '0',";							// チャンネルスキップ用03/13/2010追加
-				$sql .= " primary key (id)";
+				$sql .= " skip boolean not null default '0'";							// チャンネルスキップ用03/13/2010追加
 				break;
 
 			// カテゴリテーブル
 			case self::$__settings->tbl_prefix.CATEGORY_TBL:
-				$sql .= " id {$auto_inc_type},";										// ID
 				$sql .= " name_jp varchar(512) not null default 'none',";				// 表示名
 				$sql .= " name_en varchar(512) not null default 'none',";				// 同上
-				$sql .= " category_disc varchar(128) not null default 'none',";			// 識別用hash
-				$sql .= " primary key (id)";
+				$sql .= " category_disc varchar(128) not null default 'none'";			// 識別用hash
 				break;
 
 			// キーワードテーブル
 			case self::$__settings->tbl_prefix.KEYWORD_TBL:
-				$sql .= " id {$auto_inc_type},";										// ID
 				$sql .= " keyword varchar(512) not null default '*',";					// 表示名
 				$sql .= " type varchar(8) not null default '*',";						// 種別
 				$sql .= " channel_id integer not null default '0',";					// channel ID
@@ -298,17 +290,14 @@ class DBRecord extends ModelBase
 				$sql .= " use_regexp boolean not null default '0',";					// 正規表現を使用するなら1
 				$sql .= " autorec_mode integer not null default '0',";					// 自動録画のモード02/23/2010追加
 				$sql .= " weekofday varchar(1) not null default '0',";					// 曜日、同追加
-				$sql .= " prgtime varchar(2) not null default '24',";					// 時間　03/13/2010追加
-				$sql .= " primary key (id)";
+				$sql .= " prgtime varchar(2) not null default '24'";					// 時間　03/13/2010追加
 				break;
 
 			// ログテーブル
 			case self::$__settings->tbl_prefix.LOG_TBL:
-				$sql .= " id {$auto_inc_type},";										// ID
 				$sql .= " logtime timestamp not null default '1970-01-01 00:00:00',";	// 記録日時
 				$sql .= " level integer not null default '0',";							// エラーレベル
-				$sql .= " message varchar(512) not null default '',";					// メッセージ
-				$sql .= " primary key (id)";
+				$sql .= " message varchar(512) not null default ''";					// メッセージ
 				break;
 		}
 		return $sql;
