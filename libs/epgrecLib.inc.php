@@ -292,22 +292,28 @@ function parse_epgdump_file( $type, $xmlfile )
 function garbageClean()
 {
 	// 8日以上前のプログラムを消す
-	if (DBRecord::getDbType() == 'mysql')
-		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL 8 DAY)" );
-	else
+	if (DBRecord::getDbType() == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL '8 DAY')" );
+	else if (DBRecord::getDbType() == 'sqlite')
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < datetime('now', '-8 days')" );
+	else
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL 8 DAY)" );
 
 	// 8日以上先のデータがあれば消す
-	if (DBRecord::getDbType() == 'mysql')
-		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL 8 DAY)" );
-	else
+	if (DBRecord::getDbType() == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL '8 DAY')" );
+	else if (DBRecord::getDbType() == 'sqlite')
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > datetime('now', '+8 days')" );
+	else
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL 8 DAY)" );
 
 	// 10日以上前のログを消す
-	if (DBRecord::getDbType() == 'mysql')
-		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
-	else
+	if (DBRecord::getDbType() == 'pgsql')
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL '10 DAY')" );
+	else if (DBRecord::getDbType() == 'sqlite')
+		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < datetime('now', '-10 days')" );
+	else
+		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
 }
 
 // キーワード自動録画予約
@@ -337,16 +343,19 @@ function doPowerReduce($isGetEpg = false)
 		{
 			$wakeupvars_text = file_get_contents( INSTALL_PATH. "/settings/wakeupvars.xml" );
 			$wakeupvars = new SimpleXMLElement($wakeupvars_text);
+			if (DBRecord::getDbType() == 'pgsql')
+				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()";
+			else if (DBRecord::getDbType() == 'sqlite')
+				$options = "WHERE complete <> '1' AND starttime < datetime('now', '+1 days') AND endtime > datetime('now')";
+			else
+				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()";
 
 			// 起動理由を調べる
 			if ( strcasecmp( "getepg", $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
-				if (DBRecord::getDbType() == 'mysql')
-					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()" );
-				else
-					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()" );
-				if ( $count != 0 )
+				$num = DBRecord::countRecords( RESERVE_TBL, $options );
+				if ( $num != 0 )
 				{	// 録画があるなら録画起動にして終了
 					$wakeupvars->reason = "reserve";
 				}
@@ -358,11 +367,9 @@ function doPowerReduce($isGetEpg = false)
 			else if ( strcasecmp( "reserve", $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
-				if (DBRecord::getDbType() == 'mysql')
-					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()" );
-				else
-					$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()" );
-				if ( $count != 0 ) {	// 録画があるなら何もしない
+				$num = DBRecord::countRecords( RESERVE_TBL, $options );
+				if ( $num != 0 )
+				{	// 録画があるなら何もしない
 					exit();
 				}
 				exec( $settings->shutdown . " -h +".$settings->wakeup_before );

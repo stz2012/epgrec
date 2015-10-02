@@ -566,10 +566,10 @@ class Reservation extends ModelBase
 			}
 			else
 			{
-				if (self::getDbType() == 'mysql')
-					$sql .= " AND CONCAT(title,description) LIKE :keyword";
-				else
+				if (self::getDbType() == 'pgsql' || self::getDbType() == 'sqlite')
 					$sql .= " AND title || description LIKE :keyword";
+				else
+					$sql .= " AND CONCAT(title,description) LIKE :keyword";
 			}
 		}
 		if ( $tuner_type != "*" )

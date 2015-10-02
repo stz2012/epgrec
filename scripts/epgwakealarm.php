@@ -21,11 +21,14 @@
 	try {
 		// 規定時間以内に予約はあるか
 		$recstart_time = intval($settings->wakeup_before) + 5;
-		if (DBRecord::getDbType() == 'mysql')
-			$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL {$recstart_time} MINUTE)" );
+		if (DBRecord::getDbType() == 'pgsql')
+			$options = " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL '{$recstart_time} MINUTE')";
+		else if (DBRecord::getDbType() == 'sqlite')
+			$options = " WHERE complete <> '1' AND starttime > datetime('now') AND starttime <= datetime('now', '+{$recstart_time} minutes')";
 		else
-			$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL '{$recstart_time} MINUTE')" );
-		if( $count > 0 ) {
+			$options = " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL {$recstart_time} MINUTE)";
+		$num = DBRecord::countRecords( RESERVE_TBL, $options );
+		if( $num > 0 ) {
 			$wakeupvars->reason = "reserve";
 		}
 		else if( (intval($wakeupvars->getepg_time) + intval($settings->getepg_timer) * 3600 ) <= time() ) {
@@ -46,8 +49,12 @@
   else if( strcasecmp( $argv[1], "stop" ) == 0 ) {
 	try {
 		// 録画中はないか？
-		$count = DBRecord::countRecords( RESERVE_TBL, " WHERE complete <> '1' AND starttime < now() AND endtime > now()" );
-		if( $count != 0 ) {
+		if (DBRecord::getDbType() == 'sqlite')
+			$options = "WHERE complete <> '1' AND starttime < datetime('now') AND endtime > datetime('now')";
+		else
+			$options = "WHERE complete <> '1' AND starttime < now() AND endtime > now()";
+		$num = DBRecord::countRecords( RESERVE_TBL, $options );
+		if( $num != 0 ) {
 			// シャットダウン中止を試みる
 			exec( $settings->shutdown." -c" );
 			recLog("予約中にシャットダウンが実行された", EPGREC_WARN );
