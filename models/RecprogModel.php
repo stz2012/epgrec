@@ -10,7 +10,7 @@ class RecprogModel extends CommonModel
 	 * 予約データ取得
 	 * @return array
 	 */
-	public function getReserveData()
+	public function getReserveData($POST_DATA)
 	{
 		$reserve_data = array();
 		$sql = "SELECT a.*, b.name_en AS cat, c.name AS station_name";
@@ -20,8 +20,26 @@ class RecprogModel extends CommonModel
 		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." c";
 		$sql .= "   ON a.channel_id = c.id";
 		$sql .= " WHERE a.complete = '0'";
+		if ($POST_DATA['do_search'] != "")
+		{
+			if ($POST_DATA['search'] != "")
+				$sql .= " AND CONCAT(title, description) LIKE :search";
+			if ($POST_DATA['category_id'] != 0)
+				$sql .= " AND category_id= :cate_id";
+			if ($POST_DATA['station'] != 0)
+				$sql .= " AND channel_id= :station";
+		}
 		$sql .= " ORDER BY starttime ASC";
 		$stmt = $this->db->prepare($sql);
+		if ($POST_DATA['do_search'] != "")
+		{
+			if ($POST_DATA['search'] != "")
+				$stmt->bindValue(':search', "%{$POST_DATA['search']}%");
+			if ($POST_DATA['category_id'] != 0)
+				$stmt->bindValue(':cate_id', $POST_DATA['category_id']);
+			if ($POST_DATA['station'] != 0)
+				$stmt->bindValue(':station', $POST_DATA['station']);
+		}
 		$stmt->execute();
 		$reserve_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$stmt->closeCursor();
@@ -42,12 +60,10 @@ class RecprogModel extends CommonModel
 		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." c";
 		$sql .= "   ON a.channel_id = c.id";
 		$sql .= " WHERE starttime < CAST(:starttime AS TIMESTAMP)";
-		if ($POST_DATA['key'] != "")
-			$sql .= " AND autorec = :autorec";
 		if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")
-				$sql .= " AND CONCAT(title,description) like :search";
+				$sql .= " AND CONCAT(title, description) LIKE :search";
 			if ($POST_DATA['category_id'] != 0)
 				$sql .= " AND category_id= :cate_id";
 			if ($POST_DATA['station'] != 0)
@@ -56,8 +72,6 @@ class RecprogModel extends CommonModel
 		$sql .= " ORDER BY starttime DESC";
 		$stmt = $this->db->prepare($sql);
 		$stmt->bindValue(':starttime', date('Y-m-d H:i:s'));
-		if ($POST_DATA['key'] != "")
-			$stmt->bindValue(':autorec', $POST_DATA['key']);
 		if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")

@@ -12,17 +12,25 @@ class RecprogController extends CommonController
 	public function indexAction()
 	{
 		global $RECORD_MODE;
-		
+		$search = $this->request->getPost('search');
+		$category_id = ($this->request->getPost('category_id')) ? $this->request->getPost('category_id') : 0;
+		$channel_id = ($this->request->getPost('station')) ? $this->request->getPost('station') : 0;
+
 		$reservations = array();
-		$rvs = $this->model->getReserveData();
+		$rvs = $this->model->getReserveData($this->request->getPost());
 		foreach ( $rvs as $r )
 		{
 			$r['mode'] = $RECORD_MODE[$r['mode']]['name'];
 			array_push( $reservations, $r );
 		}
-		
-		$this->view->assign("sitetitle", "録画予約一覧");
-		$this->view->assign("reservations", $reservations);
+
+		$this->view->assign( "sitetitle", "録画予約一覧" );
+		$this->view->assign( "reservations", $reservations );
+		$this->view->assign( "search",       $search );
+		$this->view->assign( "stations",     $this->model->getStationOptions() );
+		$this->view->assign( "sel_station",  $channel_id );
+		$this->view->assign( "categorys",    $this->model->getCategoryOptions() );
+		$this->view->assign( "sel_category", $category_id );
 	}
 
 	/**
@@ -67,8 +75,8 @@ class RecprogController extends CommonController
 		}
 
 		$this->view->assign( "sitetitle",    "録画済一覧" );
-		$this->view->assign( "search",       $search );
 		$this->view->assign( "records",      $records );
+		$this->view->assign( "search",       $search );
 		$this->view->assign( "stations",     $this->model->getStationOptions() );
 		$this->view->assign( "sel_station",  $channel_id );
 		$this->view->assign( "categorys",    $this->model->getCategoryOptions() );

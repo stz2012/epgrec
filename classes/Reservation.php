@@ -577,7 +577,7 @@ class Reservation extends ModelBase
 		if ( $category_id != 0 )
 			$sql .= " AND category_id = :category_id";
 		if ( $prgtime != 24 )
-			$sql .= " AND TIME(starttime) BETWEEN CAST(:prgtime_from AS time) AND CAST(:prgtime_to AS time)";
+			$sql .= " AND CAST(starttime AS TIME) BETWEEN CAST(:prgtime_from AS TIME) AND CAST(:prgtime_to AS TIME)";
 		if ( $weekofday != 0 )
 		{
 			if (self::getDbType() == 'pgsql')

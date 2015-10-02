@@ -5,6 +5,17 @@
 <p><a href="{$home_url}index">番組表に戻る</a></p>
 </div>
 
+<div class="container">
+絞り込み：
+<form method="post" action="{$this_class->getCurrentUri()}">
+<input type="hidden" name="do_search" value="1" />
+検索語句<input type="text" size="20" name="search" value="{$search}" />
+局{html_options name="station" options=$stations selected=$sel_station}
+カテゴリ{html_options name="category_id" options=$categorys selected=$sel_category}
+<input type="submit" value="絞り込む" />
+</form>
+</div>
+
 <div class="container nonborderbox">
 {if count($reservations)}
 <table id="reservation_table" class="table">
