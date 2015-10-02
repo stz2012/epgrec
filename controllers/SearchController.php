@@ -16,7 +16,7 @@ class SearchController extends CommonController
 		$type = "*";
 		$category_id = 0;
 		$channel_id = 0;
-		$weekofday = 7;
+		$weekofday = 0;
 		$prgtime = 24;
 
 		// パラメータの処理
@@ -165,7 +165,7 @@ class SearchController extends CommonController
 	// 曜日
 	private function _getWeekOfDays()
 	{
-		return array( "月", "火", "水", "木", "金", "土", "日", "なし" );
+		return array( "なし", "月", "火", "水", "木", "金", "土", "日" );
 	}
 }
 ?>

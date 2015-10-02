@@ -26,15 +26,22 @@ function reclog( $message , $level = EPGREC_INFO )
 	}
 }
 
-function toTimestamp( $string )
+function toTimestamp( $param )
 {
-	sscanf( $string, "%4d-%2d-%2d %2d:%2d:%2d", $y, $mon, $day, $h, $min, $s );
-	return mktime( $h, $min, $s, $mon, $day, $y );
+	sscanf( $param, "%4d-%2d-%2d %2d:%2d:%2d", $yyyy, $mm, $dd, $hh, $ii, $ss );
+	return mktime( $hh, $ii, $ss, $mm, $dd, $yyyy );
 }
 
 function toDatetime( $timestamp )
 {
 	return date("Y-m-d H:i:s", $timestamp);
+}
+
+function toDatetime2( $param )
+{
+	$param = str_replace(' +0900', '', $param);
+	sscanf( $param, "%4d%2d%2d%2d%2d%2d", $yyyy, $mm, $dd, $hh, $ii, $ss );
+	return toDatetime( mktime( $hh, $ii, $ss, $mm, $dd, $yyyy ) );
 }
 
 function jdialog( $message, $url = "index.php" )
@@ -75,7 +82,7 @@ function check_epgdump_file( $file )
 function parse_epgdump_file( $type, $xmlfile )
 {
 	$settings = Settings::factory();
-	$map = array();
+	$ch_map = array();
 
 	// XML parse
 	$xml = @simplexml_load_file( $xmlfile );
@@ -88,34 +95,35 @@ function parse_epgdump_file( $type, $xmlfile )
 	// channel抽出
 	foreach ( $xml->channel as $ch )
 	{
-		$map["$disc"] = (string)$ch['tp'];
-		$disc = (string)$ch['id'];
 		$ch_name = (string)$ch->{'display-name'};
-		$tmp_arr = explode('_', $disc);
+		$ch_disc = (string)$ch['id'];
+		$ch_map["$ch_disc"] = (string)$ch['tp'];
+		$tmp_arr = explode('_', $ch_disc);
 		$sid = $tmp_arr[1];
 		try
 		{
 			// チャンネルデータを探す
-			$num = DBRecord::countRecords( CHANNEL_TBL , "WHERE channel_disc = '" . $disc ."'" );
+			$num = DBRecord::countRecords( CHANNEL_TBL , "WHERE channel_disc = '{$ch_disc}'" );
 			if ( $num == 0 )
 			{
 				// チャンネルデータがないなら新規作成
 				$rec = new DBRecord( CHANNEL_TBL );
 				$rec->type = $type;
-				$rec->channel = $map["$disc"];
-				$rec->channel_disc = $disc;
 				$rec->name = $ch_name;
+				$rec->channel = $ch_map["$ch_disc"];
+				$rec->channel_disc = $ch_disc;
 				$rec->sid = $sid;
+				reclog("parse_epgdump_file:: 新規チャンネル {$ch_name} を追加" );
 			}
 			else
 			{
 				// 存在した場合も、とりあえずチャンネル名は更新する
-				$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $disc );
+				$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $ch_disc );
 				$rec->name = $ch_name;
 				// BS／CSの場合、チャンネル番号とSIDを更新
 				if ( $type == "BS" ||  $type == "CS" )
 				{
-					$rec->channel = $map["$disc"];
+					$rec->channel = $ch_map["$ch_disc"];
 					$rec->sid = $sid;
 				}
 			}
@@ -134,22 +142,22 @@ function parse_epgdump_file( $type, $xmlfile )
 	{
 		$channel_rec = null;
 		$channel_disc = (string)$program['channel']; 
-		if ( ! array_key_exists( "$channel_disc", $map ) ) continue;
-		$channel = $map["$channel_disc"];
-		
+		if ( ! array_key_exists( "$channel_disc", $ch_map ) ) continue;
+		$channel = $ch_map["$channel_disc"];
+
 		try
 		{
 			$channel_rec = new DBRecord(CHANNEL_TBL, "channel_disc", "$channel_disc" );
 		}
 		catch ( Exception $e )
 		{
-			reclog( "parse_epgdump_file::チャンネルレコード $channel_disc が発見できない", EPGREC_ERROR );
+			reclog( "parse_epgdump_file::チャンネルレコード {$channel_disc} が発見できない", EPGREC_ERROR );
 		}
 		if ( $channel_rec == null ) continue;	// あり得ないことが起きた
 		if ( $channel_rec->skip == 1 ) continue;	// 受信しないチャンネル
 
-		$starttime = str_replace(" +0900", '', (string)$program['start'] );
-		$endtime = str_replace( " +0900", '', (string)$program['stop'] );
+		$starttime = toDatetime2( (string)$program['start'] );
+		$endtime = toDatetime2( (string)$program['stop'] );
 		$title = (string)$program->title;
 		$desc = (string)$program->desc;
 		$cat_ja = "";
@@ -168,7 +176,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		{
 			// カテゴリを処理する
 			$category_disc = md5( $cat_ja . $cat_en );
-			$num = DBRecord::countRecords(CATEGORY_TBL, "WHERE category_disc = '".$category_disc."'" );
+			$num = DBRecord::countRecords(CATEGORY_TBL, "WHERE category_disc = '{$category_disc}'" );
 			if ( $num == 0 )
 			{
 				// 新規カテゴリの追加
@@ -176,7 +184,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				$cat_rec->name_jp = $cat_ja;
 				$cat_rec->name_en = $cat_en;
 				$cat_rec->category_disc = $category_disc;
-				reclog("parse_epgdump_file:: 新規カテゴリ".$cat_ja."を追加" );
+				reclog("parse_epgdump_file:: 新規カテゴリ {$cat_ja} を追加" );
 			}
 			else
 				$cat_rec = new DBRecord(CATEGORY_TBL, "category_disc" , $category_disc );
@@ -192,13 +200,14 @@ function parse_epgdump_file( $type, $xmlfile )
 		try
 		{
 			//
-			$num = DBRecord::countRecords(PROGRAM_TBL, "WHERE program_disc = '".$program_disc."'" );
+			$num = DBRecord::countRecords(PROGRAM_TBL, "WHERE program_disc = '{$program_disc}'" );
 			if ( $num == 0 )
 			{
 				// 新規番組
 				// 重複チェック 同時間帯にある番組
-				$options = "WHERE channel_disc = '".$channel_disc."' ".
-					"AND starttime < CAST('". $endtime ."' AS TIMESTAMP) AND endtime >  CAST('".$starttime."' AS TIMESTAMP)";
+				$options = "WHERE channel_disc = '{$channel_disc}'";
+				$options .= " AND starttime < CAST('{$endtime}' AS TIMESTAMP)";
+				$options .= " AND endtime > CAST('{$starttime}' AS TIMESTAMP)";
 				$battings = DBRecord::countRecords(PROGRAM_TBL, $options );
 				if ( $battings > 0 )
 				{
@@ -244,7 +253,6 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->starttime = $starttime;
 				$rec->endtime = $endtime;
 				$rec->program_disc = $program_disc;
-				$rec->update();
 			}
 			else
 			{
@@ -253,7 +261,6 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->title = $title;
 				$rec->description = $desc;
 				$rec->category_id = $cat_rec->id;
-				$rec->update();
 				try
 				{
 					$reserve = new DBRecord( RESERVE_TBL, "program_id", $rec->id );
@@ -263,7 +270,6 @@ function parse_epgdump_file( $type, $xmlfile )
 						$reserve->title = $title;
 						$reserve->description = $desc;
 						reclog( "parse_epgdump_file:: 予約ID".$reserve->id."のEPG情報が更新された" );
-						$reserve->update();
 					}
 				}
 				catch ( Exception $e ) {

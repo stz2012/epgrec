@@ -109,7 +109,7 @@ class EpgrecRpc
 		$type = "*", 
 		$category_id = 0,
 		$channel_id = 0,
-		$weekofday = 7,
+		$weekofday = 0,
 		$prgtime = 24
 	) {
 		if ( $weekofday > 7 ) throw new XML_RPC2_FaultException("weekofday value is invalid");

@@ -1950,6 +1950,7 @@ $(function(){
 		if ( ASSIST_INI.index ) {ER_sub.INDEX.ini();}
 		break;
 	case 'search' :
+	case 'search_index' :
 		ER_sub.__PAGE = 'programtable';
 		if ( ASSIST_INI.search ) {ER_sub.PROGRAMTBL.ini();}
 		break;

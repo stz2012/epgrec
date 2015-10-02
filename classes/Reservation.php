@@ -531,7 +531,7 @@ class Reservation extends ModelBase
 		$channel_id = 0,
 		$category_id = 0,
 		$prgtime = 24,
-		$weekofday = 7,
+		$weekofday = 0,
 		$limit = 300
 	) {
 		$settings = Settings::factory();
@@ -547,6 +547,7 @@ class Reservation extends ModelBase
 		$sql .= "  LEFT JOIN (";
 		$sql .= "    SELECT program_id, COUNT(*) AS rsv_cnt";
 		$sql .= "      FROM {$settings->tbl_prefix}".RESERVE_TBL;
+		$sql .= "     GROUP BY program_id";
 		$sql .= "  ) d";
 		$sql .= "    ON d.program_id = a.id";
 		$sql .= " WHERE starttime > CAST(:search_time AS TIMESTAMP)";
@@ -577,12 +578,12 @@ class Reservation extends ModelBase
 			$sql .= " AND category_id = :category_id";
 		if ( $prgtime != 24 )
 			$sql .= " AND TIME(starttime) BETWEEN CAST(:prgtime_from AS time) AND CAST(:prgtime_to AS time)";
-		if ( $weekofday != 7 )
+		if ( $weekofday != 0 )
 		{
 			if (self::getDbType() == 'pgsql')
 				$sql .= " AND EXTRACT(dow from starttime) = :weekofday";
 			else
-				$sql .= " AND WEEKDAY(starttime) = :weekofday";
+				$sql .= " AND DAYOFWEEK(starttime) = :weekofday";
 		}
 		$sql .= " ORDER BY starttime ASC";
 		$sql .= " LIMIT :search_limit";
@@ -606,7 +607,7 @@ class Reservation extends ModelBase
 			$stmt->bindValue(':prgtime_from', sprintf("%02d:00:00", $prgtime));
 			$stmt->bindValue(':prgtime_to',   sprintf("%02d:59:59", $prgtime));
 		}
-		if ( $weekofday != 7 )
+		if ( $weekofday != 0 )
 			$stmt->bindValue(':weekofday', $weekofday);
 		$stmt->bindValue(':search_limit', $limit, PDO::PARAM_INT);
 		$stmt->execute();
