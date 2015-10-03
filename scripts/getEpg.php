@@ -12,8 +12,7 @@ $procMng = new EpgrecProcMng();
 if (intval($settings->use_power_reduce) != 0 )
 {
 	$userinfo = posix_getpwnam( $settings->www_user );
-	$groupinfp = posix_getgrnam( $settings->www_group );
-
+	$groupinfo = posix_getgrnam( $settings->www_group );
 	posix_setgid( $groupinfo['gid'] );
 	posix_setuid( $userinfo['uid'] );
 }

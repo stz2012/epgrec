@@ -113,12 +113,13 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->channel = $ch_map["$ch_disc"];
 				$rec->channel_disc = $ch_disc;
 				$rec->sid = $sid;
+				$rec->update();
 				reclog("parse_epgdump_file:: 新規チャンネル {$ch_name} を追加" );
 			}
 			else
 			{
 				// 存在した場合も、とりあえずチャンネル名は更新する
-				$rec = new DBRecord(CHANNEL_TBL, "channel_disc", $ch_disc );
+				$rec = new DBRecord( CHANNEL_TBL, "channel_disc", $ch_disc );
 				$rec->name = $ch_name;
 				// BS／CSの場合、チャンネル番号とSIDを更新
 				if ( $type == "BS" ||  $type == "CS" )
@@ -126,6 +127,7 @@ function parse_epgdump_file( $type, $xmlfile )
 					$rec->channel = $ch_map["$ch_disc"];
 					$rec->sid = $sid;
 				}
+				$rec->update();
 			}
 		}
 		catch ( Exception $e )
@@ -147,7 +149,7 @@ function parse_epgdump_file( $type, $xmlfile )
 
 		try
 		{
-			$channel_rec = new DBRecord(CHANNEL_TBL, "channel_disc", "$channel_disc" );
+			$channel_rec = new DBRecord( CHANNEL_TBL, "channel_disc", "$channel_disc" );
 		}
 		catch ( Exception $e )
 		{
@@ -176,7 +178,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		{
 			// カテゴリを処理する
 			$category_disc = md5( $cat_ja . $cat_en );
-			$num = DBRecord::countRecords(CATEGORY_TBL, "WHERE category_disc = '{$category_disc}'" );
+			$num = DBRecord::countRecords( CATEGORY_TBL, "WHERE category_disc = '{$category_disc}'" );
 			if ( $num == 0 )
 			{
 				// 新規カテゴリの追加
@@ -184,10 +186,11 @@ function parse_epgdump_file( $type, $xmlfile )
 				$cat_rec->name_jp = $cat_ja;
 				$cat_rec->name_en = $cat_en;
 				$cat_rec->category_disc = $category_disc;
+				$cat_rec->update();
 				reclog("parse_epgdump_file:: 新規カテゴリ {$cat_ja} を追加" );
 			}
 			else
-				$cat_rec = new DBRecord(CATEGORY_TBL, "category_disc" , $category_disc );
+				$cat_rec = new DBRecord( CATEGORY_TBL, "category_disc" , $category_disc );
 		}
 		catch ( Exception $e )
 		{
@@ -200,7 +203,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		try
 		{
 			//
-			$num = DBRecord::countRecords(PROGRAM_TBL, "WHERE program_disc = '{$program_disc}'" );
+			$num = DBRecord::countRecords( PROGRAM_TBL, "WHERE program_disc = '{$program_disc}'" );
 			if ( $num == 0 )
 			{
 				// 新規番組
@@ -209,11 +212,11 @@ function parse_epgdump_file( $type, $xmlfile )
 				$options = "WHERE channel_disc = '{$channel_disc}'";
 				$options .= " AND starttime < CAST('{$endtime}' AS {$F_TYPE})";
 				$options .= " AND endtime > CAST('{$starttime}' AS {$F_TYPE})";
-				$battings = DBRecord::countRecords(PROGRAM_TBL, $options );
+				$battings = DBRecord::countRecords( PROGRAM_TBL, $options );
 				if ( $battings > 0 )
 				{
 					// 重複発生＝おそらく放映時間の変更
-					$records = DBRecord::createRecords(PROGRAM_TBL, $options);
+					$records = DBRecord::createRecords( PROGRAM_TBL, $options);
 					foreach ( $records as $rec )
 					{
 						// 自動録画予約された番組は放映時間変更と同時にいったん削除する
@@ -254,6 +257,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->starttime = $starttime;
 				$rec->endtime = $endtime;
 				$rec->program_disc = $program_disc;
+				$rec->update();
 			}
 			else
 			{
@@ -262,6 +266,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->title = $title;
 				$rec->description = $desc;
 				$rec->category_id = $cat_rec->id;
+				$rec->update();
 				try
 				{
 					$reserve = new DBRecord( RESERVE_TBL, "program_id", $rec->id );
@@ -270,10 +275,12 @@ function parse_epgdump_file( $type, $xmlfile )
 					{
 						$reserve->title = $title;
 						$reserve->description = $desc;
+						$reserve->update();
 						reclog( "parse_epgdump_file:: 予約ID".$reserve->id."のEPG情報が更新された" );
 					}
 				}
-				catch ( Exception $e ) {
+				catch ( Exception $e )
+				{
 					// 無視する
 				}
 				// 書き込む
