@@ -221,83 +221,92 @@ class DBRecord extends ModelBase
 	private function _getTableStruct()
 	{
 		if (self::getDbType() == 'pgsql')
-			$sql = 'id serial not null primary key,';
+		{
+			$sql = 'id serial not null primary key';
+			$F_TYPE = 'timestamp';
+		}
 		else if (self::getDbType() == 'sqlite')
-			$sql = 'id integer not null primary key autoincrement,';
+		{
+			$sql = 'id integer not null primary key autoincrement';
+			$F_TYPE = 'timestamp';
+		}
 		else
-			$sql = 'id integer not null primary key auto_increment,';
+		{
+			$sql = 'id integer not null primary key auto_increment';
+			$F_TYPE = 'datetime';
+		}
 		switch ($this->__table)
 		{
 			// 予約テーブル
 			case self::$__settings->tbl_prefix.RESERVE_TBL:
-				$sql .= " channel_disc varchar(128) not null default 'none',";			// channel disc
-				$sql .= " channel_id integer not null  default '0',";					// channel ID
-				$sql .= " program_id integer not null default '0',";					// Program ID
-				$sql .= " type varchar(8) not null default 'GR',";						// 種別（GR/BS/CS）
-				$sql .= " channel varchar(10) not null default '0',";					// チャンネル
-				$sql .= " title varchar(512) not null default 'none',";					// タイトル
-				$sql .= " description varchar(512) not null default 'none',";			// 説明 text->varchar
-				$sql .= " category_id integer not null default '0',";					// カテゴリID
-				$sql .= " starttime timestamp not null default '1970-01-01 00:00:00',";	// 開始時刻
-				$sql .= " endtime timestamp not null default '1970-01-01 00:00:00',";	// 終了時刻
-				$sql .= " job integer not null default '0',";							// job番号
-				$sql .= " path text default null,";										// 録画ファイルパス
-				$sql .= " complete boolean not null default '0',";						// 完了フラグ
-				$sql .= " reserve_disc varchar(128) not null default 'none',";			// 識別用hash
-				$sql .= " autorec integer not null default '0',";						// キーワードID
-				$sql .= " mode integer not null default '0',";							// 録画モード
-				$sql .= " dirty boolean not null default '0'";							// ダーティフラグ
+				$sql .= ", channel_disc varchar(128) not null default 'none'";			// channel disc
+				$sql .= ", channel_id integer not null  default '0'";					// channel ID
+				$sql .= ", program_id integer not null default '0'";					// Program ID
+				$sql .= ", type varchar(8) not null default 'GR'";						// 種別（GR/BS/CS）
+				$sql .= ", channel varchar(10) not null default '0'";					// チャンネル
+				$sql .= ", title varchar(512) not null default 'none'";					// タイトル
+				$sql .= ", description varchar(512) not null default 'none'";			// 説明 text->varchar
+				$sql .= ", category_id integer not null default '0'";					// カテゴリID
+				$sql .= ", starttime {$F_TYPE} not null default '2001-01-01 00:00:00'";	// 開始時刻
+				$sql .= ", endtime {$F_TYPE} not null default '2001-01-01 00:00:00'";	// 終了時刻
+				$sql .= ", job integer not null default '0'";							// job番号
+				$sql .= ", path text default null";										// 録画ファイルパス
+				$sql .= ", complete boolean not null default '0'";						// 完了フラグ
+				$sql .= ", reserve_disc varchar(128) not null default 'none'";			// 識別用hash
+				$sql .= ", autorec integer not null default '0'";						// キーワードID
+				$sql .= ", mode integer not null default '0'";							// 録画モード
+				$sql .= ", dirty boolean not null default '0'";							// ダーティフラグ
 				break;
 
 			// 番組表テーブル
 			case self::$__settings->tbl_prefix.PROGRAM_TBL:
-				$sql .= " channel_disc varchar(128) not null default 'none',";			// channel disc
-				$sql .= " channel_id integer not null default '0',";					// channel ID
-				$sql .= " type varchar(8) not null default 'GR',";						// 種別（GR/BS/CS）
-				$sql .= " channel varchar(10) not null default '0',";					// チャンネル
-				$sql .= " title varchar(512) not null default 'none',";					// タイトル
-				$sql .= " description varchar(512) not null default 'none',";			// 説明 text->varchar
-				$sql .= " category_id integer not null default '0',";					// カテゴリID
-				$sql .= " starttime timestamp not null default '1970-01-01 00:00:00',";	// 開始時刻
-				$sql .= " endtime timestamp not null default '1970-01-01 00:00:00',";	// 終了時刻
-				$sql .= " program_disc varchar(128) not null default 'none',";	 		// 識別用hash
-				$sql .= " autorec boolean not null default '1'";						// 自動録画有効無効
+				$sql .= ", channel_disc varchar(128) not null default 'none'";			// channel disc
+				$sql .= ", channel_id integer not null default '0'";					// channel ID
+				$sql .= ", type varchar(8) not null default 'GR'";						// 種別（GR/BS/CS）
+				$sql .= ", channel varchar(10) not null default '0'";					// チャンネル
+				$sql .= ", title varchar(512) not null default 'none'";					// タイトル
+				$sql .= ", description varchar(512) not null default 'none'";			// 説明 text->varchar
+				$sql .= ", category_id integer not null default '0'";					// カテゴリID
+				$sql .= ", starttime {$F_TYPE} not null default '2001-01-01 00:00:00'";	// 開始時刻
+				$sql .= ", endtime {$F_TYPE} not null default '2001-01-01 00:00:00'";	// 終了時刻
+				$sql .= ", program_disc varchar(128) not null default 'none'";	 		// 識別用hash
+				$sql .= ", autorec boolean not null default '1'";						// 自動録画有効無効
 				break;
 
 			// チャンネルテーブル
 			case self::$__settings->tbl_prefix.CHANNEL_TBL:
-				$sql .= " type varchar(8) not null default 'GR',";						// 種別
-				$sql .= " channel varchar(10) not null default '0',";					// channel
-				$sql .= " name varchar(512) not null default 'none',";					// 表示名
-				$sql .= " channel_disc varchar(128) not null default 'none',";			// 識別用hash
-				$sql .= " sid varchar(64) not null default 'hd',";						// サービスID用02/23/2010追加
-				$sql .= " skip boolean not null default '0'";							// チャンネルスキップ用03/13/2010追加
+				$sql .= ", type varchar(8) not null default 'GR'";						// 種別
+				$sql .= ", channel varchar(10) not null default '0'";					// channel
+				$sql .= ", name varchar(512) not null default 'none'";					// 表示名
+				$sql .= ", channel_disc varchar(128) not null default 'none'";			// 識別用hash
+				$sql .= ", sid varchar(64) not null default 'hd'";						// サービスID用02/23/2010追加
+				$sql .= ", skip boolean not null default '0'";							// チャンネルスキップ用03/13/2010追加
 				break;
 
 			// カテゴリテーブル
 			case self::$__settings->tbl_prefix.CATEGORY_TBL:
-				$sql .= " name_jp varchar(512) not null default 'none',";				// 表示名
-				$sql .= " name_en varchar(512) not null default 'none',";				// 同上
-				$sql .= " category_disc varchar(128) not null default 'none'";			// 識別用hash
+				$sql .= ", name_jp varchar(512) not null default 'none'";				// 表示名
+				$sql .= ", name_en varchar(512) not null default 'none'";				// 同上
+				$sql .= ", category_disc varchar(128) not null default 'none'";			// 識別用hash
 				break;
 
 			// キーワードテーブル
 			case self::$__settings->tbl_prefix.KEYWORD_TBL:
-				$sql .= " keyword varchar(512) not null default '*',";					// 表示名
-				$sql .= " type varchar(8) not null default '*',";						// 種別
-				$sql .= " channel_id integer not null default '0',";					// channel ID
-				$sql .= " category_id integer not null default '0',";					// カテゴリID
-				$sql .= " use_regexp boolean not null default '0',";					// 正規表現を使用するなら1
-				$sql .= " autorec_mode integer not null default '0',";					// 自動録画のモード02/23/2010追加
-				$sql .= " weekofday varchar(1) not null default '0',";					// 曜日、同追加
-				$sql .= " prgtime varchar(2) not null default '24'";					// 時間　03/13/2010追加
+				$sql .= ", keyword varchar(512) not null default '*'";					// 表示名
+				$sql .= ", type varchar(8) not null default '*'";						// 種別
+				$sql .= ", channel_id integer not null default '0'";					// channel ID
+				$sql .= ", category_id integer not null default '0'";					// カテゴリID
+				$sql .= ", use_regexp boolean not null default '0'";					// 正規表現を使用するなら1
+				$sql .= ", autorec_mode integer not null default '0'";					// 自動録画のモード02/23/2010追加
+				$sql .= ", weekofday varchar(1) not null default '0'";					// 曜日、同追加
+				$sql .= ", prgtime varchar(2) not null default '24'";					// 時間　03/13/2010追加
 				break;
 
 			// ログテーブル
 			case self::$__settings->tbl_prefix.LOG_TBL:
-				$sql .= " logtime timestamp not null default '1970-01-01 00:00:00',";	// 記録日時
-				$sql .= " level integer not null default '0',";							// エラーレベル
-				$sql .= " message varchar(512) not null default ''";					// メッセージ
+				$sql .= ", logtime {$F_TYPE} not null default '2001-01-01 00:00:00'";	// 記録日時
+				$sql .= ", level integer not null default '0'";							// エラーレベル
+				$sql .= ", message varchar(512) not null default ''";					// メッセージ
 				break;
 		}
 		return $sql;

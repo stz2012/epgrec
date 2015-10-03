@@ -13,22 +13,23 @@ class IndexModel extends CommonModel
 	public function getProgramData($channel_type, $top_time, $last_time)
 	{
 		$program_data = array();
+		$F_TYPE = (self::getDbType() == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 		$sql = "SELECT a.channel AS ch_channel, a.name AS ch_name,";
 		$sql .= " a.channel_disc AS ch_disc, a.sid, a.skip, b.*,";
 		$sql .= " c.name_en AS cate_name, COALESCE(d.rsv_cnt, 0) AS rec";
 		$sql .= "  FROM {$this->setting->tbl_prefix}".CHANNEL_TBL." a";
 		$sql .= " INNER JOIN {$this->setting->tbl_prefix}".PROGRAM_TBL." b";
 		$sql .= "    ON b.channel_disc = a.channel_disc";
-		$sql .= "   AND b.endtime > CAST(:top_time AS TIMESTAMP)";
-		$sql .= "   AND b.starttime < CAST(:last_time AS TIMESTAMP)";
+		$sql .= "   AND b.endtime > CAST(:top_time AS {$F_TYPE})";
+		$sql .= "   AND b.starttime < CAST(:last_time AS {$F_TYPE})";
 		$sql .= "  LEFT JOIN {$this->setting->tbl_prefix}".CATEGORY_TBL." c";
 		$sql .= "    ON c.id = b.category_id";
 		$sql .= "  LEFT JOIN (";
 		$sql .= "    SELECT program_id, COUNT(*) AS rsv_cnt";
 		$sql .= "      FROM {$this->setting->tbl_prefix}".RESERVE_TBL;
 		$sql .= "     WHERE complete = '0'";
-		$sql .= "       AND endtime > CAST(:top_time AS TIMESTAMP)";
-		$sql .= "       AND starttime < CAST(:last_time AS TIMESTAMP)";
+		$sql .= "       AND endtime > CAST(:top_time AS {$F_TYPE})";
+		$sql .= "       AND starttime < CAST(:last_time AS {$F_TYPE})";
 		$sql .= "     GROUP BY program_id";
 		$sql .= "  ) d";
 		$sql .= "    ON d.program_id = b.id";

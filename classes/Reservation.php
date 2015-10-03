@@ -82,10 +82,11 @@ class Reservation extends ModelBase
 			$tuners = ($crec->type == "GR") ? (int)($settings->gr_tuners) : (int)($settings->bs_tuners);
 
 			// 影響する予約情報を集める
+			$F_TYPE = (self::getDbType() == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 			$options = "WHERE complete = '0'";
 			$options .= " AND " . ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS')";
-			$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS TIMESTAMP)";
-			$options .= " AND endtime > CAST('".toDatetime($rec_start)."' AS TIMESTAMP)";
+			$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS {$F_TYPE})";
+			$options .= " AND endtime > CAST('".toDatetime($rec_start)."' AS {$F_TYPE})";
 			$trecs = DBRecord::createRecords(RESERVE_TBL, $options);
 			// 情報を配列に入れる
 			for ( $i = 0; $i < count($trecs) ; $i++ )
@@ -538,6 +539,7 @@ class Reservation extends ModelBase
 	) {
 		$settings = Settings::factory();
 		$program_data = array();
+		$F_TYPE = (self::getDbType() == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 
 		$sql = "SELECT a.*, b.name AS station_name,";
 		$sql .= " c.name_en AS cat, COALESCE(d.rsv_cnt, 0) AS rec";
@@ -552,7 +554,7 @@ class Reservation extends ModelBase
 		$sql .= "     GROUP BY program_id";
 		$sql .= "  ) d";
 		$sql .= "    ON d.program_id = a.id";
-		$sql .= " WHERE starttime > CAST(:search_time AS TIMESTAMP)";
+		$sql .= " WHERE starttime > CAST(:search_time AS {$F_TYPE})";
 		if ( $keyword != "" )
 		{
 			if ( $use_regexp )

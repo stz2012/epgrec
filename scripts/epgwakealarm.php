@@ -23,11 +23,11 @@ if ( strcasecmp( $argv[1], "start" ) == 0 )
 		// 規定時間以内に予約はあるか
 		$recstart_time = intval($settings->wakeup_before) + 5;
 		if ($settings->db_type == 'pgsql')
-			$options = " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL '{$recstart_time} MINUTE')";
+			$options = "WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL '{$recstart_time} MINUTE')";
 		else if ($settings->db_type == 'sqlite')
-			$options = " WHERE complete <> '1' AND starttime > datetime('now') AND starttime <= datetime('now', '+{$recstart_time} minutes')";
+			$options = "WHERE complete <> '1' AND starttime > datetime('now', 'localtime') AND starttime <= datetime('now', '+{$recstart_time} minutes', 'localtime')";
 		else
-			$options = " WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL {$recstart_time} MINUTE)";
+			$options = "WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL {$recstart_time} MINUTE)";
 		$num = DBRecord::countRecords( RESERVE_TBL, $options );
 		if ( $num > 0 )
 			$wakeupvars->reason = "reserve";
@@ -53,7 +53,7 @@ else if( strcasecmp( $argv[1], "stop" ) == 0 )
 	{
 		// 録画中はないか？
 		if ($settings->db_type == 'sqlite')
-			$options = "WHERE complete <> '1' AND starttime < datetime('now') AND endtime > datetime('now')";
+			$options = "WHERE complete <> '1' AND starttime < datetime('now', 'localtime') AND endtime > datetime('now', 'localtime')";
 		else
 			$options = "WHERE complete <> '1' AND starttime < now() AND endtime > now()";
 		$num = DBRecord::countRecords( RESERVE_TBL, $options );
@@ -67,7 +67,7 @@ else if( strcasecmp( $argv[1], "stop" ) == 0 )
 
 		$waketime = 0;
 		// 次の予約録画の開始時刻は？
-		$nextreserves = DBRecord::createRecords( RESERVE_TBL, " WHERE complete <> '1' ORDER BY starttime LIMIT 10" );
+		$nextreserves = DBRecord::createRecords( RESERVE_TBL, "WHERE complete <> '1' ORDER BY starttime LIMIT 10" );
 		$next_rectime = 0;
 		foreach ( $nextreserves as $reserve )
 		{

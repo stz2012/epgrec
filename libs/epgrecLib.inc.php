@@ -205,9 +205,10 @@ function parse_epgdump_file( $type, $xmlfile )
 			{
 				// 新規番組
 				// 重複チェック 同時間帯にある番組
+				$F_TYPE = ($settings->db_type == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 				$options = "WHERE channel_disc = '{$channel_disc}'";
-				$options .= " AND starttime < CAST('{$endtime}' AS TIMESTAMP)";
-				$options .= " AND endtime > CAST('{$starttime}' AS TIMESTAMP)";
+				$options .= " AND starttime < CAST('{$endtime}' AS {$F_TYPE})";
+				$options .= " AND endtime > CAST('{$starttime}' AS {$F_TYPE})";
 				$battings = DBRecord::countRecords(PROGRAM_TBL, $options );
 				if ( $battings > 0 )
 				{
@@ -296,7 +297,7 @@ function garbageClean()
 	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL '8 DAY')" );
 	else if ($settings->db_type == 'sqlite')
-		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < datetime('now', '-8 days')" );
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < datetime('now', '-8 days', 'localtime')" );
 	else
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL 8 DAY)" );
 
@@ -304,7 +305,7 @@ function garbageClean()
 	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL '8 DAY')" );
 	else if ($settings->db_type == 'sqlite')
-		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > datetime('now', '+8 days')" );
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > datetime('now', '+8 days', 'localtime')" );
 	else
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL 8 DAY)" );
 
@@ -312,7 +313,7 @@ function garbageClean()
 	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL '10 DAY')" );
 	else if ($settings->db_type == 'sqlite')
-		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < datetime('now', '-10 days')" );
+		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < datetime('now', '-10 days', 'localtime')" );
 	else
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
 }
@@ -348,7 +349,7 @@ function doPowerReduce($isGetEpg = false)
 			if ($settings->db_type == 'pgsql')
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()";
 			else if ($settings->db_type == 'sqlite')
-				$options = "WHERE complete <> '1' AND starttime < datetime('now', '+1 days') AND endtime > datetime('now')";
+				$options = "WHERE complete <> '1' AND starttime < datetime('now', '+1 days', 'localtime') AND endtime > datetime('now', 'localtime')";
 			else
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()";
 

@@ -59,7 +59,7 @@ class RecprogModel extends CommonModel
 		$sql .= "   ON a.category_id = b.id";
 		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." c";
 		$sql .= "   ON a.channel_id = c.id";
-		$sql .= " WHERE starttime < CAST(:starttime AS TIMESTAMP)";
+		$sql .= " WHERE starttime < CURRENT_TIMESTAMP";
 		if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")
@@ -71,7 +71,6 @@ class RecprogModel extends CommonModel
 		}
 		$sql .= " ORDER BY starttime DESC";
 		$stmt = $this->db->prepare($sql);
-		$stmt->bindValue(':starttime', date('Y-m-d H:i:s'));
 		if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")

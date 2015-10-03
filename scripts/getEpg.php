@@ -33,7 +33,7 @@ if ( $settings->gr_tuners != 0 )
 		if ($settings->db_type == 'pgsql')
 			$options = "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < (now() + INTERVAL '70 SECOND')";
 		else if ($settings->db_type == 'sqlite')
-			$options = "WHERE complete = '0' AND type = 'GR' AND endtime > datetime('now') AND starttime < datetime('now', '+70 seconds')";
+			$options = "WHERE complete = '0' AND type = 'GR' AND endtime > datetime('now', 'localtime') AND starttime < datetime('now', '+70 seconds', 'localtime')";
 		else
 			$options = "WHERE complete = '0' AND type = 'GR' AND endtime > now() AND starttime < (now() + INTERVAL 70 SECOND)";
 		// 録画重複チェック
@@ -55,7 +55,7 @@ if ( $settings->bs_tuners != 0 )
 	if ($settings->db_type == 'pgsql')
 		$options = "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL '185 SECOND')";
 	else if ($settings->db_type == 'sqlite')
-		$options = "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > datetime('now') AND starttime < datetime('now', '+185 seconds')";
+		$options = "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > datetime('now', 'localtime') AND starttime < datetime('now', '+185 seconds', 'localtime')";
 	else
 		$options = "WHERE complete = '0' AND (type = 'BS' OR type = 'CS') AND endtime > now() AND starttime < (now() + INTERVAL 185 SECOND)";
 
