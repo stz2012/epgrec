@@ -403,7 +403,7 @@ ER_sub.TM = {
 		this.ST = new Date(INISet.tableStartTime);
 		this.ED = new Date(INISet.tableEndTime);
 		this.LEN = (this.ED - this.ST)/3600000;
-		this.LINK = $('#jump-broadcast .selected a').attr('href').replace(/&time=[0-9]*/,'');
+		this.LINK = $('#jump-broadcast .selected a').attr('href');
 		this.T_make();
 	},
 	// @param t ( hour || Date || 'now')
@@ -417,7 +417,8 @@ ER_sub.TM = {
 			D= new Date(this.ST);
 			D.setHours(D.getHours() +parseInt(t,10));
 		}
-		return this.LINK+'&time='+D.getFullYear() + $.N2S(D.getMonth()+1, 2) + $.N2S(D.getDate(),2) + $.N2S(D.getHours(), 2);
+		var timeStr = D.getFullYear() + $.N2S(D.getMonth()+1, 2) + $.N2S(D.getDate(), 2) + $.N2S(D.getHours(), 2);
+		return INISet.prgTimeLink[timeStr];
 	},
 	T_make : function(){
 		var i, dt = ht = '', date, day, S, D = new Date(this.ST), that = this,

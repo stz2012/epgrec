@@ -11,7 +11,7 @@ class IndexController extends CommonController
 	 */
 	public function indexAction()
 	{
-		$DAY_OF_WEEK = array( "(日)","(月)","(火)","(水)","(木)","(金)","(土)" );
+		$DAY_OF_WEEK = array( '(日)','(月)','(火)','(水)','(木)','(金)','(土)' );
 
 		// パラメータの処理
 		// 表示する長さ（時間）
@@ -21,13 +21,13 @@ class IndexController extends CommonController
 			$program_length = (int)$this->request->getQuery('length');
 		}
 		// 地上=GR/BS=BS
-		$type = "GR";
+		$type = 'GR';
 		if ( $this->request->getQuery('type') )
 		{
 			$type = $this->request->getQuery('type');
 		}
 		// 現在の時間
-		$top_time = mktime( date("H"), 0 , 0 );
+		$top_time = mktime( date('H'), 0 , 0 );
 		if ( $this->request->getQuery('time') )
 		{
 			if ( sscanf( $this->request->getQuery('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 )
@@ -42,7 +42,7 @@ class IndexController extends CommonController
 		// 時刻欄
 		for ( $i = 0 ; $i < $program_length; $i++ )
 		{
-			$tvtimes[$i] = date("H", $top_time + 3600 * $i );
+			$tvtimes[$i] = date('H', $top_time + 3600 * $i );
 		}
 
 		// チャンネルマップ／番組表
@@ -63,23 +63,23 @@ class IndexController extends CommonController
 				if ( $st >= 0 && ($last_time - $prev_end) > 0 )
 				{
 					$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
-					$programs[$st]['list'][$num]['category_name'] = "none";
+					$programs[$st]['list'][$num]['category_name'] = 'none';
 					$programs[$st]['list'][$num]['height'] = $height;
-					$programs[$st]['list'][$num]['title'] = "";
-					$programs[$st]['list'][$num]['starttime'] = "";
-					$programs[$st]['list'][$num]['description'] = "";
+					$programs[$st]['list'][$num]['title'] = '';
+					$programs[$st]['list'][$num]['starttime'] = '';
+					$programs[$st]['list'][$num]['description'] = '';
 					$num++;
 			 	}
 
 			 	// チャンネル毎のブレーク処理
 				$st_save = $prg['sid'];
 				$st++;
-				$programs[$st]["skip"] = $prg['skip'];
+				$programs[$st]['skip'] = $prg['skip'];
 				if ( $prg['skip'] == 0 ) $num_ch++;
-				$programs[$st]["channel_disc"] = $prg['ch_disc'];
-				$programs[$st]["station_name"]  = $prg['ch_name'];
-				$programs[$st]["sid"] = $prg['sid'];
-				$programs[$st]["ch_hash"] = md5($prg['ch_disc']);
+				$programs[$st]['channel_disc'] = $prg['ch_disc'];
+				$programs[$st]['station_name']  = $prg['ch_name'];
+				$programs[$st]['sid'] = $prg['sid'];
+				$programs[$st]['ch_hash'] = md5($prg['ch_disc']);
 				$programs[$st]['list'] = array();
 				$num = 0;
 				$prev_end = $top_time;
@@ -93,11 +93,11 @@ class IndexController extends CommonController
 				if ( ($prg_starttime - $prev_end) > 0 )
 				{
 					$height = ($prg_starttime - $prev_end) * $this->setting->height_per_hour / 3600;
-					$programs[$st]['list'][$num]['category_name'] = "none";
+					$programs[$st]['list'][$num]['category_name'] = 'none';
 					$programs[$st]['list'][$num]['height'] = $height;
-					$programs[$st]['list'][$num]['title'] = "";
-					$programs[$st]['list'][$num]['starttime'] = "";
-					$programs[$st]['list'][$num]['description'] = "";
+					$programs[$st]['list'][$num]['title'] = '';
+					$programs[$st]['list'][$num]['starttime'] = '';
+					$programs[$st]['list'][$num]['description'] = '';
 					$num++;
 				}
 				$prev_end = $prg_endtime;
@@ -120,11 +120,11 @@ class IndexController extends CommonController
 				$programs[$st]['list'][$num]['category_name'] = $prg['cate_name'];
 				$programs[$st]['list'][$num]['height']        = $height;
 				$programs[$st]['list'][$num]['title']         = $prg['title'];
-				$programs[$st]['list'][$num]['starttime']     = date("H:i", $start )."" ;
+				$programs[$st]['list'][$num]['starttime']     = date('H:i', $start );
 				$programs[$st]['list'][$num]['description']   = $prg['description'];
-				$programs[$st]['list'][$num]['prg_start']     = str_replace( "-", "/", $prg['starttime']);
-				$programs[$st]['list'][$num]['duration']      = "" . (toTimestamp($prg['endtime']) - toTimestamp($prg['starttime']));
-				$programs[$st]['list'][$num]['channel']       = ($prg['type'] == "GR" ? "地上D" : "BS" ) . ":". $prg['channel'] . "ch";
+				$programs[$st]['list'][$num]['prg_start']     = str_replace( '-', '/', $prg['starttime']);
+				$programs[$st]['list'][$num]['duration']      = (toTimestamp($prg['endtime']) - toTimestamp($prg['starttime']));
+				$programs[$st]['list'][$num]['channel']       = ($prg['type'] == 'GR' ? '地上D' : 'BS' ) . ":{$prg['channel']}ch";
 				$programs[$st]['list'][$num]['id']            = $prg['id'];
 				$programs[$st]['list'][$num]['rec']           = $prg['rec'];
 				$num++;
@@ -134,11 +134,11 @@ class IndexController extends CommonController
 		if ( $st >= 0 && ($last_time - $prev_end) > 0 )
 		{
 			$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
-			$programs[$st]['list'][$num]['category_name'] = "none";
+			$programs[$st]['list'][$num]['category_name'] = 'none';
 			$programs[$st]['list'][$num]['height'] = $height;
-			$programs[$st]['list'][$num]['title'] = "";
-			$programs[$st]['list'][$num]['starttime'] = "";
-			$programs[$st]['list'][$num]['description'] = "";
+			$programs[$st]['list'][$num]['title'] = '';
+			$programs[$st]['list'][$num]['starttime'] = '';
+			$programs[$st]['list'][$num]['description'] = '';
 			$num++;
 	 	}
 
@@ -151,7 +151,7 @@ class IndexController extends CommonController
 		$get_param = array();
 		$get_param['type'] = $type;
 		$get_param['length'] = $program_length;
-		$get_param['time'] = date( "YmdH", $top_time);
+		$get_param['time'] = date( 'YmdH', $top_time );
 
 		// カテゴリ一覧
 		$crec = DBRecord::createRecords( CATEGORY_TBL );
@@ -163,68 +163,69 @@ class IndexController extends CommonController
 			$cats[$num]['name_jp'] = $val->name_jp;
 			$num++;
 		}
-		$this->view->assign( "cats", $cats );
+		$this->view->assign( 'cats', $cats );
 
 		// タイプ選択
 		$types = array();
 		$i = 0;
 		if ( $this->setting->gr_tuners != 0 )
 		{
-			$types[$i]['selected'] = ( $type == "GR" ) ? 'class="selected"' : "";
+			$types[$i]['selected'] = ( $type == 'GR' ) ? 'class="selected"' : '';
 			$get_param['type'] = 'GR';
 			$types[$i]['link'] = UtilString::buildQueryString($get_param);
-			$types[$i]['name'] = "地上デジタル";
+			$types[$i]['name'] = '地上デジタル';
 			$i++;
 		}
 		if ( $this->setting->bs_tuners != 0 )
 		{
-			$types[$i]['selected'] = ( $type == "BS" ) ? 'class="selected"' : "";
+			$types[$i]['selected'] = ( $type == 'BS' ) ? 'class="selected"' : '';
 			$get_param['type'] = 'BS';
 			$types[$i]['link'] = UtilString::buildQueryString($get_param);
-			$types[$i]['name'] = "BS";
+			$types[$i]['name'] = 'BS';
 			$i++;
 
 			// CS
 			if ( $this->setting->cs_rec_flg != 0 )
 			{
-				$types[$i]['selected'] = ( $type == "CS" ) ? 'class="selected"' : "";
+				$types[$i]['selected'] = ( $type == 'CS' ) ? 'class="selected"' : '';
 				$get_param['type'] = 'CS';
 				$types[$i]['link'] = UtilString::buildQueryString($get_param);
-				$types[$i]['name'] = "CS";
+				$types[$i]['name'] = 'CS';
 				$i++;
 			}
 		}
-		$this->view->assign( "types", $types );
+		$this->view->assign( 'types', $types );
 
 		// GETパラメタ（リセット）
 		$get_param['type'] = $type;
 
 		// 日付選択
+		$json_data = array();
 		$days = array();
 		$day = array();
-		$day['d'] = "昨日";
-		$get_param['time'] = date( "YmdH", time() - 3600 *24 );
-		$day['link'] = UtilString::buildQueryString($get_param);
-		$day['ofweek'] = "";
+		$day['d'] = '昨日';
+		$get_param['time'] = date( 'YmdH', time() - 3600 *24 );
+		$day['link'] = $json_data[$get_param['time']] = UtilString::buildQueryString($get_param);
+		$day['ofweek'] = '';
 		$day['selected'] = ( $top_time < mktime(0, 0, 0) ) ? 'class="selected"' : '';
 
 		array_push( $days , $day );
-		$day['d'] = "現在";
+		$day['d'] = '現在';
 		unset($get_param['time']);
 		$day['link'] = UtilString::buildQueryString($get_param);
-		$day['ofweek'] = "";
-		$day['selected'] = "";
+		$day['ofweek'] = '';
+		$day['selected'] = '';
 		array_push( $days, $day );
 		for ( $i = 0 ; $i < 8 ; $i++ )
 		{
-			$day['d'] = "".date("d", time() + 24 * 3600 * $i ) . "日";
-			$get_param['time'] = date( "Ymd", time() + 24 * 3600 * $i) . date("H" , $top_time );
-			$day['link'] = UtilString::buildQueryString($get_param);
-			$day['ofweek'] = $DAY_OF_WEEK[(int)date( "w", time() + 24 * 3600 * $i )];
-			$day['selected'] = ( date("d", $top_time) == date("d", time() + 24 * 3600 * $i ) ) ? 'class="selected"' : '';
+			$day['d'] = date( 'd', time() + 24 * 3600 * $i ) . '日';
+			$get_param['time'] = date( 'Ymd', time() + 24 * 3600 * $i) . date('H' , $top_time );
+			$day['link'] = $json_data[$get_param['time']] = UtilString::buildQueryString($get_param);
+			$day['ofweek'] = $DAY_OF_WEEK[(int)date( 'w', time() + 24 * 3600 * $i )];
+			$day['selected'] = ( date('d', $top_time) == date('d', time() + 24 * 3600 * $i ) ) ? 'class="selected"' : '';
 			array_push( $days, $day );
 		}
-		$this->view->assign( "days" , $days );
+		$this->view->assign( 'days' , $days );
 
 		// 時間選択
 		$toptimes = array();
@@ -232,27 +233,28 @@ class IndexController extends CommonController
 		{
 			$tmp = array();
 			$tmp['hour'] = sprintf( "%02d:00", $i );
-			$get_param['time'] = date("Ymd", $top_time ) . sprintf("%02d", $i );
-			$tmp['link'] = UtilString::buildQueryString($get_param);
+			$get_param['time'] = date( 'Ymd', $top_time ) . sprintf("%02d", $i );
+			$tmp['link'] = $json_data[$get_param['time']] = UtilString::buildQueryString($get_param);
 			array_push( $toptimes, $tmp );
 		}
-		$this->view->assign( "toptimes" , $toptimes );
+		$this->view->assign( 'toptimes' , $toptimes );
 
-		$this->view->assign( "tvtimes", $tvtimes );
-		$this->view->assign( "programs", $programs );
-		$this->view->assign( "ch_set_width", (int)($this->setting->ch_set_width) );
-		$this->view->assign( "chs_width", $chs_width );
-		$this->view->assign( "height_per_hour", $this->setting->height_per_hour );
-		$this->view->assign( "height_per_min", $this->setting->height_per_hour / 60 );
-		$this->view->assign( "num_ch", $num_ch );
-		$this->view->assign( "num_all_ch" , count( $channel_map ) );
+		$this->view->assign( 'tvtimes', $tvtimes );
+		$this->view->assign( 'programs', $programs );
+		$this->view->assign( 'ch_set_width', (int)($this->setting->ch_set_width) );
+		$this->view->assign( 'chs_width', $chs_width );
+		$this->view->assign( 'height_per_hour', $this->setting->height_per_hour );
+		$this->view->assign( 'height_per_min', $this->setting->height_per_hour / 60 );
+		$this->view->assign( 'num_ch', $num_ch );
+		$this->view->assign( 'num_all_ch' , count( $channel_map ) );
 
 		$sat_type = array('GR' => '地上デジタル', 'BS' => 'BSデジタル', 'CS' => 'CSデジタル');
-		$sitetitle = date( "Y", $top_time ) . "年" . date( "m", $top_time ) . "月" . date( "d", $top_time ) . "日". date( "H", $top_time ) .
-		              "時～".$sat_type[$type]."番組表";
-		$this->view->assign("sitetitle", $sitetitle );
-		$this->view->assign("top_time", str_replace( "-", "/" ,toDatetime($top_time)) );
-		$this->view->assign("last_time", str_replace( "-", "/" ,toDatetime($last_time)) );
+		$sitetitle = date( 'Y', $top_time ) . '年' . date( 'm', $top_time ) . '月' . date( 'd', $top_time ) . '日'. date( 'H', $top_time ) .
+		              '時～'.$sat_type[$type].'番組表';
+		$this->view->assign( 'sitetitle', $sitetitle );
+		$this->view->assign( 'top_time', str_replace( '-', '/' ,toDatetime($top_time)) );
+		$this->view->assign( 'last_time', str_replace( '-', '/' ,toDatetime($last_time)) );
+		$this->view->assign( 'prg_time_link', $json_data );
 	}
 
 	/**
@@ -264,13 +266,13 @@ class IndexController extends CommonController
 		{
 			try
 			{
-				$crec = new DBRecord( CHANNEL_TBL, "channel_disc", $this->request->getPost('channel_disc') );
+				$crec = new DBRecord( CHANNEL_TBL, 'channel_disc', $this->request->getPost('channel_disc') );
 				$crec->sid = trim($this->request->getPost('sid'));
 				$crec->skip = (int)(trim($this->request->getPost('skip')));
 			}
 			catch ( Exception $e )
 			{
-				exit( "Error: チャンネル情報更新失敗" );
+				exit( 'Error: チャンネル情報更新失敗' );
 			}
 		}
 	}
@@ -280,7 +282,7 @@ class IndexController extends CommonController
 	 */
 	public function reserveFormAction()
 	{
-		if ( ! $this->request->getPost('program_id') ) exit("Error: 番組IDが指定されていません" );
+		if ( ! $this->request->getPost('program_id') ) exit('Error: 番組IDが指定されていません' );
 		$program_id = $this->request->getPost('program_id');
 
 		try
@@ -315,6 +317,7 @@ class IndexController extends CommonController
 		{
 			exit( "Error:". $e->getMessage() );
 		}
+		exit;
 	}
 
 	/**
@@ -333,6 +336,7 @@ class IndexController extends CommonController
 		{
 			exit( "Error:". $e->getMessage() );
 		}
+		exit;
 	}
 
 	/**
@@ -402,6 +406,7 @@ class IndexController extends CommonController
 		{
 			exit( "Error:".$e->getMessage() );
 		}
+		exit;
 	}
 
 	/**
@@ -472,6 +477,7 @@ class IndexController extends CommonController
 		{
 			exit( "Error" . $e->getMessage() );
 		}
+		exit;
 	}
 
 	/**
@@ -525,6 +531,7 @@ class IndexController extends CommonController
 		{
 			exit("Error: ". $e->getMessage());
 		}
+		exit;
 	}
 }
 ?>

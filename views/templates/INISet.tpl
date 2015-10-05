@@ -17,7 +17,7 @@ var INISet = {
 	prgSetChannelURL : '{$home_url}index/setChannelInfo',	// チャンネル設定
 	prgDelKeyURL : '{$home_url}search/delete'		// キーワード削除
 {if $this_class->getControllerName() == 'index'}
-	,
+	prgTimeLink : {$prg_time_link|@json_encode},
 	dotHour : {$height_per_hour},
 	dotMin : {$height_per_min},
 	tableStartTime : '{$top_time}',
