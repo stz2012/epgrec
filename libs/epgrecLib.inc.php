@@ -68,15 +68,10 @@ function check_epgrec_env( &$contents = '' )
 {
 	$err_flg = false;
 
-	// 設定ファイルの存在チェック
-	if ( ! file_exists( INSTALL_PATH."/settings/config.xml" ) )
-		return false;
-	else
-	{
-		$settings = Settings::factory();
-		if ( $settings->is_installed != 0 )
-			return true;
-	}
+	// 設定ファイルの状態チェック
+	$settings = Settings::factory();
+	if ( $settings->is_installed != 0 )
+		return true;
 
 	// do-record.shの存在チェック
 	if ( ! file_exists( DO_RECORD ) )
@@ -171,7 +166,7 @@ function parse_epgdump_file( $type, $xmlfile )
 	$xml = @simplexml_load_file( $xmlfile );
 	if ( $xml === false )
 	{
-		reclog( "parse_epgdump_file:: 正常な".$xmlfile."が作成されなかった模様(放送間帯でないなら問題ありません)", EPGREC_WARN );
+		reclog( "parse_epgdump_file:: 正常な{$xmlfile}が作成されなかった模様(放送間帯でないなら問題ありません)", EPGREC_WARN );
 		return;	// XMLが読み取れないなら何もしない
 	}
 
@@ -202,7 +197,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->sid = $ch_map["$ch_disc"]['sid'];
 				$rec->update();
 				$ch_map["$ch_disc"]['id'] = $rec->id;
-				reclog("parse_epgdump_file:: 新規チャンネル {$ch_name} を追加" );
+				reclog( "parse_epgdump_file:: 新規チャンネル {$rec->name} を追加" );
 			}
 			else
 			{
@@ -222,8 +217,8 @@ function parse_epgdump_file( $type, $xmlfile )
 		}
 		catch ( Exception $e )
 		{
-			reclog( "parse_epgdump_file::DBの接続またはチャンネルテーブルの書き込みに失敗", EPGREC_ERROR );
-			reclog( "parse_epgdump_file:: ".$e->getMessage()."" , EPGREC_ERROR );
+			reclog( "parse_epgdump_file:: DBの接続またはチャンネルテーブルの書き込みに失敗", EPGREC_ERROR );
+			reclog( "parse_epgdump_file:: {$e->getMessage()}" , EPGREC_ERROR);
 			exit( $e->getMessage() );
 		}
 	}
@@ -235,7 +230,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		$channel_disc = (string)$program['channel']; 
 		if ( ! array_key_exists( "$channel_disc", $ch_map ) )
 		{
-			reclog( "parse_epgdump_file::チャンネルレコード {$channel_disc} が発見できない", EPGREC_ERROR );
+			reclog( "parse_epgdump_file:: チャンネルレコード {$channel_disc} が発見できない", EPGREC_ERROR );
 			continue;
 		}
 		if ( $ch_map["$channel_disc"]['skip'] == 1 )
@@ -269,15 +264,15 @@ function parse_epgdump_file( $type, $xmlfile )
 				$cat_rec->name_en = $cat_en;
 				$cat_rec->category_disc = $category_disc;
 				$cat_rec->update();
-				reclog("parse_epgdump_file:: 新規カテゴリ {$cat_ja} を追加" );
+				reclog("parse_epgdump_file:: 新規カテゴリ {$cat_rec->name_jp} を追加" );
 			}
 			else
 				$cat_rec = new DBRecord( CATEGORY_TBL, "category_disc" , $category_disc );
 		}
 		catch ( Exception $e )
 		{
-			reclog("parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様", EPGREC_ERROR );
-			reclog("parse_epgdump_file:: ".$e->getMessage()."" , EPGREC_ERROR );
+			reclog( "parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様", EPGREC_ERROR );
+			reclog( "parse_epgdump_file:: {$e->getMessage()}" , EPGREC_ERROR);
 			exit( $e->getMessage() );
 		}
 
@@ -320,13 +315,13 @@ function parse_epgdump_file( $type, $xmlfile )
 							// すでに開始されている録画は無視する
 							if ( time() > (toTimestamp($reserve->starttime) - PADDING_TIME - $settings->former_time) )
 							{
-								reclog( "parse_epgdump_file::録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は録画開始後に時間変更が発生した可能性がある", EPGREC_WARN );
+								reclog( "parse_epgdump_file:: 録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は録画開始後に時間変更が発生した可能性がある", EPGREC_WARN );
 							}
 							else
 							{
 								if ( $reserve->autorec )
 								{
-									reclog( "parse_epgdump_file::録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は時間変更の可能性があり予約取り消し" );
+									reclog( "parse_epgdump_file:: 録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は時間変更の可能性があり予約取り消し" );
 									Reservation::cancel( $reserve->id );
 								}
 							}
@@ -335,7 +330,7 @@ function parse_epgdump_file( $type, $xmlfile )
 							// 無視
 						}
 						// 番組削除
-						reclog( "parse_epgdump_file::放送時間重複が発生した番組ID".$rec->id." ".$rec->type.$rec->channel.$rec->title."を削除" );
+						reclog( "parse_epgdump_file:: 放送時間重複が発生した番組ID".$rec->id." ".$rec->type.$rec->channel.$rec->title."を削除" );
 						$rec->delete();
 					}
 				}
@@ -370,7 +365,7 @@ function parse_epgdump_file( $type, $xmlfile )
 						$reserve->title = $title;
 						$reserve->description = $desc;
 						$reserve->update();
-						reclog( "parse_epgdump_file:: 予約ID".$reserve->id."のEPG情報が更新された" );
+						reclog( "parse_epgdump_file:: 予約ID {$reserve->id} のEPG情報が更新された" );
 					}
 				}
 				catch ( Exception $e )
@@ -383,7 +378,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		catch (Exception $e)
 		{
 			reclog( "parse_epgdump_file:: プログラムテーブルに問題が生じた模様", EPGREC_ERROR );
-			reclog( "parse_epgdump_file:: ".$e->getMessage()."" , EPGREC_ERROR);
+			reclog( "parse_epgdump_file:: {$e->getMessage()}" , EPGREC_ERROR);
 			exit( $e->getMessage() );
 		}
 	}

@@ -13,7 +13,7 @@ class InstallController extends CommonController
 	{
 		global $GR_CHANNEL_MAP;
 		$this->view->compile_dir = '/tmp';	// 一時的に設定
-		$contents = "<p><b>epgrecのインストール状態をチェックします</b></p>";
+		$contents = '';
 
 		if ( check_epgrec_env($contents) )
 		{
@@ -138,8 +138,17 @@ class InstallController extends CommonController
 	 */
 	public function step5Action()
 	{
-		$proc = new EpgrecProc( GET_EPG_CMD.' &' );
-		$proc->startCommand();
+		$POST_DATA = $this->request->getPost();
+		if ($POST_DATA['token'] != '')
+		{
+			$proc = new EpgrecProc( GET_EPG_CMD.' &' );
+			$proc->startCommand();
+		}
+		else
+		{
+			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}/step2" );
+			exit;
+		}
 
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "sitetitle", "インストール完了" );

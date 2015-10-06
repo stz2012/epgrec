@@ -2,6 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
+<p><b>epgrecのインストール状態をチェックします</b></p>
 
 {$contents}
 </div>
