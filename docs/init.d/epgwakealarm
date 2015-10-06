@@ -26,7 +26,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 do_start()
 {
-	$EPGREC_DIR/epgwakealarm.php start
+	$EPGREC_DIR/scripts/epgwakealarm.php start
 	return 0
 }
 
@@ -35,7 +35,7 @@ do_start()
 #
 do_stop()
 {
-	$EPGREC_DIR/epgwakealarm.php stop
+	$EPGREC_DIR/scripts/epgwakealarm.php stop
 	return 0
 }
 

@@ -294,7 +294,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				else if ($settings->db_type == 'sqlite')
 				{
 					$options .= " AND datetime(starttime) < datetime('{$endtime}')";
-					$options .= " AND datetime(endtime > datetime('{$starttime}')";
+					$options .= " AND datetime(endtime) > datetime('{$starttime}')";
 				}
 				else
 				{

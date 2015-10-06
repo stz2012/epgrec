@@ -568,7 +568,7 @@ class Reservation extends ModelBase
 		if (self::getDbType() == 'pgsql')
 			$sql .= " WHERE starttime > CAST(:search_time AS TIMESTAMP)";
 		else if (self::getDbType() == 'sqlite')
-			$sql .= " WHERE datetime(starttime) > datetime(:search_time )";
+			$sql .= " WHERE datetime(starttime) > datetime(:search_time)";
 		else
 			$sql .= " WHERE starttime > CAST(:search_time AS DATETIME)";
 		if ( $keyword != "" )
