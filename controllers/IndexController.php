@@ -259,27 +259,6 @@ class IndexController extends CommonController
 	}
 
 	/**
-	 * チャンネル情報更新
-	 */
-	public function setChannelInfoAction()
-	{
-		if ( $this->request->getPost('sid') && $this->request->getPost('channel_disc') && $this->request->getPost('skip') )
-		{
-			try
-			{
-				$crec = new DBRecord( CHANNEL_TBL, 'channel_disc', $this->request->getPost('channel_disc') );
-				$crec->sid = trim($this->request->getPost('sid'));
-				$crec->skip = (int)(trim($this->request->getPost('skip')));
-			}
-			catch ( Exception $e )
-			{
-				exit( 'Error: チャンネル情報更新失敗' );
-			}
-		}
-		exit;
-	}
-
-	/**
 	 * 録画フォーム
 	 */
 	public function reserveFormAction()
@@ -318,6 +297,26 @@ class IndexController extends CommonController
 		catch ( exception $e )
 		{
 			exit( "Error:". $e->getMessage() );
+		}
+	}
+
+	/**
+	 * チャンネル情報更新
+	 */
+	public function setChannelInfoAction()
+	{
+		if ( $this->request->getPost('sid') && $this->request->getPost('channel_disc') && $this->request->getPost('skip') )
+		{
+			try
+			{
+				$crec = new DBRecord( CHANNEL_TBL, 'channel_disc', $this->request->getPost('channel_disc') );
+				$crec->sid = trim($this->request->getPost('sid'));
+				$crec->skip = (int)(trim($this->request->getPost('skip')));
+			}
+			catch ( Exception $e )
+			{
+				exit( 'Error: チャンネル情報更新失敗' );
+			}
 		}
 		exit;
 	}

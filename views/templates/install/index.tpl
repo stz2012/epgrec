@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<p><b>epgrec‚ÌƒCƒ“ƒXƒg[ƒ‹ó‘Ô‚ğƒ`ƒFƒbƒN‚µ‚Ü‚·</b></p>
+<p><b>epgrecã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«çŠ¶æ…‹ã‚’ãƒã‚§ãƒƒã‚¯ã—ã¾ã™</b></p>
 
 {$contents}
 </div>

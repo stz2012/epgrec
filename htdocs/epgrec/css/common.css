@@ -1,5 +1,5 @@
 a {text-decoration:none;}
-input, select {color:#444;}
+button, input, optgroup, select, textarea {color:#444;}
 
 .bold {font-weight:bold;}
 .small {font-size:75%;}

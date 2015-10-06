@@ -11,7 +11,6 @@ Debian/Ubuntu用の設定ファイルは{$install_path}/docs/cron.d/getepgです
 <pre>
 $ sudo cp {$install_path}/docs/cron.d/getepg /etc/cron.d/ [Enter]
 </pre>
-<br />
 という具合にコピーするだけで動作するでしょう。<br />
 それ以外のディストリビューションをお使いの方はDebian/Ubuntu用の設定ファイルを参考に、適切にcronの設定を行ってください。</p>
 
@@ -21,7 +20,6 @@ $ sudo cp {$install_path}/docs/cron.d/getepg /etc/cron.d/ [Enter]
 <pre>
 $ {$install_path}/scripts/getEpg.php [Enter]
 </pre>
-<br />
 と実行してください。
 </p>
 
