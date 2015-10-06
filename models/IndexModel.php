@@ -26,8 +26,8 @@ class IndexModel extends CommonModel
 		}
 		else if (self::getDbType() == 'sqlite')
 		{
-			$sql .= " AND datetime(b.endtime, 'localtime') > datetime(:top_time, 'localtime')";
-			$sql .= " AND datetime(b.starttime, 'localtime') < datetime(:last_time, 'localtime')";
+			$sql .= " AND datetime(b.endtime) > datetime(:top_time)";
+			$sql .= " AND datetime(b.starttime) < datetime(:last_time)";
 		}
 		else
 		{
@@ -47,8 +47,8 @@ class IndexModel extends CommonModel
 		}
 		else if (self::getDbType() == 'sqlite')
 		{
-			$sql .= " AND datetime(endtime, 'localtime') > datetime(:top_time, 'localtime')";
-			$sql .= " AND datetime(starttime, 'localtime') < datetime(:last_time, 'localtime')";
+			$sql .= " AND datetime(endtime) > datetime(:top_time)";
+			$sql .= " AND datetime(starttime) < datetime(:last_time)";
 		}
 		else
 		{

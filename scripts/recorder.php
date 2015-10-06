@@ -35,8 +35,8 @@ try
 	}
 	else if ($settings->db_type == 'sqlite')
 	{
-		$options .= " AND datetime(starttime, 'localtime') < datetime('{$rrec->endtime}', 'localtime')";
-		$options .= " AND datetime(endtime, 'localtime' > datetime('{$rrec->starttime}', 'localtime')";
+		$options .= " AND datetime(starttime) < datetime('{$rrec->endtime}')";
+		$options .= " AND datetime(endtime) > datetime('{$rrec->starttime}')";
 	}
 	else
 	{

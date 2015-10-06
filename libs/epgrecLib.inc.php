@@ -216,8 +216,8 @@ function parse_epgdump_file( $type, $xmlfile )
 				}
 				else if ($settings->db_type == 'sqlite')
 				{
-					$options .= " AND datetime(starttime, 'localtime') < datetime('{$endtime}', 'localtime')";
-					$options .= " AND datetime(endtime, 'localtime' > datetime('{$starttime}', 'localtime')";
+					$options .= " AND datetime(starttime) < datetime('{$endtime}')";
+					$options .= " AND datetime(endtime > datetime('{$starttime}')";
 				}
 				else
 				{
@@ -316,7 +316,7 @@ function garbageClean()
 	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL '8 DAY')" );
 	else if ($settings->db_type == 'sqlite')
-		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < datetime('now', '-8 days', 'localtime')" );
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE datetime(endtime) < datetime('now', '-8 days', 'localtime')" );
 	else
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE endtime < (now() - INTERVAL 8 DAY)" );
 
@@ -324,7 +324,7 @@ function garbageClean()
 	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL '8 DAY')" );
 	else if ($settings->db_type == 'sqlite')
-		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > datetime('now', '+8 days', 'localtime')" );
+		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE datetime(starttime) > datetime('now', '+8 days', 'localtime')" );
 	else
 		DBRecord::deleteRecords( PROGRAM_TBL, "WHERE starttime > (now() + INTERVAL 8 DAY)" );
 
@@ -332,7 +332,7 @@ function garbageClean()
 	if ($settings->db_type == 'pgsql')
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL '10 DAY')" );
 	else if ($settings->db_type == 'sqlite')
-		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < datetime('now', '-10 days', 'localtime')" );
+		DBRecord::deleteRecords( LOG_TBL, "WHERE datetime(logtime) < datetime('now', '-10 days', 'localtime')" );
 	else
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
 }
@@ -368,7 +368,7 @@ function doPowerReduce($isGetEpg = false)
 			if ($settings->db_type == 'pgsql')
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()";
 			else if ($settings->db_type == 'sqlite')
-				$options = "WHERE complete <> '1' AND starttime < datetime('now', '+1 days', 'localtime') AND endtime > datetime('now', 'localtime')";
+				$options = "WHERE complete <> '1' AND datetime(starttime) < datetime('now', '+1 days', 'localtime') AND datetime(endtime) > datetime('now', 'localtime')";
 			else
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()";
 

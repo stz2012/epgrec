@@ -165,7 +165,7 @@ class SearchController extends CommonController
 	// 曜日
 	private function _getWeekOfDays()
 	{
-		return array( "なし", "月", "火", "水", "木", "金", "土", "日" );
+		return array( "なし", "日", "月", "火", "水", "木", "金", "土" );
 	}
 }
 ?>

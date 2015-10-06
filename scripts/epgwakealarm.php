@@ -25,7 +25,7 @@ if ( strcasecmp( $argv[1], "start" ) == 0 )
 		if ($settings->db_type == 'pgsql')
 			$options = "WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL '{$recstart_time} MINUTE')";
 		else if ($settings->db_type == 'sqlite')
-			$options = "WHERE complete <> '1' AND starttime > datetime('now', 'localtime') AND starttime <= datetime('now', '+{$recstart_time} minutes', 'localtime')";
+			$options = "WHERE complete <> '1' AND datetime(starttime) > datetime('now', 'localtime') AND datetime(starttime) <= datetime('now', '+{$recstart_time} minutes', 'localtime')";
 		else
 			$options = "WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL {$recstart_time} MINUTE)";
 		$num = DBRecord::countRecords( RESERVE_TBL, $options );
@@ -53,7 +53,7 @@ else if( strcasecmp( $argv[1], "stop" ) == 0 )
 	{
 		// 録画中はないか？
 		if ($settings->db_type == 'sqlite')
-			$options = "WHERE complete <> '1' AND starttime < datetime('now', 'localtime') AND endtime > datetime('now', 'localtime')";
+			$options = "WHERE complete <> '1' AND datetime(starttime) < datetime('now', 'localtime') AND datetime(endtime) > datetime('now', 'localtime')";
 		else
 			$options = "WHERE complete <> '1' AND starttime < now() AND endtime > now()";
 		$num = DBRecord::countRecords( RESERVE_TBL, $options );

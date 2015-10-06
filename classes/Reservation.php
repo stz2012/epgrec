@@ -91,8 +91,8 @@ class Reservation extends ModelBase
 			}
 			else if (self::getDbType() == 'sqlite')
 			{
-				$options .= " AND datetime(starttime, 'localtime') < datetime('".toDatetime($end_time)."', 'localtime')";
-				$options .= " AND datetime(endtime, 'localtime') > datetime('".toDatetime($rec_start)."', 'localtime')";
+				$options .= " AND datetime(starttime) < datetime('".toDatetime($end_time)."')";
+				$options .= " AND datetime(endtime) > datetime('".toDatetime($rec_start)."')";
 			}
 			else
 			{
@@ -568,7 +568,7 @@ class Reservation extends ModelBase
 		if (self::getDbType() == 'pgsql')
 			$sql .= " WHERE starttime > CAST(:search_time AS TIMESTAMP)";
 		else if (self::getDbType() == 'sqlite')
-			$sql .= " WHERE datetime(starttime, 'localtime') > datetime(:search_time , 'localtime')";
+			$sql .= " WHERE datetime(starttime) > datetime(:search_time )";
 		else
 			$sql .= " WHERE starttime > CAST(:search_time AS DATETIME)";
 		if ( $keyword != "" )
@@ -600,9 +600,9 @@ class Reservation extends ModelBase
 		{
 			if (self::getDbType() == 'sqlite')
 			{
-				$sql .= " AND strftime('%H:%M:%S', starttime, 'localtime')";
-				$sql .= " BETWEEN strftime('%H:%M:%S', :prgtime_from, 'localtime')";
-				$sql .= " AND strftime('%H:%M:%S', :prgtime_to, 'localtime')";
+				$sql .= " AND strftime('%H:%M:%S', starttime)";
+				$sql .= " BETWEEN strftime('%H:%M:%S', :prgtime_from)";
+				$sql .= " AND strftime('%H:%M:%S', :prgtime_to)";
 			}
 			else
 				$sql .= " AND CAST(starttime AS TIME) BETWEEN CAST(:prgtime_from AS TIME) AND CAST(:prgtime_to AS TIME)";
@@ -610,9 +610,9 @@ class Reservation extends ModelBase
 		if ( $weekofday != 0 )
 		{
 			if (self::getDbType() == 'pgsql')
-				$sql .= " AND EXTRACT(dow from starttime) = :weekofday";
+				$sql .= " AND (EXTRACT(dow from starttime) + 1) = :weekofday";
 			else if (self::getDbType() == 'sqlite')
-				$sql .= " AND (strftime('%w', starttime, 'localtime') + 1) = :weekofday";
+				$sql .= " AND (strftime('%w', starttime) + 1) = :weekofday";
 			else
 				$sql .= " AND DAYOFWEEK(starttime) = :weekofday";
 		}
@@ -639,7 +639,7 @@ class Reservation extends ModelBase
 			$stmt->bindValue(':prgtime_to',   sprintf("%02d:59:59", $prgtime));
 		}
 		if ( $weekofday != 0 )
-			$stmt->bindValue(':weekofday', $weekofday);
+			$stmt->bindValue(':weekofday', $weekofday, PDO::PARAM_INT);
 		$stmt->bindValue(':search_limit', $limit, PDO::PARAM_INT);
 		$stmt->execute();
 		$program_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
