@@ -318,7 +318,7 @@ class DBRecord extends ModelBase
 		{
 			// 予約テーブル
 			case self::$__settings->tbl_prefix.RESERVE_TBL:
-				$sql = "CREATE INDEX reserve_ch_idx ON {$this->__table}(channel_disc)";
+				$sql = "CREATE INDEX reserve_pg_idx ON {$this->__table}(program_id)";
 				$stmt = $this->db->prepare( $sql );
 				if ( $stmt->execute() === false )
 					throw new exception( "createIndex:インデックス作成失敗" );
@@ -332,7 +332,7 @@ class DBRecord extends ModelBase
 
 			// 番組表テーブル
 			case self::$__settings->tbl_prefix.PROGRAM_TBL:
-				$sql = "CREATE INDEX program_ch_idx ON {$this->__table}(channel_disc)";
+				$sql = "CREATE INDEX program_pg_idx ON {$this->__table}(program_disc)";
 				$stmt = $this->db->prepare( $sql );
 				if ( $stmt->execute() === false )
 					throw new exception( "createIndex:インデックス作成失敗" );

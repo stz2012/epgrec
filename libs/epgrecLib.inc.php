@@ -64,6 +64,89 @@ function custom_autoloader($className)
 	require_once $file_name;
 }
 
+function check_epgrec_env( &$contents = '' )
+{
+	$err_flg = false;
+
+	// 設定ファイルの存在チェック
+	if ( ! file_exists( INSTALL_PATH."/settings/config.xml" ) )
+		return false;
+	else
+	{
+		$settings = Settings::factory();
+		if ( $settings->is_installed != 0 )
+			return true;
+	}
+
+	// do-record.shの存在チェック
+	if ( ! file_exists( DO_RECORD ) )
+	{
+		$contents .= DO_RECORD."が存在しません<br>do-record.sh.pt1やdo-record.sh.friioを参考に作成してください<br />";
+		return false;
+	}
+
+	// パーミッションチェック
+	$rw_dirs = array( 
+		INSTALL_PATH."/settings",
+		INSTALL_PATH."/htdocs/epgrec/thumbs",
+		INSTALL_PATH."/video",
+		INSTALL_PATH."/views/templates_c",
+	);
+	$gen_thumbnail = INSTALL_PATH."/scripts/gen-thumbnail.sh";
+	if ( defined("GEN_THUMBNAIL") )
+		$gen_thumbnail = GEN_THUMBNAIL;
+	$exec_files = array(
+		DO_RECORD,
+		RECORDER_CMD,
+		GET_EPG_CMD,
+		STORE_PRG_CMD,
+		$gen_thumbnail,
+	);
+
+	$contents .= "<br />";
+	$contents .= "<p><b>ディレクトリのパーミッションチェック（707）</b></p>";
+	$contents .= "<div>";
+	foreach ($rw_dirs as $value )
+	{
+		$contents .= $value;
+		$perm = check_permission( $value );
+		if ( !($perm == "707" || $perm == "777") )
+		{
+			$err_flg = true;
+			$contents .= '<font color="red">...'.$perm.'... missing</font><br />このディレクトリを書き込み許可にしてください（ex. chmod 707 '.$value.'）<br />';
+		}
+		else
+			$contents .= "...".$perm."...ok<br />";
+	}
+	$contents .= "</div>";
+
+	$contents .= "<br />";
+	$contents .= "<p><b>ファイルのパーミッションチェック（705）</b></p>";
+	$contents .= "<div>";
+	foreach ($exec_files as $value )
+	{
+		$contents .= $value;
+		$perm = check_permission( $value );
+		if ( !($perm == "705" || $perm == "755") )
+		{
+			$err_flg = true;
+			$contents .= '<font color="red">...'.$perm.'... missing</font><br>このファイルを実行可にしてください（ex. chmod 705 '.$value.'）<br />';
+		}
+		else
+			$contents .= "...".$perm."...ok<br />";
+	}
+	$contents .= "</div>";
+
+	return ( $err_flg == false );
+}
+
+// パーミッションを返す
+function check_permission( $file )
+{
+	$ss = @stat( $file );
+	return sprintf("%o", ($ss['mode'] & 000777));
+}
+
 function check_epgdump_file( $file )
 {
 	// ファイルがないなら無問題
@@ -95,11 +178,15 @@ function parse_epgdump_file( $type, $xmlfile )
 	// channel抽出
 	foreach ( $xml->channel as $ch )
 	{
-		$ch_name = (string)$ch->{'display-name'};
 		$ch_disc = (string)$ch['id'];
-		$ch_map["$ch_disc"] = (string)$ch['tp'];
-		$tmp_arr = explode('_', $ch_disc);
-		$sid = $tmp_arr[1];
+		list(, $ch_sid) = explode('_', $ch_disc);
+		$ch_map["$ch_disc"] = array(
+			'id'      => 0,
+			'channel' => (string)$ch['tp'],
+			'name'    => (string)$ch->{'display-name'},
+			'sid'     => $ch_sid,
+			'skip'    => 0
+		);
 		try
 		{
 			// チャンネルデータを探す
@@ -109,25 +196,28 @@ function parse_epgdump_file( $type, $xmlfile )
 				// チャンネルデータがないなら新規作成
 				$rec = new DBRecord( CHANNEL_TBL );
 				$rec->type = $type;
-				$rec->name = $ch_name;
-				$rec->channel = $ch_map["$ch_disc"];
+				$rec->name = $ch_map["$ch_disc"]['name'];
+				$rec->channel = $ch_map["$ch_disc"]['channel'];
 				$rec->channel_disc = $ch_disc;
-				$rec->sid = $sid;
+				$rec->sid = $ch_map["$ch_disc"]['sid'];
 				$rec->update();
+				$ch_map["$ch_disc"]['id'] = $rec->id;
 				reclog("parse_epgdump_file:: 新規チャンネル {$ch_name} を追加" );
 			}
 			else
 			{
 				// 存在した場合も、とりあえずチャンネル名は更新する
 				$rec = new DBRecord( CHANNEL_TBL, "channel_disc", $ch_disc );
-				$rec->name = $ch_name;
+				$rec->name = $ch_map["$ch_disc"]['name'];
 				// BS／CSの場合、チャンネル番号とSIDを更新
 				if ( $type == "BS" ||  $type == "CS" )
 				{
-					$rec->channel = $ch_map["$ch_disc"];
-					$rec->sid = $sid;
+					$rec->channel = $ch_map["$ch_disc"]['channel'];
+					$rec->sid = $ch_map["$ch_disc"]['sid'];
 				}
 				$rec->update();
+				$ch_map["$ch_disc"]['id'] = $rec->id;
+				$ch_map["$ch_disc"]['skip'] = $rec->skip;
 			}
 		}
 		catch ( Exception $e )
@@ -142,21 +232,14 @@ function parse_epgdump_file( $type, $xmlfile )
 	// programme 取得
 	foreach ( $xml->programme as $program )
 	{
-		$channel_rec = null;
 		$channel_disc = (string)$program['channel']; 
-		if ( ! array_key_exists( "$channel_disc", $ch_map ) ) continue;
-		$channel = $ch_map["$channel_disc"];
-
-		try
-		{
-			$channel_rec = new DBRecord( CHANNEL_TBL, "channel_disc", "$channel_disc" );
-		}
-		catch ( Exception $e )
+		if ( ! array_key_exists( "$channel_disc", $ch_map ) )
 		{
 			reclog( "parse_epgdump_file::チャンネルレコード {$channel_disc} が発見できない", EPGREC_ERROR );
+			continue;
 		}
-		if ( $channel_rec == null ) continue;	// あり得ないことが起きた
-		if ( $channel_rec->skip == 1 ) continue;	// 受信しないチャンネル
+		if ( $ch_map["$channel_disc"]['skip'] == 1 )
+			continue;	// 受信しないチャンネル
 
 		$starttime = toDatetime2( (string)$program['start'] );
 		$endtime = toDatetime2( (string)$program['stop'] );
@@ -170,7 +253,6 @@ function parse_epgdump_file( $type, $xmlfile )
 			if ( (string)$cat['lang'] == "en" ) $cat_en = (string)$cat;
 		}
 		$program_disc = md5( $channel_disc . $starttime . $endtime );
-		// printf( "%s %s %s %s %s %s %s \n", $program_disc, $channel, $starttime, $endtime, $title, $desc, $cat_ja );
 
 		// カテゴリ登録
 		$cat_rec = null;
@@ -260,9 +342,9 @@ function parse_epgdump_file( $type, $xmlfile )
 				// 番組内容登録
 				$rec = new DBRecord( PROGRAM_TBL );
 				$rec->channel_disc = $channel_disc;
-				$rec->channel_id = $channel_rec->id;
+				$rec->channel_id = $ch_map["$channel_disc"]['id'];
 				$rec->type = $type;
-				$rec->channel = $channel_rec->channel;
+				$rec->channel = $ch_map["$channel_disc"]['channel'];
 				$rec->title = $title;
 				$rec->description = $desc;
 				$rec->category_id = $cat_rec->id;

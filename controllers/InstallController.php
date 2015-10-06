@@ -13,84 +13,21 @@ class InstallController extends CommonController
 	{
 		global $GR_CHANNEL_MAP;
 		$this->view->compile_dir = '/tmp';	// 一時的に設定
-		$err_flg = false;
 		$contents = "<p><b>epgrecのインストール状態をチェックします</b></p>";
 
-		// do-record.shの存在チェック
-		if (! file_exists( DO_RECORD ) )
+		if ( check_epgrec_env($contents) )
 		{
-			$contents .= DO_RECORD."が存在しません<br>do-record.sh.pt1やdo-record.sh.friioを参考に作成してください<br />";
-			$this->view->assign( "sitetitle", "インストールステップ１" );
-			$this->view->assign( "contents" , $contents );
-			return;
-		}
-
-		// パーミッションチェック
-		$rw_dirs = array( 
-			INSTALL_PATH."/settings",
-			INSTALL_PATH."/htdocs/epgrec/thumbs",
-			INSTALL_PATH."/video",
-			INSTALL_PATH."/views/templates_c",
-		);
-
-		$gen_thumbnail = INSTALL_PATH."/scripts/gen-thumbnail.sh";
-		if ( defined("GEN_THUMBNAIL") )
-			$gen_thumbnail = GEN_THUMBNAIL;
-
-		$exec_files = array(
-			DO_RECORD,
-			RECORDER_CMD,
-			GET_EPG_CMD,
-			STORE_PRG_CMD,
-			$gen_thumbnail,
-		);
-
-		$contents .= "<br />";
-		$contents .= "<p><b>ディレクトリのパーミッションチェック（707）</b></p>";
-		$contents .= "<div>";
-		foreach ($rw_dirs as $value )
-		{
-			$contents .= $value;
-			$perm = $this->_getPerm( $value );
-			if ( !($perm == "707" || $perm == "777") )
+			$contents .= "<br />";
+			$contents .= "<p><b>地上デジタルチャンネルの設定確認</b></p>";
+			$contents .= "<div>現在、config.phpでは以下のチャンネルの受信が設定されています。受信不可能なチャンネルが混ざっていると番組表が表示できません。</div>";
+			$contents .= "<ul>";
+			foreach ( $GR_CHANNEL_MAP as $key => $value )
 			{
-				$err_flg = true;
-				$contents .= '<font color="red">...'.$perm.'... missing</font><br />このディレクトリを書き込み許可にしてください（ex. chmod 707 '.$value.'）<br />';
+				$contents .= "<li>物理チャンネル".$value."</li>";
 			}
-			else
-				$contents .= "...".$perm."...ok<br />";
-		}
-		$contents .= "</div>";
-
-		$contents .= "<br />";
-		$contents .= "<p><b>ファイルのパーミッションチェック（705）</b></p>";
-		$contents .= "<div>";
-		foreach ($exec_files as $value )
-		{
-			$contents .= $value;
-			$perm = $this->_getPerm( $value );
-			if ( !($perm == "705" || $perm == "755") )
-			{
-				$err_flg = true;
-				$contents .= '<font color="red">...'.$perm.'... missing</font><br>このファイルを実行可にしてください（ex. chmod 705 '.$value.'）<br />';
-			}
-			else
-				$contents .= "...".$perm."...ok<br />";
-		}
-		$contents .= "</div>";
-
-		$contents .= "<br />";
-		$contents .= "<p><b>地上デジタルチャンネルの設定確認</b></p>";
-		$contents .= "<div>現在、config.phpでは以下のチャンネルの受信が設定されています。受信不可能なチャンネルが混ざっていると番組表が表示できません。</div>";
-		$contents .= "<ul>";
-		foreach ( $GR_CHANNEL_MAP as $key => $value )
-		{
-			$contents .= "<li>物理チャンネル".$value."</li>";
-		}
-		$contents .= "</ul>";
-
-		if (!$err_flg)
+			$contents .= "</ul>";
 			$contents .= "<p><a href=\"{$this->getCurrentUri(false)}/step2\">以上を確認し次の設定に進む</a></p>";
+		}
 
 		$this->view->assign( "sitetitle", "インストールステップ１" );
 		$this->view->assign( "contents" , $contents );
@@ -116,15 +53,24 @@ class InstallController extends CommonController
 	public function step3Action()
 	{
 		// 設定の保存
-		$this->setting->post($this->request->getPost());
-		$this->setting->save();
+		$POST_DATA = $this->request->getPost();
+		if ($POST_DATA['token'] != '')
+		{
+			$this->setting->post($POST_DATA);
+			$this->setting->save();
+		}
+		else
+		{
+			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}/step2" );
+			exit;
+		}
 
 		// データベース接続チェック
 		$this->model->initDb();
 		if (!ModelBase::isConnect())
 		{
-			jdialog( "ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください", "{$this->getCurrentUri(false)}/step2" );
-			exit();
+			jdialog( 'ＤＢに接続できません。ホスト名/ユーザー名/パスワードを再チェックしてください。', "{$this->getCurrentUri(false)}/step2" );
+			exit;
 		}
 
 		// DBテーブルの作成
@@ -152,7 +98,7 @@ class InstallController extends CommonController
 		{
 			UtilLog::writeLog("テーブルの作成失敗: ".print_r($e, true));
 			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step2" );
-			exit();
+			exit;
 		}
 
 		$this->view->assign( "settings", $this->setting );
@@ -169,8 +115,18 @@ class InstallController extends CommonController
 	public function step4Action()
 	{
 		// 設定の保存
-		$this->setting->post($this->request->getPost());
-		$this->setting->save();
+		$POST_DATA = $this->request->getPost();
+		if ($POST_DATA['token'] != '')
+		{
+			$POST_DATA['is_installed'] = 1;
+			$this->setting->post($POST_DATA);
+			$this->setting->save();
+		}
+		else
+		{
+			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}/step2" );
+			exit;
+		}
 
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "install_path", INSTALL_PATH );
@@ -187,13 +143,6 @@ class InstallController extends CommonController
 
 		$this->view->assign( "settings", $this->setting );
 		$this->view->assign( "sitetitle", "インストール完了" );
-	}
-
-	// パーミッションを返す
-	private function _getPerm( $file )
-	{
-		$ss = @stat( $file );
-		return sprintf("%o", ($ss['mode'] & 000777));
 	}
 }
 ?>

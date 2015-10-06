@@ -46,9 +46,16 @@ class SettingController extends CommonController
 	 */
 	public function saveAction()
 	{
-		$this->setting->post($this->request->getPost());
-		$this->setting->save();
-		jdialog("設定が保存されました", HOME_URL);
+		$POST_DATA = $this->request->getPost();
+		if ($POST_DATA['token'] != '')
+		{
+			$this->setting->post($POST_DATA);
+			$this->setting->save();
+			jdialog( '設定が保存されました', HOME_URL );
+		}
+		else
+			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}/step2" );
+		exit;
 	}
 }
 ?>

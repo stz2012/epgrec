@@ -43,7 +43,7 @@
 <input type="text" name="former_time" value="{$settings->former_time}" size="4" class="required digits" />
 </div>
 
-<h3>録画時間を長めにする</h3>
+<h3>録画時間を長めにする（秒）</h3>
 <div class="setting">
 <div class="caption">下の欄に0以上の秒数を設定すると、すべての番組に対して設定した秒数分だけ録画時間を延ばします。この設定は「連続した番組の予約」設定と相性が良くありません。0以外の秒を設定する場合、連続した番組の予約が行いづらくなることに注意してください。推奨値は0です。</div>
 <input type="text" name="extra_time" value="{$settings->extra_time}" size="4" class="required digits" />
@@ -58,7 +58,7 @@
 </select>
 </div>
 
-<h3>録画コマンドの切り替え時間</h3>
+<h3>録画コマンドの切り替え時間（秒）</h3>
 <div class="setting">
 <div class="caption">連続した番組を予約するとき、録画が終了して次の録画を開始するまでの余裕時間（秒）を設定します。1以上の秒数を設定してください。設定する秒数が短いほど録画時間を短縮する時間が短くなりますが、この時間を短くしすぎると連続した番組の予約に失敗する恐れがあります。失敗するかどうかは使用している録画コマンドやチューナーに依存します。</div>
 <input type="text" name="rec_switch_time" id="id_rec_switch_time" value="{$settings->rec_switch_time}" size="4" class="required digits" />
@@ -125,18 +125,19 @@
 <input type="text" name="program_length" value="{$settings->program_length}" size="2" class="required digits" />
 </div>
 
-<h3>1局あたりの幅</h3>
+<h3>1局あたりの幅（px）</h3>
 <div class="setting">
 <div class="caption">番組表の1局当たりの幅をピクセル数で設定します。標準は150ピクセルです。</div>
 <input type="text" id="ch_set_width" name="ch_set_width" value="{$settings->ch_set_width}" size="4" class="required digits" />
 </div>
 
-<h3>1時間あたりの高さ</h3>
+<h3>1時間あたりの高さ（px）</h3>
 <div class="setting">
 <div class="caption">番組表の1時間あたりの高さをピクセル数で設定します。標準は120ピクセルです。なお、60で割り切れないピクセル数を指定するとFirefoxを除くブラウザでは番組の高さが揃わなくなり見た目が悪くなるかもしれません。これはFirefox以外のブラウザでは実数のピクセルを正しくレンダリングしないためです。</div>
 <input type="text" id="height_per_hour" name="height_per_hour" value="{$settings->height_per_hour}" size="4" class="required digits" />
 </div>
 
+<input type="hidden" name="token" value="{$token}" />
 <input type="submit" value="設定を保存する" id="env_setting-submit" />
 </form>
 </div>

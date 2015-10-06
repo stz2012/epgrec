@@ -18,7 +18,7 @@ class IndexModel extends CommonModel
 		$sql .= " c.name_en AS cate_name, COALESCE(d.rsv_cnt, 0) AS rec";
 		$sql .= "  FROM {$this->setting->tbl_prefix}".CHANNEL_TBL." a";
 		$sql .= " INNER JOIN {$this->setting->tbl_prefix}".PROGRAM_TBL." b";
-		$sql .= "    ON b.channel_disc = a.channel_disc";
+		$sql .= "    ON b.channel_id = a.id";
 		if (self::getDbType() == 'pgsql')
 		{
 			$sql .= " AND b.endtime > CAST(:top_time AS TIMESTAMP)";

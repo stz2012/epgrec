@@ -13,14 +13,14 @@ class CommonController extends ControllerBase
 	{
 		// 基底クラスの処理を呼出
 		parent::preAction();
-		
-		// 設定ファイルの有無を検査する
-		if ( ! file_exists( INSTALL_PATH."/settings/config.xml") )
+
+		// セットアップ状態を検査する
+		if ( ! check_epgrec_env() && $this->getControllerName() != 'install' )
 		{
 			$this->setNextPage('install');
 			return;
 		}
-		else if ( ! ModelBase::isConnect()  && $this->getControllerName() != 'install')
+		else if ( ! ModelBase::isConnect() && $this->getControllerName() != 'install' )
 		{
 			$this->setNextPage('install', 'step2');
 			return;

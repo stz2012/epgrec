@@ -142,6 +142,7 @@
 <div><b>グループ名：</b><input type="text" name="shutdown" id="id_shutdown" value="{$settings->shutdown}" size="40" class="required" /></div>
 </div>
 
+<input type="hidden" name="token" value="{$token}" />
 <input type="submit" value="設定を保存する" id="system_setting-submit" />
 </form>
 </div>

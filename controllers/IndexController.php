@@ -229,13 +229,14 @@ class IndexController extends CommonController
 
 		// 時間選択
 		$toptimes = array();
-		for ( $i = 0 ; $i < 24; $i+=4 )
+		for ( $i = 0 ; $i < 24; $i++ )
 		{
 			$tmp = array();
 			$tmp['hour'] = sprintf( "%02d:00", $i );
 			$get_param['time'] = date( 'Ymd', $top_time ) . sprintf("%02d", $i );
 			$tmp['link'] = $json_data[$get_param['time']] = UtilString::buildQueryString($get_param);
-			array_push( $toptimes, $tmp );
+			if ( $i % 4 == 0 )
+				array_push( $toptimes, $tmp );
 		}
 		$this->view->assign( 'toptimes' , $toptimes );
 
@@ -275,6 +276,7 @@ class IndexController extends CommonController
 				exit( 'Error: チャンネル情報更新失敗' );
 			}
 		}
+		exit;
 	}
 
 	/**

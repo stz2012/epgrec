@@ -139,10 +139,11 @@ class RecprogController extends CommonController
 		{
 			exit( $e->getMessage() );
 		}
+		exit;
 	}
 
 	/**
-	 * 
+	 * ストリーミング配信
 	 */
 	public function sendStreamAction()
 	{
@@ -189,6 +190,7 @@ class RecprogController extends CommonController
 		{
 			exit( $e->getMessage() );
 		}
+		exit;
 	}
 }
 ?>
