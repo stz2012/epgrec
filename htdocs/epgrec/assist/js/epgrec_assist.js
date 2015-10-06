@@ -418,7 +418,7 @@ ER_sub.TM = {
 			D.setHours(D.getHours() +parseInt(t,10));
 		}
 		var timeStr = D.getFullYear() + $.N2S(D.getMonth()+1, 2) + $.N2S(D.getDate(), 2) + $.N2S(D.getHours(), 2);
-		return INISet.prgTimeLink[timeStr];
+		return INISet.prgProgramURL + '?' + INISet.prgTimeLink[timeStr];
 	},
 	T_make : function(){
 		var i, dt = ht = '', date, day, S, D = new Date(this.ST), that = this,

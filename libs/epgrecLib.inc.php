@@ -208,10 +208,22 @@ function parse_epgdump_file( $type, $xmlfile )
 			{
 				// 新規番組
 				// 重複チェック 同時間帯にある番組
-				$F_TYPE = ($settings->db_type == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 				$options = "WHERE channel_disc = '{$channel_disc}'";
-				$options .= " AND starttime < CAST('{$endtime}' AS {$F_TYPE})";
-				$options .= " AND endtime > CAST('{$starttime}' AS {$F_TYPE})";
+				if ($settings->db_type == 'pgsql')
+				{
+					$options .= " AND starttime < CAST('{$endtime}' AS TIMESTAMP)";
+					$options .= " AND endtime > CAST('{$starttime}' AS TIMESTAMP)";
+				}
+				else if ($settings->db_type == 'sqlite')
+				{
+					$options .= " AND datetime(starttime, 'localtime') < datetime('{$endtime}', 'localtime')";
+					$options .= " AND datetime(endtime, 'localtime' > datetime('{$starttime}', 'localtime')";
+				}
+				else
+				{
+					$options .= " AND starttime < CAST('{$endtime}' AS DATETIME)";
+					$options .= " AND endtime > CAST('{$starttime}' AS DATETIME)";
+				}
 				$battings = DBRecord::countRecords( PROGRAM_TBL, $options );
 				if ( $battings > 0 )
 				{

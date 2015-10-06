@@ -82,11 +82,23 @@ class Reservation extends ModelBase
 			$tuners = ($crec->type == "GR") ? (int)($settings->gr_tuners) : (int)($settings->bs_tuners);
 
 			// 影響する予約情報を集める
-			$F_TYPE = (self::getDbType() == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 			$options = "WHERE complete = '0'";
 			$options .= " AND " . ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS')";
-			$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS {$F_TYPE})";
-			$options .= " AND endtime > CAST('".toDatetime($rec_start)."' AS {$F_TYPE})";
+			if (self::getDbType() == 'pgsql')
+			{
+				$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS TIMESTAMP)";
+				$options .= " AND endtime > CAST('".toDatetime($rec_start)."' AS TIMESTAMP)";
+			}
+			else if (self::getDbType() == 'sqlite')
+			{
+				$options .= " AND datetime(starttime, 'localtime') < datetime('".toDatetime($end_time)."', 'localtime')";
+				$options .= " AND datetime(endtime, 'localtime') > datetime('".toDatetime($rec_start)."', 'localtime')";
+			}
+			else
+			{
+				$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS DATETIME)";
+				$options .= " AND endtime > CAST('".toDatetime($rec_start)."' AS DATETIME)";
+			}
 			$trecs = DBRecord::createRecords(RESERVE_TBL, $options);
 			// 情報を配列に入れる
 			for ( $i = 0; $i < count($trecs) ; $i++ )
@@ -539,7 +551,6 @@ class Reservation extends ModelBase
 	) {
 		$settings = Settings::factory();
 		$program_data = array();
-		$F_TYPE = (self::getDbType() == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 
 		$sql = "SELECT a.*, b.name AS station_name,";
 		$sql .= " c.name_en AS cat, COALESCE(d.rsv_cnt, 0) AS rec";
@@ -554,7 +565,12 @@ class Reservation extends ModelBase
 		$sql .= "     GROUP BY program_id";
 		$sql .= "  ) d";
 		$sql .= "    ON d.program_id = a.id";
-		$sql .= " WHERE starttime > CAST(:search_time AS {$F_TYPE})";
+		if (self::getDbType() == 'pgsql')
+			$sql .= " WHERE starttime > CAST(:search_time AS TIMESTAMP)";
+		else if (self::getDbType() == 'sqlite')
+			$sql .= " WHERE datetime(starttime, 'localtime') > datetime(:search_time , 'localtime')";
+		else
+			$sql .= " WHERE starttime > CAST(:search_time AS DATETIME)";
 		if ( $keyword != "" )
 		{
 			if ( $use_regexp )
@@ -581,13 +597,22 @@ class Reservation extends ModelBase
 		if ( $category_id != 0 )
 			$sql .= " AND category_id = :category_id";
 		if ( $prgtime != 24 )
-			$sql .= " AND CAST(starttime AS TIME) BETWEEN CAST(:prgtime_from AS TIME) AND CAST(:prgtime_to AS TIME)";
+		{
+			if (self::getDbType() == 'sqlite')
+			{
+				$sql .= " AND strftime('%H:%M:%S', starttime, 'localtime')";
+				$sql .= " BETWEEN strftime('%H:%M:%S', :prgtime_from, 'localtime')";
+				$sql .= " AND strftime('%H:%M:%S', :prgtime_to, 'localtime')";
+			}
+			else
+				$sql .= " AND CAST(starttime AS TIME) BETWEEN CAST(:prgtime_from AS TIME) AND CAST(:prgtime_to AS TIME)";
+		}
 		if ( $weekofday != 0 )
 		{
 			if (self::getDbType() == 'pgsql')
 				$sql .= " AND EXTRACT(dow from starttime) = :weekofday";
 			else if (self::getDbType() == 'sqlite')
-				$sql .= " AND CAST(strftime('%w', starttime) AS INTEGER) + 1 = :weekofday";
+				$sql .= " AND (strftime('%w', starttime, 'localtime') + 1) = :weekofday";
 			else
 				$sql .= " AND DAYOFWEEK(starttime) = :weekofday";
 		}

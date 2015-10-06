@@ -25,12 +25,24 @@ try
 	reclog("recorder:: 録画ID".$rrec->id .":".$rrec->type.$rrec->channel.$rrec->title."の録画ジョブ開始" );
 
 	// tuner
-	$F_TYPE = ($settings->db_type == 'mysql') ? 'DATETIME' : 'TIMESTAMP';
 	$options = "WHERE complete = '0'";
 	$options .= " AND " . ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS')";
 	$options .= " AND id <> '{$rrec->id}'";
-	$options .= " AND starttime < CAST('{$rrec->endtime}' AS {$F_TYPE})";
-	$options .= " AND endtime > CAST('{$rrec->starttime}' AS {$F_TYPE})";
+	if ($settings->db_type == 'pgsql')
+	{
+		$options .= " AND starttime < CAST('{$rrec->endtime}' AS TIMESTAMP)";
+		$options .= " AND endtime > CAST('{$rrec->starttime}' AS TIMESTAMP)";
+	}
+	else if ($settings->db_type == 'sqlite')
+	{
+		$options .= " AND datetime(starttime, 'localtime') < datetime('{$rrec->endtime}', 'localtime')";
+		$options .= " AND datetime(endtime, 'localtime' > datetime('{$rrec->starttime}', 'localtime')";
+	}
+	else
+	{
+		$options .= " AND starttime < CAST('{$rrec->endtime}' AS DATETIME)";
+		$options .= " AND endtime > CAST('{$rrec->starttime}' AS DATETIME)";
+	}
 	$tuner = DBRecord::countRecords( RESERVE_TBL, $options );
 
 	// program_start;
