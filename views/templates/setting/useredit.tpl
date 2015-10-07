@@ -17,19 +17,19 @@
 <h3>ユーザー名</h3>
 <div class="setting">
 <div class="caption">ユーザー名を入力してください。</div>
-<input type="text" name="user_name" value="{$user_data.name}" size="15" class="required" />
+<input type="text" name="user_name" value="{$user_data.name}" size="15" maxlength="64" class="required" />
 </div>
 
 <h3>ログイン名</h3>
 <div class="setting">
 <div class="caption">ログイン名を入力してください。</div>
-<input type="text" name="login_user" value="{$user_data.login_user}" size="15" class="required" />
+<input type="text" name="login_name" value="{$user_data.login_name}" size="15" maxlength="16" class="required" />
 </div>
 
 <h3>ログインパスワード</h3>
 <div class="setting">
 <div class="caption">パスワードを入力してください。</div>
-<input type="password" name="login_pass" value="{$user_data.login_pass}" size="15" class="required" />
+<input type="password" name="login_pass" value="{$user_data.login_pass}" size="15" maxlength="16" class="required" />
 </div>
 
 <input type="hidden" name="token" value="{$token}" />
@@ -37,18 +37,4 @@
 </form>
 </div>
 {include file='INISet.tpl'}
-<script type="text/javascript">
-<!--
-{literal}
-$(document).ready(function(){
-	$("#user_setting").validate({
-		rules : {
-			login_user: { min: 8, max: 16 },
-			login_pass: { min: 8, max: 16 }
-		}
-	});
-});
-{/literal}
--->
-</script>
 {include file='footer.tpl'}

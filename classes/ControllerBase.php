@@ -275,7 +275,7 @@ abstract class ControllerBase
 		{
 			$this->request->setSession($this->controller, array());
 			$this->request->saveSession($this->controller);
-			$this->setNextPage('sorry', 'timeout');
+			$this->setNextPage('index');
 		}
 		// CSRF判定
 		if ($this->request->getPost('token') != null && 
@@ -283,7 +283,7 @@ abstract class ControllerBase
 		{
 			$this->request->setSession($this->controller, array());
 			$this->request->saveSession($this->controller);
-			$this->setNextPage('sorry', 'timeout');
+			$this->setNextPage('index');
 		}
 	}
 

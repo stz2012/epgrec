@@ -17,6 +17,7 @@
 				</div>
 				<input type="submit" name="btn_action" value="ログイン" class="btn btn-primary" />
 			</fieldset>
+			<input type="hidden" name="token" value="{$token}" />
 			</form>
 		</div>
 		<div class="col-md-4"></div>
@@ -29,6 +30,7 @@
 {/foreach}
 		</ul>
 	</div>
+{/if}
 </div>
 
 {include file='INISet.tpl'}

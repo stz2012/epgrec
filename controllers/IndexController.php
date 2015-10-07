@@ -11,7 +11,7 @@ class IndexController extends CommonController
 	 */
 	public function indexAction()
 	{
-		if ( $this->request->getPost('token') )
+		if ( $this->request->getPost('btn_action') == 'ログイン' )
 		{
 			$this->error_msg = $this->valid->user_login($this->request->getPost());
 			if (count($this->error_msg) == 0)
