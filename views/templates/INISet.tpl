@@ -16,7 +16,7 @@ var INISet = {
 	prgReservFormURL : '{$home_url}index/reserveForm',	// 予約フォーム
 	prgSetChannelURL : '{$home_url}index/setChannelInfo',	// チャンネル設定
 	prgDelKeyURL : '{$home_url}search/delete'		// キーワード削除
-{if $this_class->getControllerName() == 'index'}
+{if $this_class->getControllerName() == 'index' && $this_class->getActionName() == 'program'}
 	,
 	prgTimeLink : {$prg_time_link|@json_encode},
 	dotHour : {$height_per_hour},

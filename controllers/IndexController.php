@@ -240,7 +240,6 @@ class IndexController extends CommonController
 		$day['link'] = $json_data[$get_param['time']] = UtilString::buildQueryString($get_param);
 		$day['ofweek'] = '';
 		$day['selected'] = ( $top_time < mktime(0, 0, 0) ) ? 'class="selected"' : '';
-
 		array_push( $days , $day );
 		$day['d'] = '現在';
 		unset($get_param['time']);
@@ -272,22 +271,18 @@ class IndexController extends CommonController
 		}
 		$this->view->assign( 'toptimes' , $toptimes );
 
-		$this->view->assign( 'tvtimes', $tvtimes );
-		$this->view->assign( 'programs', $programs );
-		$this->view->assign( 'ch_set_width', (int)($this->setting->ch_set_width) );
-		$this->view->assign( 'chs_width', $chs_width );
+		$this->view->assign( 'tvtimes',         $tvtimes );
+		$this->view->assign( 'programs',        $programs );
+		$this->view->assign( 'ch_set_width',    (int)($this->setting->ch_set_width) );
+		$this->view->assign( 'chs_width',       $chs_width );
 		$this->view->assign( 'height_per_hour', $this->setting->height_per_hour );
-		$this->view->assign( 'height_per_min', $this->setting->height_per_hour / 60 );
-		$this->view->assign( 'num_ch', $num_ch );
-		$this->view->assign( 'num_all_ch' , count( $channel_map ) );
-
-		$sat_type = array('GR' => '地上デジタル', 'BS' => 'BSデジタル', 'CS' => 'CSデジタル');
-		$sitetitle = date( 'Y', $top_time ) . '年' . date( 'm', $top_time ) . '月' . date( 'd', $top_time ) . '日'. date( 'H', $top_time ) .
-		              '時～'.$sat_type[$type].'番組表';
-		$this->view->assign( 'sitetitle', $sitetitle );
-		$this->view->assign( 'top_time', str_replace( '-', '/' ,toDatetime($top_time)) );
-		$this->view->assign( 'last_time', str_replace( '-', '/' ,toDatetime($last_time)) );
-		$this->view->assign( 'prg_time_link', $json_data );
+		$this->view->assign( 'height_per_min',  $this->setting->height_per_hour / 60 );
+		$this->view->assign( 'num_ch',          $num_ch );
+		$this->view->assign( 'num_all_ch' ,     count( $channel_map ) );
+		$this->view->assign( 'sitetitle',       '番組表' );
+		$this->view->assign( 'top_time',        str_replace( '-', '/' ,toDatetime($top_time)) );
+		$this->view->assign( 'last_time',       str_replace( '-', '/' ,toDatetime($last_time)) );
+		$this->view->assign( 'prg_time_link',   $json_data );
 	}
 
 	/**

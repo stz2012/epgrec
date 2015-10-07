@@ -297,10 +297,10 @@ class DBRecord extends ModelBase
 
 			// ユーザテーブル
 			case self::$__settings->tbl_prefix.USER_TBL:
-				$sql .= ", name varchar(64) not null default ''";						// ユーザ名
+				$sql .= ", name varchar(128) not null default ''";						// ユーザ名
 				$sql .= ", level integer not null default '0'";							// ユーザレベル
-				$sql .= ", login_name varchar(16) not null default ''";					// ログイン名
-				$sql .= ", login_pass varchar(32) not null default ''";					// ログインパス
+				$sql .= ", login_name varchar(32) not null default ''";					// ログイン名
+				$sql .= ", login_pass varchar(64) not null default ''";					// ログインパス
 				break;
 		}
 		return $sql;
