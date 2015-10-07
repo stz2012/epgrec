@@ -11,9 +11,9 @@ class SearchController extends CommonController
 	 */
 	public function indexAction()
 	{
-		$search = "";
+		$search = '';
 		$use_regexp = 0;
-		$type = "*";
+		$type = '*';
 		$category_id = 0;
 		$channel_id = 0;
 		$weekofday = 0;
@@ -41,27 +41,27 @@ class SearchController extends CommonController
 		}
 
 		$do_keyword = 0;
-		if ( ($search != "") || ($type != "*") || ($category_id != 0) || ($channel_id != 0) )
+		if ( ($search != '') || ($type != '*') || ($category_id != 0) || ($channel_id != 0) )
 			$do_keyword = 1;
 		$programs = Reservation::getSearchData( $search, $use_regexp, $type, $channel_id, $category_id, $prgtime, $weekofday );
 
-		$this->view->assign( "sitetitle",     "番組検索" );
-		$this->view->assign( "do_keyword",    $do_keyword );
-		$this->view->assign( "search" ,       $search );
-		$this->view->assign( "use_regexp",    $use_regexp );
-		$this->view->assign( "types",         $this->model->getTunerTypeOptions() );
-		$this->view->assign( "sel_type",      $type );
-		$this->view->assign( "stations",      $this->model->getStationOptions() );
-		$this->view->assign( "sel_station",   $channel_id );
-		$this->view->assign( "categorys",     $this->model->getCategoryOptions() );
-		$this->view->assign( "sel_category",  $category_id );
-		$this->view->assign( "prgtimes",      $this->_getPrgTimes() );
-		$this->view->assign( "sel_prgtime",   $prgtime );
-		$this->view->assign( "weekofdays",    $this->_getWeekOfDays() );
-		$this->view->assign( "sel_weekofday", $weekofday );
-		$this->view->assign( "programs",      $programs );
-		$this->view->assign( "record_mode" ,  $this->model->getRecModeOptions() );
-		$this->view->assign( "sel_recmode",   $this->setting->autorec_mode );
+		$this->view->assign( 'sitetitle',     '番組検索' );
+		$this->view->assign( 'do_keyword',    $do_keyword );
+		$this->view->assign( 'search' ,       $search );
+		$this->view->assign( 'use_regexp',    $use_regexp );
+		$this->view->assign( 'types',         $this->model->getTunerTypeOptions() );
+		$this->view->assign( 'sel_type',      $type );
+		$this->view->assign( 'stations',      $this->model->getStationOptions() );
+		$this->view->assign( 'sel_station',   $channel_id );
+		$this->view->assign( 'categorys',     $this->model->getCategoryOptions() );
+		$this->view->assign( 'sel_category',  $category_id );
+		$this->view->assign( 'prgtimes',      $this->_getPrgTimes() );
+		$this->view->assign( 'sel_prgtime',   $prgtime );
+		$this->view->assign( 'weekofdays',    $this->_getWeekOfDays() );
+		$this->view->assign( 'sel_weekofday', $weekofday );
+		$this->view->assign( 'programs',      $programs );
+		$this->view->assign( 'record_mode' ,  $this->model->getRecModeOptions() );
+		$this->view->assign( 'sel_recmode',   $this->setting->autorec_mode );
 	}
 
 	/**
@@ -96,7 +96,7 @@ class SearchController extends CommonController
 			}
 			catch ( Exception $e )
 			{
-				exit( $e->getMessage() );
+				throw $e;
 			}
 		}
 
@@ -110,7 +110,7 @@ class SearchController extends CommonController
 				$arr['id']           = $rec->id;
 				$arr['keyword']      = $rec->keyword;
 				$arr['use_regexp']   = $rec->use_regexp;
-				$arr['type']         = ( $rec->type == "*" ) ? "すべて" : $rec->type;
+				$arr['type']         = ( $rec->type == '*' ) ? 'すべて' : $rec->type;
 				$arr['channel']      = $stations["$rec->channel_id"];
 				$arr['category']     = $categorys["$rec->category_id"];
 				$arr['prgtime']      = $prgtimes["$rec->prgtime"];
@@ -121,11 +121,11 @@ class SearchController extends CommonController
 		}
 		catch ( Exception $e )
 		{
-			exit( $e->getMessage() );
+			throw $e;
 		}
 
-		$this->view->assign( "keywords", $keywords );
-		$this->view->assign( "sitetitle", "自動録画キーワードの管理" );
+		$this->view->assign( 'keywords', $keywords );
+		$this->view->assign( 'sitetitle', '自動録画キーワードの管理' );
 	}
 
 	/**
@@ -133,24 +133,23 @@ class SearchController extends CommonController
 	 */
 	public function deleteAction()
 	{
-		if ( $this->request->getPost('keyword_id') )
+		if ( ! $this->request->getPost('keyword_id') )
+			exit( 'Error: キーワードIDが指定されていません' );
+
+		try
 		{
-			try
-			{
-				$rec = new DBRecord( KEYWORD_TBL, "id", $this->request->getPost('keyword_id') );
+			$rec = new DBRecord( KEYWORD_TBL, 'id', $this->request->getPost('keyword_id') );
 
-				// 一気にキャンセル
-				Reservation::keyword( $rec->id, true );
+			// 一気にキャンセル
+			Reservation::keyword( $rec->id, true );
 
-				$rec->delete();
-			}
-			catch ( Exception $e )
-			{
-				exit( "Error:" . $e->getMessage() );
-			}
+			$rec->delete();
 		}
-		else
-			exit( "Error:キーワードIDが指定されていません" );
+		catch ( Exception $e )
+		{
+			exit( 'Error: ' . $e->getMessage() );
+		}
+		exit;
 	}
 
 	// 時間帯
@@ -158,14 +157,14 @@ class SearchController extends CommonController
 	{
 		$prgtimes = array();
 		for ( $i=0; $i < 25; $i++ )
-			$prgtimes[$i] = ( $i == 24 ) ? "なし" : sprintf("%02d時～", $i);
+			$prgtimes[$i] = ( $i == 24 ) ? 'なし' : sprintf('%02d時～', $i);
 		return $prgtimes;
 	}
 
 	// 曜日
 	private function _getWeekOfDays()
 	{
-		return array( "なし", "日", "月", "火", "水", "木", "金", "土" );
+		return array( 'なし', '日', '月', '火', '水', '木', '金', '土' );
 	}
 }
 ?>

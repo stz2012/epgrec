@@ -39,19 +39,26 @@
 
 <h3>録画開始の余裕時間（秒）</h3>
 <div class="setting">
-<div class="caption">epgrecは番組開始時間より早く録画を開始します。どのくらい録画開始を早めるかを秒で設定してください。早める時間を短くしすぎると、番組冒頭がとぎれる恐れがあります。設定できる時間は0秒以上180秒未満です。</div>
+<div class="caption">epgrecは番組開始時間より早く録画を開始します。どのくらい録画開始を早めるかを秒で設定してください。<br />
+早める時間を短くしすぎると、番組冒頭がとぎれる恐れがあります。設定できる時間は0秒以上180秒未満です。</div>
 <input type="text" name="former_time" value="{$settings->former_time}" size="4" class="required digits" />
 </div>
 
 <h3>録画時間を長めにする（秒）</h3>
 <div class="setting">
-<div class="caption">下の欄に0以上の秒数を設定すると、すべての番組に対して設定した秒数分だけ録画時間を延ばします。この設定は「連続した番組の予約」設定と相性が良くありません。0以外の秒を設定する場合、連続した番組の予約が行いづらくなることに注意してください。推奨値は0です。</div>
+<div class="caption">下の欄に0以上の秒数を設定すると、すべての番組に対して設定した秒数分だけ録画時間を延ばします。<br />
+この設定は「連続した番組の予約」設定と相性が良くありません。0以外の秒を設定する場合、<br />
+連続した番組の予約が行いづらくなることに注意してください。推奨値は0です。</div>
 <input type="text" name="extra_time" value="{$settings->extra_time}" size="4" class="required digits" />
 </div>
 
 <h3>連続した番組の予約</h3>
 <div class="setting">
-<div class="caption">この設定を「行う」にするとepgrecが自動的に直前の時間に予約されている番組の録画時間を短縮して時間が連続している番組の予約を可能にします。録画時間を短縮する時間は「録画開始の余裕時間」＋「録画コマンドの切り替え時間」です。この機能を使って連続した番組を予約する場合、前の時間の番組の最後がとぎれる可能性がありますが、チューナーが1台しか無くてもキーワード自動録画による連続した番組の予約が可能になります。メリットとデメリットをよく考えて設定してください。</div>
+<div class="caption">この設定を「行う」にするとepgrecが自動的に直前の時間に予約されている番組の録画時間を短縮して時間が連続している番組の予約を可能にします。<br />
+録画時間を短縮する時間は「録画開始の余裕時間」＋「録画コマンドの切り替え時間」です。<br />
+この機能を使って連続した番組を予約する場合、前の時間の番組の最後がとぎれる可能性がありますが、<br />
+チューナーが1台しか無くてもキーワード自動録画による連続した番組の予約が可能になります。<br />
+メリットとデメリットをよく考えて設定してください。</div>
 <select name="force_cont_rec" id="id_force_cont_rec" onchange="javascript:PRG.force_cont()" >
   <option value="0" {if $settings->force_cont_rec == 0} selected="selected"{/if}>行わない</option>
   <option value="1" {if $settings->force_cont_rec == 1} selected="selected"{/if}>行う</option>
@@ -60,14 +67,18 @@
 
 <h3>録画コマンドの切り替え時間（秒）</h3>
 <div class="setting">
-<div class="caption">連続した番組を予約するとき、録画が終了して次の録画を開始するまでの余裕時間（秒）を設定します。1以上の秒数を設定してください。設定する秒数が短いほど録画時間を短縮する時間が短くなりますが、この時間を短くしすぎると連続した番組の予約に失敗する恐れがあります。失敗するかどうかは使用している録画コマンドやチューナーに依存します。</div>
+<div class="caption">連続した番組を予約するとき、録画が終了して次の録画を開始するまでの余裕時間（秒）を設定します。<br />
+1以上の秒数を設定してください。設定する秒数が短いほど録画時間を短縮する時間が短くなりますが、<br />
+この時間を短くしすぎると連続した番組の予約に失敗する恐れがあります。<br />
+失敗するかどうかは使用している録画コマンドやチューナーに依存します。</div>
 <input type="text" name="rec_switch_time" id="id_rec_switch_time" value="{$settings->rec_switch_time}" size="4" class="required digits" />
 </div>
 
 <h3>優先する録画モード</h3>
 <div class="setting">
-<div class="caption">キーワード自動録画や簡易録画を行う番組の録画モードを設定します。config.phpの$RECORD_MODEに複数の録画モードを登録し、do-record.shをカスタマイズているのであれば、その録画モードを優先して利用できます。キーワード自動録画はキーワード登録時に録画モードを設定することもできます。デフォルトはモード0です。
-</div>
+<div class="caption">キーワード自動録画や簡易録画を行う番組の録画モードを設定します。<br />
+config.phpの$RECORD_MODEに複数の録画モードを登録し、do-record.shをカスタマイズているのであれば、その録画モードを優先して利用できます。<br />
+キーワード自動録画はキーワード登録時に録画モードを設定することもできます。デフォルトはモード0です。</div>
 <select name="autorec_mode" id="id_autorec_mode">
 {html_options options=$record_mode selected=$settings->autorec_mode}
 </select>
@@ -75,8 +86,9 @@
 
 <h3>mediatomb連係機能</h3>
 <div class="setting">
-<div class="caption">この設定を「使う」にすると録画した番組のタイトルと概要をmediatombに反映させます。mediatombを使用していない方は「使わない」に設定してください。なお、この設定を利用するにはmediatomb側の設定も必要になります。詳しくはドキュメントを参照してください。
-</div>
+<div class="caption">この設定を「使う」にすると録画した番組のタイトルと概要をmediatombに反映させます。<br />
+mediatombを使用していない方は「使わない」に設定してください。<br />
+なお、この設定を利用するにはmediatomb側の設定も必要になります。詳しくはドキュメントを参照してください。</div>
 <select name="mediatomb_update" id="id_mediatomb_update" >
   <option value="0" {if $settings->mediatomb_update == 0} selected="selected"{/if}>使わない</option>
   <option value="1" {if $settings->mediatomb_update == 1} selected="selected"{/if}>使う</option>
@@ -85,7 +97,8 @@
 
 <h3>録画ファイル名の形式</h3>
 <div class="setting">
-<div class="caption">epgrecは録画ファイル名をカスタマイズすることができます。下の欄にファイル名のフォーマットを記入してください。フォーマットに使用できる特殊文字列は以下の通りです。
+<div class="caption">epgrecは録画ファイル名をカスタマイズすることができます。<br />
+下の欄にファイル名のフォーマットを記入してください。フォーマットに使用できる特殊文字列は以下の通りです。
 
 <table cellspacing="1" border="1">
 <thead>
@@ -111,7 +124,12 @@
  <tr><td>%DURATION%</td><td>録画時間（秒）</td></tr>
 </tbody>
 </table>
-たとえば、<p>%YEAR%年%MONTH%月%DAY%日%HOUR%時%MIN%分%SEC%秒_%TYPE%%CH%_%TITLE%</p>と設定すると<p>2009年07月15日12時49分16秒_GR21_番組タイトル.ts</p>というような形式の録画ファイルが生成されます。%TYPE%や%CH%などを混ぜ、異なる番組に同じ録画ファイルが生成されないよう注意してください。なお、ファイルシステムがUTF-8以外の文字コードで、ファイル名に日本語を交ぜる場合、config.php内の定数FILESYSTEM_ENCODINGに文字コードを設定することができます。ただし、UTF-8以外の文字コードはテストを行っていないため推奨しません。</div>
+たとえば、<p>%YEAR%年%MONTH%月%DAY%日%HOUR%時%MIN%分%SEC%秒_%TYPE%%CH%_%TITLE%</p>と設定すると<br />
+<p>2009年07月15日12時49分16秒_GR21_番組タイトル.ts</p>というような形式の録画ファイルが生成されます。<br />
+%TYPE%や%CH%などを混ぜ、異なる番組に同じ録画ファイルが生成されないよう注意してください。<br />
+なお、ファイルシステムがUTF-8以外の文字コードで、ファイル名に日本語を交ぜる場合、<br />
+config.php内の定数FILESYSTEM_ENCODINGに文字コードを設定することができます。<br />
+ただし、UTF-8以外の文字コードはテストを行っていないため推奨しません。</div>
 <input type="text" name="filename_format" value="{$settings->filename_format}" size="40" class="required" />
 </div>
 
@@ -133,7 +151,9 @@
 
 <h3>1時間あたりの高さ（px）</h3>
 <div class="setting">
-<div class="caption">番組表の1時間あたりの高さをピクセル数で設定します。標準は120ピクセルです。なお、60で割り切れないピクセル数を指定するとFirefoxを除くブラウザでは番組の高さが揃わなくなり見た目が悪くなるかもしれません。これはFirefox以外のブラウザでは実数のピクセルを正しくレンダリングしないためです。</div>
+<div class="caption">番組表の1時間あたりの高さをピクセル数で設定します。標準は120ピクセルです。<br />
+なお、60で割り切れないピクセル数を指定するとFirefoxを除くブラウザでは番組の高さが揃わなくなり見た目が悪くなるかもしれません。<br />
+これはFirefox以外のブラウザでは実数のピクセルを正しくレンダリングしないためです。</div>
 <input type="text" id="height_per_hour" name="height_per_hour" value="{$settings->height_per_hour}" size="4" class="required digits" />
 </div>
 

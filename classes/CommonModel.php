@@ -21,6 +21,16 @@ class CommonModel extends ModelBase
 	}
 
 	/**
+	 * 実テーブル名を取得
+	 * @param string $table
+	 * return string
+	 */
+	public function getFullTblName($table)
+	{
+		return $this->setting->tbl_prefix.$table;
+	}
+
+	/**
 	 * 録画モード一覧取得
 	 * @return array
 	 */
@@ -58,7 +68,7 @@ class CommonModel extends ModelBase
 	public function getStationOptions()
 	{
 		$stations = array(0 => 'すべて');
-		$recs = $this->selectRow('*', "{$this->setting->tbl_prefix}".CHANNEL_TBL, '');
+		$recs = $this->selectRow('*', $this->getFullTblName(CHANNEL_TBL), '');
 		foreach ( $recs as $r )
 			$stations[$r['id']] = $r['name'];
 		return $stations;
@@ -71,7 +81,7 @@ class CommonModel extends ModelBase
 	public function getCategoryOptions()
 	{
 		$categorys = array(0 => 'すべて');
-		$recs = $this->selectRow('*', "{$this->setting->tbl_prefix}".CATEGORY_TBL, '');
+		$recs = $this->selectRow('*', $this->getFullTblName(CATEGORY_TBL), '');
 		foreach ( $recs as $r )
 			$categorys[$r['id']] = $r['name_jp'];
 		return $categorys;

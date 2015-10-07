@@ -17,20 +17,20 @@ class InstallController extends CommonController
 
 		if ( check_epgrec_env($contents) )
 		{
-			$contents .= "<br />";
-			$contents .= "<p><b>地上デジタルチャンネルの設定確認</b></p>";
-			$contents .= "<div>現在、config.phpでは以下のチャンネルの受信が設定されています。受信不可能なチャンネルが混ざっていると番組表が表示できません。</div>";
-			$contents .= "<ul>";
+			$contents .= '<br />';
+			$contents .= '<p><b>地上デジタルチャンネルの設定確認</b></p>';
+			$contents .= '<div>現在、config.phpでは以下のチャンネルの受信が設定されています。受信不可能なチャンネルが混ざっていると番組表が表示できません。</div>';
+			$contents .= '<ul>';
 			foreach ( $GR_CHANNEL_MAP as $key => $value )
 			{
-				$contents .= "<li>物理チャンネル".$value."</li>";
+				$contents .= "<li>物理チャンネル {$value}</li>";
 			}
-			$contents .= "</ul>";
+			$contents .= '</ul>';
 			$contents .= "<p><a href=\"{$this->getCurrentUri(false)}/step2\">以上を確認し次の設定に進む</a></p>";
 		}
 
-		$this->view->assign( "sitetitle", "インストールステップ１" );
-		$this->view->assign( "contents" , $contents );
+		$this->view->assign( 'sitetitle', 'インストールステップ１' );
+		$this->view->assign( 'contents' , $contents );
 	}
 
 	/**
@@ -39,12 +39,12 @@ class InstallController extends CommonController
 	public function step2Action()
 	{
 		global $PDO_DRIVER_MAP;
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "install_path", INSTALL_PATH );
-		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step3" );
-		$this->view->assign( "sitetitle", "インストールステップ２" );
-		$this->view->assign( "message", "システム設定を行います。このページの設定が正しく行われないとepgrecは機能しません。" );
-		$this->view->assign( "pdo_driver", $PDO_DRIVER_MAP );
+		$this->view->assign( 'settings',     $this->setting );
+		$this->view->assign( 'install_path', INSTALL_PATH );
+		$this->view->assign( 'post_to',      "{$this->getCurrentUri(false)}/step3" );
+		$this->view->assign( 'sitetitle',    'インストールステップ２' );
+		$this->view->assign( 'message',      'システム設定を行います。このページの設定が正しく行われないとepgrecは機能しません。' );
+		$this->view->assign( 'pdo_driver',   $PDO_DRIVER_MAP );
 	}
 
 	/**
@@ -96,17 +96,17 @@ class InstallController extends CommonController
 		}
 		catch ( Exception $e )
 		{
-			UtilLog::writeLog("テーブルの作成失敗: ".print_r($e, true));
-			jdialog("テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。", "{$this->getCurrentUri(false)}/step2" );
+			UtilLog::writeLog('テーブルの作成失敗: '.print_r($e, true));
+			jdialog( 'テーブルの作成に失敗しました。データベースに権限がない等の理由が考えられます。', "{$this->getCurrentUri(false)}/step2" );
 			exit;
 		}
 
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "install_path", INSTALL_PATH );
-		$this->view->assign( "sitetitle", "インストールステップ３" );
-		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/step4" );
-		$this->view->assign( "message" , "環境設定を行います。これらの設定はデフォルトのままでも制限付きながら動作します。" );
-		$this->view->assign( "record_mode" , $this->model->getRecModeOptions() );
+		$this->view->assign( 'settings',     $this->setting );
+		$this->view->assign( 'install_path', INSTALL_PATH );
+		$this->view->assign( 'sitetitle',    'インストールステップ３' );
+		$this->view->assign( 'post_to',      "{$this->getCurrentUri(false)}/step4" );
+		$this->view->assign( 'message' ,     '環境設定を行います。これらの設定はデフォルトのままでも制限付きながら動作します。' );
+		$this->view->assign( 'record_mode' , $this->model->getRecModeOptions() );
 	}
 
 	/**
@@ -128,9 +128,9 @@ class InstallController extends CommonController
 			exit;
 		}
 
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "install_path", INSTALL_PATH );
-		$this->view->assign( "sitetitle", "インストール最終ステップ" );
+		$this->view->assign( 'settings',     $this->setting );
+		$this->view->assign( 'install_path', INSTALL_PATH );
+		$this->view->assign( 'sitetitle',    'インストール最終ステップ' );
 	}
 
 	/**
@@ -150,8 +150,8 @@ class InstallController extends CommonController
 			exit;
 		}
 
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "sitetitle", "インストール完了" );
+		$this->view->assign( 'settings',  $this->setting );
+		$this->view->assign( 'sitetitle', 'インストール完了' );
 	}
 }
 ?>

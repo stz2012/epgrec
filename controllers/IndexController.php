@@ -30,7 +30,7 @@ class IndexController extends CommonController
 		$top_time = mktime( date('H'), 0 , 0 );
 		if ( $this->request->getQuery('time') )
 		{
-			if ( sscanf( $this->request->getQuery('time') , "%04d%2d%2d%2d", $y, $mon, $day, $h ) == 4 )
+			if ( sscanf( $this->request->getQuery('time') , '%04d%2d%2d%2d', $y, $mon, $day, $h ) == 4 )
 			{
 				$tmp_time = mktime( $h, 0, 0, $mon, $day, $y );
 				if ( ($tmp_time < ($top_time + 3600 * 24 * 8)) && ($tmp_time > ($top_time - 3600 * 24 * 8)) )
@@ -154,13 +154,13 @@ class IndexController extends CommonController
 		$get_param['time'] = date( 'YmdH', $top_time );
 
 		// カテゴリ一覧
-		$crec = DBRecord::createRecords( CATEGORY_TBL );
+		$crec = $this->model->selectRow('*', $this->model->getFullTblName(CATEGORY_TBL), '');
 		$cats = array();
 		$num = 0;
-		foreach ( $crec as $val )
+		foreach ( $crec as $r )
 		{
-			$cats[$num]['name_en'] = $val->name_en;
-			$cats[$num]['name_jp'] = $val->name_jp;
+			$cats[$num]['name_en'] = $r['name_en'];
+			$cats[$num]['name_jp'] = $r['name_jp'];
 			$num++;
 		}
 		$this->view->assign( 'cats', $cats );
@@ -232,8 +232,8 @@ class IndexController extends CommonController
 		for ( $i = 0 ; $i < 24; $i++ )
 		{
 			$tmp = array();
-			$tmp['hour'] = sprintf( "%02d:00", $i );
-			$get_param['time'] = date( 'Ymd', $top_time ) . sprintf("%02d", $i );
+			$tmp['hour'] = sprintf( '%02d:00', $i );
+			$get_param['time'] = date( 'Ymd', $top_time ) . sprintf('%02d', $i );
 			$tmp['link'] = $json_data[$get_param['time']] = UtilString::buildQueryString($get_param);
 			if ( $i % 4 == 0 )
 				array_push( $toptimes, $tmp );
@@ -263,40 +263,41 @@ class IndexController extends CommonController
 	 */
 	public function reserveFormAction()
 	{
-		if ( ! $this->request->getPost('program_id') ) exit('Error: 番組IDが指定されていません' );
+		if ( ! $this->request->getPost('program_id') )
+			exit( 'Error: 番組IDが指定されていません' );
 		$program_id = $this->request->getPost('program_id');
 
 		try
 		{
-			$prec = new DBRecord( PROGRAM_TBL, "id", $program_id );
+			$prec = new DBRecord( PROGRAM_TBL, 'id', $program_id );
 
-			sscanf( $prec->starttime, "%4d-%2d-%2d %2d:%2d:%2d", $syear, $smonth, $sday, $shour, $smin, $ssec );
-			sscanf( $prec->endtime,   "%4d-%2d-%2d %2d:%2d:%2d", $eyear, $emonth, $eday, $ehour, $emin, $esec );
-			$this->view->assign( "syear",  $syear );
-			$this->view->assign( "smonth", $smonth );
-			$this->view->assign( "sday",   $sday );
-			$this->view->assign( "shour",  $shour );
-			$this->view->assign( "smin" ,  $smin );
-			$this->view->assign( "eyear",  $eyear );
-			$this->view->assign( "emonth", $emonth );
-			$this->view->assign( "eday",   $eday );
-			$this->view->assign( "ehour",  $ehour );
-			$this->view->assign( "emin" ,  $emin );
+			sscanf( $prec->starttime, '%4d-%2d-%2d %2d:%2d:%2d', $syear, $smonth, $sday, $shour, $smin, $ssec );
+			sscanf( $prec->endtime,   '%4d-%2d-%2d %2d:%2d:%2d', $eyear, $emonth, $eday, $ehour, $emin, $esec );
+			$this->view->assign( 'syear',  $syear );
+			$this->view->assign( 'smonth', $smonth );
+			$this->view->assign( 'sday',   $sday );
+			$this->view->assign( 'shour',  $shour );
+			$this->view->assign( 'smin' ,  $smin );
+			$this->view->assign( 'eyear',  $eyear );
+			$this->view->assign( 'emonth', $emonth );
+			$this->view->assign( 'eday',   $eday );
+			$this->view->assign( 'ehour',  $ehour );
+			$this->view->assign( 'emin' ,  $emin );
 
-			$this->view->assign( "program_id",   $prec->id );
-			$this->view->assign( "type",         $prec->type );
-			$this->view->assign( "channel",      $prec->channel );
-			$this->view->assign( "channel_id",   $prec->channel_id );
-			$this->view->assign( "title",        $prec->title );
-			$this->view->assign( "description",  $prec->description );
-			$this->view->assign( "categorys" ,   $this->model->getCategoryOptions() );
-			$this->view->assign( "sel_category", $prec->category_id );
-			$this->view->assign( "record_mode" , $this->model->getRecModeOptions() );
-			$this->view->assign( "sel_recmode",  $this->setting->autorec_mode );
+			$this->view->assign( 'program_id',   $prec->id );
+			$this->view->assign( 'type',         $prec->type );
+			$this->view->assign( 'channel',      $prec->channel );
+			$this->view->assign( 'channel_id',   $prec->channel_id );
+			$this->view->assign( 'title',        $prec->title );
+			$this->view->assign( 'description',  $prec->description );
+			$this->view->assign( 'categorys' ,   $this->model->getCategoryOptions() );
+			$this->view->assign( 'sel_category', $prec->category_id );
+			$this->view->assign( 'record_mode' , $this->model->getRecModeOptions() );
+			$this->view->assign( 'sel_recmode',  $this->setting->autorec_mode );
 		}
 		catch ( exception $e )
 		{
-			exit( "Error:". $e->getMessage() );
+			exit( 'Error: '. $e->getMessage() );
 		}
 	}
 
@@ -315,7 +316,7 @@ class IndexController extends CommonController
 			}
 			catch ( Exception $e )
 			{
-				exit( 'Error: チャンネル情報更新失敗' );
+				exit( 'Error: '. $e->getMessage() );
 			}
 		}
 		exit;
@@ -326,7 +327,8 @@ class IndexController extends CommonController
 	 */
 	public function simpleAction()
 	{
-		if ( ! $this->request->getPost('program_id') ) exit("Error: 番組が指定されていません" );
+		if ( ! $this->request->getPost('program_id') )
+			exit( 'Error: 番組が指定されていません' );
 		$program_id = $this->request->getPost('program_id');
 
 		try
@@ -335,7 +337,7 @@ class IndexController extends CommonController
 		}
 		catch ( Exception $e )
 		{
-			exit( "Error:". $e->getMessage() );
+			exit( 'Error: '. $e->getMessage() );
 		}
 		exit;
 	}
@@ -366,26 +368,26 @@ class IndexController extends CommonController
 		   $this->request->getPost('category_id') &&
 		   $this->request->getPost('record_mode'))
 		) {
-			exit("Error:予約に必要な値がセットされていません");
+			exit( 'Error: 予約に必要な値がセットされていません' );
 		}
 
 		$start_time = @mktime( $this->request->getPost('shour'), $this->request->getPost('smin'), 0, $this->request->getPost('smonth'), $this->request->getPost('sday'), $this->request->getPost('syear') );
 		if ( ($start_time < 0) || ($start_time === false) )
 		{
-			exit("Error:開始時間が不正です" );
+			exit( 'Error: 開始時間が不正です' );
 		}
 
 		$end_time = @mktime( $this->request->getPost('ehour'), $this->request->getPost('emin'), 0, $this->request->getPost('emonth'), $this->request->getPost('eday'), $this->request->getPost('eyear') );
 		if ( ($end_time < 0) || ($end_time === false) )
 		{
-			exit("Error:終了時間が不正です" );
+			exit( 'Error: 終了時間が不正です' );
 		}
 
-		$channel_id = $this->request->getPost('channel_id');
-		$title = $this->request->getPost('title');
+		$channel_id  = $this->request->getPost('channel_id');
+		$title       = $this->request->getPost('title');
 		$description = $this->request->getPost('description');
 		$category_id = $this->request->getPost('category_id');
-		$mode = $this->request->getPost('record_mode');
+		$mode        = $this->request->getPost('record_mode');
 
 		$rval = 0;
 		try
@@ -405,7 +407,7 @@ class IndexController extends CommonController
 		}
 		catch ( Exception $e )
 		{
-			exit( "Error:".$e->getMessage() );
+			exit( 'Error: '.$e->getMessage() );
 		}
 		exit;
 	}
@@ -418,7 +420,7 @@ class IndexController extends CommonController
 		$program_id = 0;
 		$reserve_id = 0;
 		$rec = null;
-		$path = "";
+		$path = '';
 
 		if ( $this->request->getPost('program_id') )
 		{
@@ -429,14 +431,13 @@ class IndexController extends CommonController
 			$reserve_id = $this->request->getPost('reserve_id');
 			try
 			{
-				$rec = new DBRecord( RESERVE_TBL, "id" , $reserve_id );
+				$rec = new DBRecord( RESERVE_TBL, 'id' , $reserve_id );
 				$program_id = $rec->program_id;
-				
 				if ( $this->request->getPost('delete_file') )
 				{
 					if ( $this->request->getPost('delete_file') == 1 )
 					{
-						$path = INSTALL_PATH."/".$this->setting->spool."/".$rec->path;
+						$path = INSTALL_PATH.'/'.$this->setting->spool.'/'.$rec->path;
 					}
 				}
 			}
@@ -451,7 +452,7 @@ class IndexController extends CommonController
 		{
 			try
 			{
-				$rec = new DBRecord(PROGRAM_TBL, "id", $program_id );
+				$rec = new DBRecord(PROGRAM_TBL, 'id', $program_id );
 				$rec->autorec = 0;
 			}
 			catch ( Exception $e )
@@ -470,13 +471,13 @@ class IndexController extends CommonController
 				if ( file_exists( $path) )
 				{
 					@unlink($path);
-					@unlink($path.".jpg");
+					@unlink($path.'.jpg');
 				}
 			}
 		}
 		catch ( Exception $e )
 		{
-			exit( "Error" . $e->getMessage() );
+			exit( 'Error: ' . $e->getMessage() );
 		}
 		exit;
 	}
@@ -488,14 +489,14 @@ class IndexController extends CommonController
 	{
 		if ( ! $this->request->getPost('reserve_id') )
 		{
-			exit("Error: IDが指定されていません" );
+			exit( 'Error: IDが指定されていません' );
 		}
 		$reserve_id = $this->request->getPost('reserve_id');
 
 		try
 		{
-			$rec = new DBRecord(RESERVE_TBL, "id", $reserve_id );
-			
+			$rec = new DBRecord(RESERVE_TBL, 'id', $reserve_id );
+
 			if ( $this->request->getPost('title') )
 			{
 				$rec->title = trim( $this->request->getPost('title') );
@@ -503,7 +504,7 @@ class IndexController extends CommonController
 				if ( ($this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
 				{
 					$title = trim( $this->request->getPost('title'));
-					$title .= "(".date("Y/m/d", toTimestamp($rec->starttime)).")";
+					$title .= '('.date('Y/m/d', toTimestamp($rec->starttime)).')';
 					$this->model->updateRow('mt_cds_object', array('dc_title' => $title),
 																array('metadata' => array(
 																		'operator' => 'regexp',
@@ -511,15 +512,15 @@ class IndexController extends CommonController
 					);
 				}
 			}
-			
+
 			if ( $this->request->getPost('description') )
 			{
 				$rec->description = trim( $this->request->getPost('description') );
 				$rec->dirty = 1;
 				if ( ($this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
 				{
-					$desc = "dc:description=".trim( $this->request->getPost('description'));
-					$desc .= "&epgrec:id=".$reserve_id;
+					$desc = 'dc:description='.trim( $this->request->getPost('description'));
+					$desc .= '&epgrec:id='.$reserve_id;
 					$this->model->updateRow('mt_cds_object', array('metadata' => $desc),
 																array('metadata' => array(
 																		'operator' => 'regexp',
@@ -530,7 +531,7 @@ class IndexController extends CommonController
 		}
 		catch ( Exception $e )
 		{
-			exit("Error: ". $e->getMessage());
+			exit( 'Error: '. $e->getMessage() );
 		}
 		exit;
 	}

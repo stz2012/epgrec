@@ -11,11 +11,11 @@ class SettingController extends CommonController
 	 */
 	public function indexAction()
 	{
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "install_path", INSTALL_PATH );
-		$this->view->assign( "sitetitle", "環境設定" );
-		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/save" );
-		$this->view->assign( "record_mode", $this->model->getRecModeOptions() );
+		$this->view->assign( 'settings',     $this->setting );
+		$this->view->assign( 'install_path', INSTALL_PATH );
+		$this->view->assign( 'sitetitle',    '環境設定' );
+		$this->view->assign( 'post_to',      "{$this->getCurrentUri(false)}/save" );
+		$this->view->assign( 'record_mode',  $this->model->getRecModeOptions() );
 	}
 
 	/**
@@ -24,11 +24,11 @@ class SettingController extends CommonController
 	public function systemAction()
 	{
 		global $PDO_DRIVER_MAP;
-		$this->view->assign( "settings", $this->setting );
-		$this->view->assign( "install_path", INSTALL_PATH );
-		$this->view->assign( "sitetitle", "システム設定" );
-		$this->view->assign( "post_to", "{$this->getCurrentUri(false)}/save" );
-		$this->view->assign( "pdo_driver", $PDO_DRIVER_MAP );
+		$this->view->assign( 'settings',     $this->setting );
+		$this->view->assign( 'install_path', INSTALL_PATH );
+		$this->view->assign( 'sitetitle',    'システム設定' );
+		$this->view->assign( 'post_to',      "{$this->getCurrentUri(false)}/save" );
+		$this->view->assign( 'pdo_driver',   $PDO_DRIVER_MAP );
 	}
 
 	/**
@@ -36,9 +36,8 @@ class SettingController extends CommonController
 	 */
 	public function viewLogAction()
 	{
-		$arr = $this->model->selectRow('*', "{$this->setting->tbl_prefix}".LOG_TBL, '', array(array('logtime', 'DESC')));
-		$this->view->assign( "sitetitle" , "epgrec動作ログ" );
-		$this->view->assign( "logs", $arr );
+		$this->view->assign( 'sitetitle' , 'epgrec動作ログ' );
+		$this->view->assign( 'logs', $this->model->selectRow('*', $this->model->getFullTblName(LOG_TBL), '', 'logtime DESC') );
 	}
 
 	/**
@@ -54,7 +53,7 @@ class SettingController extends CommonController
 			jdialog( '設定が保存されました', HOME_URL );
 		}
 		else
-			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}/step2" );
+			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}" );
 		exit;
 	}
 }
