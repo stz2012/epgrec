@@ -14,10 +14,10 @@ class RecprogModel extends CommonModel
 	{
 		$reserve_data = array();
 		$sql = "SELECT a.*, b.name_en AS cat, c.name AS station_name";
-		$sql .= " FROM {$this->setting->tbl_prefix}".RESERVE_TBL." a";
-		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CATEGORY_TBL." b";
+		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL)." a";
+		$sql .= " LEFT JOIN ".$this->getFullTblName(CATEGORY_TBL)." b";
 		$sql .= "   ON a.category_id = b.id";
-		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." c";
+		$sql .= " LEFT JOIN ".$this->getFullTblName(CHANNEL_TBL)." c";
 		$sql .= "   ON a.channel_id = c.id";
 		$sql .= " WHERE a.complete = '0'";
 		if ($POST_DATA['do_search'] != "")
@@ -54,10 +54,10 @@ class RecprogModel extends CommonModel
 	{
 		$recorded_data = array();
 		$sql = "SELECT a.*, b.name_en AS cat, c.name AS station_name";
-		$sql .= " FROM {$this->setting->tbl_prefix}".RESERVE_TBL." a";
-		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CATEGORY_TBL." b";
+		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL)." a";
+		$sql .= " LEFT JOIN ".$this->getFullTblName(CATEGORY_TBL)." b";
 		$sql .= "   ON a.category_id = b.id";
-		$sql .= " LEFT JOIN {$this->setting->tbl_prefix}".CHANNEL_TBL." c";
+		$sql .= " LEFT JOIN ".$this->getFullTblName(CHANNEL_TBL)." c";
 		$sql .= "   ON a.channel_id = c.id";
 		$sql .= " WHERE starttime < CURRENT_TIMESTAMP";
 		if ($POST_DATA['do_search'] != "")

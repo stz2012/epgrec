@@ -3,7 +3,7 @@
 var INISet = {
 {/literal}
 	prgHomeURL : '{$home_url}',				// ホーム
-	prgProgramURL : '{$home_url}index',			// 番組表
+	prgProgramURL : '{$home_url}index/program',		// 番組表
 	prgSearchURL : '{$home_url}search',			// 番組検索
 	prgKeywordURL : '{$home_url}search/keyword',		// キーワード
 	prgRecprogURL : '{$home_url}recprog',			// 録画予約一覧

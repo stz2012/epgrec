@@ -41,7 +41,7 @@
 <h3>データベース接続パスワード</h3>
 <div class="setting">
 <div class="caption">データベースの接続に使用するパスワードを入力してください。</div>
-<input type="text" name="db_pass" value="{$settings->db_pass}" size="15" class="required" />
+<input type="password" name="db_pass" value="{$settings->db_pass}" size="15" class="required" />
 </div>
 
 <h3>使用データベース名</h3>
@@ -80,7 +80,7 @@ http://localhost…のままで利用することも可能ですが、その場�
 <div class="setting">
 <div class="caption">録画済み一覧にサムネールを入れるかどうかを設定します。<br />
 サムネールを利用するにはffmpegが必要です。ffmpegをお持ちでない方は「使用しない」を設定してください。</div>
-<select name="use_thumbs" id="id_use_thumbs" onchange="javascript:PRG.thumbs()" >
+<select name="use_thumbs" id="id_use_thumbs" onchange="javascript:PRG.thumbs()">
   <option value="0" {if $settings->use_thumbs == 0} selected="selected"{/if}>使用しない</option>
   <option value="1" {if $settings->use_thumbs == 1} selected="selected"{/if}>使用する</option>
 </select>
@@ -122,7 +122,8 @@ http://localhost…のままで利用することも可能ですが、その場�
 <div class="setting">
 <div class="caption">シャットダウンからの復帰および起動をACPIタイマーを使って行い録画機の消費電力を低減させます。<br />
 この機能を使うためには、お使いのLinux機がACPIタイマーでシャットダウン状態から確実に復帰できる必要があるので注意してください。<br />
-ACPIタイマーが使えないPCで設定を行った場合、録画は正常に行えません。また、ACPIタイマーの動作が不確実なPCでは録画の失敗の確率が高くなります。<br />
+ACPIタイマーが使えないPCで設定を行った場合、録画は正常に行えません。<br />
+また、ACPIタイマーの動作が不確実なPCでは録画の失敗の確率が高くなります。<br />
 詳しくはドキュメントを参照してください。</div>
 <select name="use_power_reduce" id="id_use_power_reduce" onchange="javascript:PRG.power_reduce()" >
   <option value="0" {if $settings->use_power_reduce == 0} selected="selected"{/if}>使用しない</option>

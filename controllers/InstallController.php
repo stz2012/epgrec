@@ -93,6 +93,9 @@ class InstallController extends CommonController
 
 			$rec = new DBRecord( LOG_TBL );
 			$rec->createTable();
+
+			$rec = new DBRecord( USER_TBL );
+			$rec->createTable();
 		}
 		catch ( Exception $e )
 		{
@@ -110,7 +113,7 @@ class InstallController extends CommonController
 	}
 
 	/**
-	 * インストール最終ステップ
+	 * インストールステップ４
 	 */
 	public function step4Action()
 	{
@@ -128,6 +131,34 @@ class InstallController extends CommonController
 			exit;
 		}
 
+		$this->view->assign( 'settings',  $this->setting );
+		$this->view->assign( 'sitetitle', 'インストールステップ４' );
+		$this->view->assign( 'post_to',   "{$this->getCurrentUri(false)}/step5" );
+		$this->view->assign( 'message',   'ログイン設定を行います。このページの設定が正しく行われないとepgrecにログインできません。' );
+		$this->view->assign( 'user_data' , array('name' => 'EpgRec管理者', 'login_name' => 'epgrec_admin', 'login_pass' => '') );
+	}
+
+	/**
+	 * インストール最終ステップ
+	 */
+	public function step5Action()
+	{
+		// 設定の保存
+		$POST_DATA = $this->request->getPost();
+		if ($POST_DATA['token'] != '')
+		{
+			$rec = new DBRecord( USER_TBL );
+			$rec->name = $POST_DATA['user_name'];
+			$rec->level = 100;
+			$rec->login_name = $POST_DATA['login_name'];
+			$rec->login_pass = sha1($POST_DATA['login_pass']);
+		}
+		else
+		{
+			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}/step2" );
+			exit;
+		}
+
 		$this->view->assign( 'settings',     $this->setting );
 		$this->view->assign( 'install_path', INSTALL_PATH );
 		$this->view->assign( 'sitetitle',    'インストール最終ステップ' );
@@ -136,7 +167,7 @@ class InstallController extends CommonController
 	/**
 	 * インストール完了
 	 */
-	public function step5Action()
+	public function step6Action()
 	{
 		$POST_DATA = $this->request->getPost();
 		if ($POST_DATA['token'] != '')

@@ -1,9 +1,9 @@
 <?php
 // ライブラリ
 
-define( "EPGREC_INFO" , 0 );
-define( "EPGREC_WARN" , 1 );
-define( "EPGREC_ERROR", 2 );
+define( 'EPGREC_INFO' , 0 );
+define( 'EPGREC_WARN' , 1 );
+define( 'EPGREC_ERROR', 2 );
 
 $PDO_DRIVER_MAP = array(
 	'mysql'  => 'MySQL',
@@ -16,37 +16,37 @@ function reclog( $message , $level = EPGREC_INFO )
 	try
 	{
 		$log = new DBRecord( LOG_TBL );
-		$log->logtime = date("Y-m-d H:i:s");
+		$log->logtime = date('Y-m-d H:i:s');
 		$log->level = $level;
 		$log->message = $message;
 	}
 	catch ( Exception $e )
 	{
-		UtilLog::writeLog("ログ出力失敗: ".print_r($e, true));
+		UtilLog::writeLog('ログ出力失敗: '.print_r($e, true));
 	}
 }
 
 function toTimestamp( $param )
 {
-	sscanf( $param, "%4d-%2d-%2d %2d:%2d:%2d", $yyyy, $mm, $dd, $hh, $ii, $ss );
+	sscanf( $param, '%4d-%2d-%2d %2d:%2d:%2d', $yyyy, $mm, $dd, $hh, $ii, $ss );
 	return mktime( $hh, $ii, $ss, $mm, $dd, $yyyy );
 }
 
 function toDatetime( $timestamp )
 {
-	return date("Y-m-d H:i:s", $timestamp);
+	return date('Y-m-d H:i:s', $timestamp);
 }
 
 function toDatetime2( $param )
 {
 	$param = str_replace(' +0900', '', $param);
-	sscanf( $param, "%4d%2d%2d%2d%2d%2d", $yyyy, $mm, $dd, $hh, $ii, $ss );
+	sscanf( $param, '%4d%2d%2d%2d%2d%2d', $yyyy, $mm, $dd, $hh, $ii, $ss );
 	return toDatetime( mktime( $hh, $ii, $ss, $mm, $dd, $yyyy ) );
 }
 
-function jdialog( $message, $url = "index.php" )
+function jdialog( $message, $url = 'index.php' )
 {
-    header( "Content-Type: text/html;charset=utf-8" );
+    header( 'Content-Type: text/html;charset=utf-8' );
     exit( "<script type=\"text/javascript\">\n" .
           "<!--\n".
          "alert(\"". $message . "\");\n".
@@ -76,19 +76,19 @@ function check_epgrec_env( &$contents = '' )
 	// do-record.shの存在チェック
 	if ( ! file_exists( DO_RECORD ) )
 	{
-		$contents .= DO_RECORD."が存在しません<br>do-record.sh.pt1やdo-record.sh.friioを参考に作成してください<br />";
+		$contents .= DO_RECORD.'が存在しません<br />do-record.sh.pt1やdo-record.sh.friioを参考に作成してください<br />';
 		return false;
 	}
 
 	// パーミッションチェック
 	$rw_dirs = array( 
-		INSTALL_PATH."/settings",
-		INSTALL_PATH."/htdocs/epgrec/thumbs",
-		INSTALL_PATH."/video",
-		INSTALL_PATH."/views/templates_c",
+		INSTALL_PATH.'/settings',
+		INSTALL_PATH.'/htdocs/epgrec/thumbs',
+		INSTALL_PATH.'/video',
+		INSTALL_PATH.'/views/templates_c',
 	);
-	$gen_thumbnail = INSTALL_PATH."/scripts/gen-thumbnail.sh";
-	if ( defined("GEN_THUMBNAIL") )
+	$gen_thumbnail = INSTALL_PATH.'/scripts/gen-thumbnail.sh';
+	if ( defined('GEN_THUMBNAIL') )
 		$gen_thumbnail = GEN_THUMBNAIL;
 	$exec_files = array(
 		DO_RECORD,
@@ -98,39 +98,39 @@ function check_epgrec_env( &$contents = '' )
 		$gen_thumbnail,
 	);
 
-	$contents .= "<br />";
-	$contents .= "<p><b>ディレクトリのパーミッションチェック（707）</b></p>";
-	$contents .= "<div>";
+	$contents .= '<br />';
+	$contents .= '<p><b>ディレクトリのパーミッションチェック（707）</b></p>';
+	$contents .= '<div>';
 	foreach ($rw_dirs as $value )
 	{
 		$contents .= $value;
 		$perm = check_permission( $value );
-		if ( !($perm == "707" || $perm == "777") )
+		if ( !($perm == '707' || $perm == '777') )
 		{
 			$err_flg = true;
 			$contents .= '<font color="red">...'.$perm.'... missing</font><br />このディレクトリを書き込み許可にしてください（ex. chmod 707 '.$value.'）<br />';
 		}
 		else
-			$contents .= "...".$perm."...ok<br />";
+			$contents .= '...'.$perm.'...ok<br />';
 	}
-	$contents .= "</div>";
+	$contents .= '</div>';
 
-	$contents .= "<br />";
-	$contents .= "<p><b>ファイルのパーミッションチェック（705）</b></p>";
-	$contents .= "<div>";
+	$contents .= '<br />';
+	$contents .= '<p><b>ファイルのパーミッションチェック（705）</b></p>';
+	$contents .= '<div>';
 	foreach ($exec_files as $value )
 	{
 		$contents .= $value;
 		$perm = check_permission( $value );
-		if ( !($perm == "705" || $perm == "755") )
+		if ( !($perm == '705' || $perm == '755') )
 		{
 			$err_flg = true;
 			$contents .= '<font color="red">...'.$perm.'... missing</font><br>このファイルを実行可にしてください（ex. chmod 705 '.$value.'）<br />';
 		}
 		else
-			$contents .= "...".$perm."...ok<br />";
+			$contents .= '...'.$perm.'...ok<br />';
 	}
-	$contents .= "</div>";
+	$contents .= '</div>';
 
 	return ( $err_flg == false );
 }
@@ -139,7 +139,7 @@ function check_epgrec_env( &$contents = '' )
 function check_permission( $file )
 {
 	$ss = @stat( $file );
-	return sprintf("%o", ($ss['mode'] & 000777));
+	return sprintf('%o', ($ss['mode'] & 000777));
 }
 
 function check_epgdump_file( $file )
@@ -202,10 +202,10 @@ function parse_epgdump_file( $type, $xmlfile )
 			else
 			{
 				// 存在した場合も、とりあえずチャンネル名は更新する
-				$rec = new DBRecord( CHANNEL_TBL, "channel_disc", $ch_disc );
+				$rec = new DBRecord( CHANNEL_TBL, 'channel_disc', $ch_disc );
 				$rec->name = $ch_map["$ch_disc"]['name'];
 				// BS／CSの場合、チャンネル番号とSIDを更新
-				if ( $type == "BS" ||  $type == "CS" )
+				if ( $type == 'BS' ||  $type == 'CS' )
 				{
 					$rec->channel = $ch_map["$ch_disc"]['channel'];
 					$rec->sid = $ch_map["$ch_disc"]['sid'];
@@ -217,9 +217,8 @@ function parse_epgdump_file( $type, $xmlfile )
 		}
 		catch ( Exception $e )
 		{
-			reclog( "parse_epgdump_file:: DBの接続またはチャンネルテーブルの書き込みに失敗", EPGREC_ERROR );
-			reclog( "parse_epgdump_file:: {$e->getMessage()}" , EPGREC_ERROR);
-			exit( $e->getMessage() );
+			reclog( 'parse_epgdump_file:: DBの接続またはチャンネルテーブルの書き込みに失敗', EPGREC_ERROR );
+			throw $e;
 		}
 	}
 	// channel 終了
@@ -240,12 +239,12 @@ function parse_epgdump_file( $type, $xmlfile )
 		$endtime = toDatetime2( (string)$program['stop'] );
 		$title = (string)$program->title;
 		$desc = (string)$program->desc;
-		$cat_ja = "";
-		$cat_en = "";
+		$cat_ja = '';
+		$cat_en = '';
 		foreach ( $program->category as $cat )
 		{
-			if ( (string)$cat['lang'] == "ja_JP" ) $cat_ja = (string)$cat;
-			if ( (string)$cat['lang'] == "en" ) $cat_en = (string)$cat;
+			if ( (string)$cat['lang'] == 'ja_JP' ) $cat_ja = (string)$cat;
+			if ( (string)$cat['lang'] == 'en' ) $cat_en = (string)$cat;
 		}
 		$program_disc = md5( $channel_disc . $starttime . $endtime );
 
@@ -267,13 +266,12 @@ function parse_epgdump_file( $type, $xmlfile )
 				reclog("parse_epgdump_file:: 新規カテゴリ {$cat_rec->name_jp} を追加" );
 			}
 			else
-				$cat_rec = new DBRecord( CATEGORY_TBL, "category_disc" , $category_disc );
+				$cat_rec = new DBRecord( CATEGORY_TBL, 'category_disc' , $category_disc );
 		}
 		catch ( Exception $e )
 		{
-			reclog( "parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様", EPGREC_ERROR );
-			reclog( "parse_epgdump_file:: {$e->getMessage()}" , EPGREC_ERROR);
-			exit( $e->getMessage() );
+			reclog( 'parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様', EPGREC_ERROR );
+			throw $e;
 		}
 
 		// プログラム登録
@@ -305,32 +303,33 @@ function parse_epgdump_file( $type, $xmlfile )
 				if ( $battings > 0 )
 				{
 					// 重複発生＝おそらく放映時間の変更
-					$records = DBRecord::createRecords( PROGRAM_TBL, $options);
+					$records = DBRecord::createRecords( PROGRAM_TBL, $options );
 					foreach ( $records as $rec )
 					{
 						// 自動録画予約された番組は放映時間変更と同時にいったん削除する
 						try
 						{
-							$reserve = new DBRecord(RESERVE_TBL, "program_id", $rec->id );
+							$reserve = new DBRecord( RESERVE_TBL, 'program_id', $rec->id );
 							// すでに開始されている録画は無視する
 							if ( time() > (toTimestamp($reserve->starttime) - PADDING_TIME - $settings->former_time) )
 							{
-								reclog( "parse_epgdump_file:: 録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は録画開始後に時間変更が発生した可能性がある", EPGREC_WARN );
+								reclog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は録画開始後に時間変更が発生した可能性がある', EPGREC_WARN );
 							}
 							else
 							{
 								if ( $reserve->autorec )
 								{
-									reclog( "parse_epgdump_file:: 録画ID".$reserve->id.":".$reserve->type.$reserve->channel.$reserve->title."は時間変更の可能性があり予約取り消し" );
+									reclog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は時間変更の可能性があり予約取り消し' );
 									Reservation::cancel( $reserve->id );
 								}
 							}
 						}
-						catch ( Exception $e ) {
+						catch ( Exception $e )
+						{
 							// 無視
 						}
 						// 番組削除
-						reclog( "parse_epgdump_file:: 放送時間重複が発生した番組ID".$rec->id." ".$rec->type.$rec->channel.$rec->title."を削除" );
+						reclog( 'parse_epgdump_file:: 放送時間重複が発生した番組ID'.$rec->id.' '.$rec->type.$rec->channel.$rec->title.'を削除' );
 						$rec->delete();
 					}
 				}
@@ -351,14 +350,14 @@ function parse_epgdump_file( $type, $xmlfile )
 			else
 			{
 				// 番組内容更新
-				$rec = new DBRecord( PROGRAM_TBL, "program_disc", $program_disc );
+				$rec = new DBRecord( PROGRAM_TBL, 'program_disc', $program_disc );
 				$rec->title = $title;
 				$rec->description = $desc;
 				$rec->category_id = $cat_rec->id;
 				$rec->update();
 				try
 				{
-					$reserve = new DBRecord( RESERVE_TBL, "program_id", $rec->id );
+					$reserve = new DBRecord( RESERVE_TBL, 'program_id', $rec->id );
 					// dirtyが立っておらず現在より後の録画予約であるなら
 					if ( ($reserve->dirty == 0) && (toTimestamp($reserve->starttime) > time()) )
 					{
@@ -375,11 +374,10 @@ function parse_epgdump_file( $type, $xmlfile )
 				// 書き込む
 			}
 		}
-		catch (Exception $e)
+		catch ( Exception $e )
 		{
-			reclog( "parse_epgdump_file:: プログラムテーブルに問題が生じた模様", EPGREC_ERROR );
-			reclog( "parse_epgdump_file:: {$e->getMessage()}" , EPGREC_ERROR);
-			exit( $e->getMessage() );
+			reclog( 'parse_epgdump_file:: プログラムテーブルに問題が生じた模様', EPGREC_ERROR );
+			throw $e;
 		}
 	}
 	// Programme取得完了
@@ -438,9 +436,9 @@ function doPowerReduce($isGetEpg = false)
 	$settings = Settings::factory();
 	if ( intval($settings->use_power_reduce) != 0 )
 	{
-		if ( file_exists(INSTALL_PATH. "/settings/wakeupvars.xml") )
+		if ( file_exists(INSTALL_PATH. '/settings/wakeupvars.xml') )
 		{
-			$wakeupvars_text = file_get_contents( INSTALL_PATH. "/settings/wakeupvars.xml" );
+			$wakeupvars_text = file_get_contents( INSTALL_PATH. '/settings/wakeupvars.xml' );
 			$wakeupvars = new SimpleXMLElement($wakeupvars_text);
 			if ($settings->db_type == 'pgsql')
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()";
@@ -450,20 +448,20 @@ function doPowerReduce($isGetEpg = false)
 				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()";
 
 			// 起動理由を調べる
-			if ( strcasecmp( "getepg", $wakeupvars->reason ) == 0 )
+			if ( strcasecmp( 'getepg', $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
 				$num = DBRecord::countRecords( RESERVE_TBL, $options );
 				if ( $num != 0 )
 				{	// 録画があるなら録画起動にして終了
-					$wakeupvars->reason = "reserve";
+					$wakeupvars->reason = 'reserve';
 				}
 				else
 				{
-					exec( $settings->shutdown . " -h +".$settings->wakeup_before );
+					exec( $settings->shutdown . ' -h +'.$settings->wakeup_before );
 				}
 			}
-			else if ( strcasecmp( "reserve", $wakeupvars->reason ) == 0 )
+			else if ( strcasecmp( 'reserve', $wakeupvars->reason ) == 0 )
 			{
 				// 1時間以内に録画はないか？
 				$num = DBRecord::countRecords( RESERVE_TBL, $options );
@@ -471,14 +469,14 @@ function doPowerReduce($isGetEpg = false)
 				{	// 録画があるなら何もしない
 					exit();
 				}
-				exec( $settings->shutdown . " -h +".$settings->wakeup_before );
+				exec( $settings->shutdown . ' -h +'.$settings->wakeup_before );
 			}
 
 			// getepg終了時を書込み
 			if ($isGetEpg)
 			{
 				$wakeupvars->getepg_time = time();
-				$wakeupvars->asXML(INSTALL_PATH. "/settings/wakeupvars.xml");
+				$wakeupvars->asXML(INSTALL_PATH. '/settings/wakeupvars.xml');
 			}
 		}
 	}

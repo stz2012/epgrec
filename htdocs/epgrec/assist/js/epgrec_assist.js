@@ -141,7 +141,7 @@ ER_sub.rePRG = {
 	}
 };
 
-ER_sub.INDEX = {
+ER_sub.PROGLIST = {
 	style : 'body {background:#666;} #float_follows{position:relative;} #float_titles{position:fixed;top:0;} #ch_title_bar {letter-spacing:1px;} #tvtable div.ch_set {background:#888;position:relative;} #tvtable div.prg{position:relative;background-image: url('+INISet.prgHomeURL+'assist/imgs/prg_bg3.png);cursor:pointer;box-shadow:inset 0 1px 3px hsla(0,0%,100%,0.6);} #tvtable div.ctg_etc, #category_select a.ctg_etc, .ctg_BOX.ctg_etc {color:#666;background-color: #FFFFFF;} #tvtable div.ctg_news, #category_select a.ctg_news, .ctg_BOX.ctg_news {color:#6F6F48;background-color: #FFFFD8;} #tvtable div.ctg_information, #category_select a.ctg_information, .ctg_BOX.ctg_information {color:#644876;background-color: #F2D8FF;} #tvtable div.ctg_sports, #category_select a.ctg_sports, .ctg_BOX.ctg_sports {color:#486F6F;background-color: #D8FFFF;} #tvtable div.ctg_cinema, #category_select a.ctg_cinema, .ctg_BOX.ctg_cinema {color:#6F4848;background-color: #FFD6D0;} #tvtable div.ctg_music, #category_select a.ctg_music, .ctg_BOX.ctg_music  {color:#4F537B;background-color: #D4DFFF;} #tvtable div.ctg_drama, #category_select a.ctg_drama, .ctg_BOX.ctg_drama  {color:#4F6F46;background-color: #E2FFD4;} #tvtable div.ctg_anime, #category_select a.ctg_anime, .ctg_BOX.ctg_anime  {color:#6F5238;background-color: #FFEFCF;} #tvtable div.ctg_variety, #category_select a.ctg_variety, .ctg_BOX.ctg_variety {color:#764264;background-color: #FFD2EB;} #tvtable div.ctg_hide, #category_select a.ctg_hide {background-color: #F4F4F4;color:#AAA;} #tvtable div.prg_none {background-color:#AAA;cursor:default;} #tvtable div.prg_rec  {background-color: #F55;color:#FEE} #tvtable div.prg_rec.prg_pass  {background-color: #977;color:#FCC} #tvtable div.ctg_hide .prg_title, #category_select a.ctg_hide .prg_title{color:#777;} #tvtable div.prg_hover .prg_title {color:white;} #tvtable div.prg.prg_hover {background-color: #28D;color:#EFF;} #tvtable div.prg_pass {color:#666;background-color:#BBB;}#tvtable div.prg_pass,#tvtable div.prg_none{box-shadow:inset 0 1px 3px hsla(0,0%,100%,0.4);}#tvtable div.prg_pass.prg_hover {background-color: #678;color:#EEE}#float_titles .set2 {display:inline-block;padding:0.8em 0.2em;margin:0.4em 0.2em; background-color:#333;font-family: arial,helvetica;} #ch_title_bar .no_epg {color:#888;font-style:italic;cursor:default;}'+
 	'#tvtable .rectoggle{display:none;position:absolute; top:0;right:0;background:#06B;border-bottom-left-radius:8px;}#tvtable .prg_hover .rectoggle {display:block;}#tvtable .prg_hover.prg_pass .rectoggle {display:none;}#tvtable .rectoggle:hover{background:#F40}#tvtable .rectoggle a{padding:0.2em 0.6em;color:#EEE;}#tvtable .rectoggle a:hover{text-decoration:underline;}'+
 	'.IErnd10l {width:10px;height:10px;position:absolute;top:0;left:0;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="'+INISet.prgHomeURL+'assist/imgs/ie_r10_l.png");}.IErnd10r {width:10px;height:10px;position:absolute;top:0;right:0;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="'+INISet.prgHomeURL+'assist/imgs/ie_r10_r.png");}',
@@ -216,9 +216,9 @@ ER_sub.INDEX = {
 
 		// scroll イベントファンクション削除
 		tvtimes_scroll  = function () {};
-		$(window).unbind().scroll(ER_sub.INDEX._scroll).resize(ER_sub.INDEX._scroll);
+		$(window).unbind().scroll(ER_sub.PROGLIST._scroll).resize(ER_sub.PROGLIST._scroll);
 		// ページ読み込み時イベントが発生しない場合用
-		ER_sub.INDEX._scroll();
+		ER_sub.PROGLIST._scroll();
 	},
 	_scroll : function() {
 		ER_sub.RS.reWidth();
@@ -880,7 +880,7 @@ ER_sub.TBL_SCROLLABLE = {
 };
 
 // ================== 番組検索
-ER_sub.PROGRAMTBL = {
+ER_sub.PROGSEARCH = {
 	style : '',
 	ini : function() {
 		var tmp, keyword = null, that = this, $tgs = $('#reservation_table tr:not(:eq(0))');
@@ -963,7 +963,7 @@ ER_sub.PROGRAMTBL = {
 			ctg = $tg.attr('class').match(/ctg_([a-z]*)/)[1];
 			$tds.eq(2).html('<span class="ctg_Box ctg_'+ctg+'"><span class="WD100">'+ER_sub.CTGS[ctg]+'</span><span class="WD100N">'+ctg.slice(0,3)+'</span></span>');
 			// タイトル
-			$tds.eq(3).addClass('title').attr('colspan',2).html('<div><span class="title">' + $tds.eq(4).text() + '</span><span class="desc">' + $tds.eq(5).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+'</span></div><a href="javascript:ER_sub.PROGRAMTBL._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
+			$tds.eq(3).addClass('title').attr('colspan',2).html('<div><span class="title">' + $tds.eq(4).text() + '</span><span class="desc">' + $tds.eq(5).text() + '</span><span class="WD70N" style="color:#EEE;">'+(dur?parseInt((dur/60),10)+'分 ':'')+'</span></div><a href="javascript:ER_sub.PROGSEARCH._more('+Id+');" class="moreBtn" data-a="'+Id+'">more</a>');
 			$tds.eq(4).remove();
 			$tds.eq(5).remove();
 		});
@@ -1944,14 +1944,13 @@ $(function(){
 	}
 	ER_sub.INI();
 	switch(php) {
-	case 'index' :
-	case 'index_index' :
-		if ( ASSIST_INI.index ) {ER_sub.INDEX.ini();}
+	case 'index_program' :
+		if ( ASSIST_INI.index ) {ER_sub.PROGLIST.ini();}
 		break;
 	case 'search' :
 	case 'search_index' :
 		ER_sub.__PAGE = 'programtable';
-		if ( ASSIST_INI.search ) {ER_sub.PROGRAMTBL.ini();}
+		if ( ASSIST_INI.search ) {ER_sub.PROGSEARCH.ini();}
 		break;
 	case 'search_keyword' :
 		ER_sub.__PAGE = 'keywordtable';

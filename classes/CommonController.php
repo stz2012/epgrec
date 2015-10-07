@@ -15,15 +15,25 @@ class CommonController extends ControllerBase
 		parent::preAction();
 
 		// セットアップ状態を検査する
-		if ( ! check_epgrec_env() && $this->getControllerName() != 'install' )
+		if ( ! check_epgrec_env() && $this->controller != 'install' )
 		{
 			$this->setNextPage('install');
 			return;
 		}
-		else if ( ! ModelBase::isConnect() && $this->getControllerName() != 'install' )
+		else if ( ! ModelBase::isConnect() && $this->controller != 'install' )
 		{
 			$this->setNextPage('install', 'step2');
 			return;
+		}
+
+		// パラメータ未設定の場合、強制ページ遷移
+		if ($this->request->getSession('login_data.user_id') == "")
+		{
+			if ( ! (($this->controller == 'index' && $this->action == 'index') || $this->controller == 'install') )
+			{
+				$this->setNextPage('index');
+				return;
+			}
 		}
 	}
 }

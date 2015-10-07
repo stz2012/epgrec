@@ -9,7 +9,6 @@
 	 */
 	define('CRYPT_KEY',    'WIchB266vMfXfueQP2YrgcfFBWxjOka0');
 	define('SESS_TIMEOUT', '+30 minutes');
-	define('ROOT_PATH',    INSTALL_PATH);
 	define('HOME_URL',     '/epgrec/');
 	define('BASE_URI',     '/epgrec/');
 
@@ -17,6 +16,6 @@
 	 * ディスパッチャの生成
 	 */
 	$dispatcher = new Dispatcher();
-	$dispatcher->setSystemRoot(ROOT_PATH);
+	$dispatcher->setSystemRoot(INSTALL_PATH);
 	$dispatcher->dispatch();
 ?>

@@ -3,58 +3,67 @@
 $script_path = dirname( __FILE__ );
 chdir( $script_path );
 include_once( dirname( $script_path ) . '/config.php');
-
-$type = $argv[1];	// BS CS1 CS2 GR
-$file = $argv[2];	// TSファイル
-$key  = "";
-
-// プライオリティ低に
-pcntl_setpriority(20);
+// コマンドライン起動か判別する
+if ( ! (isset($argv[0]) && __FILE__ === realpath($argv[0])) )
+	exit;
 
 $settings = Settings::factory();
+$type = $argv[1];	// BS CS1 CS2 GR
+$file = $argv[2];	// TSファイル
 
-$xmlfile = "";
-$cmdline = $settings->epgdump." ";
+try
+{
+	// プライオリティ低に
+	pcntl_setpriority(20);
 
-if ( $type === "GR" )
-{
-	$ch = $argv[3];	// channel
-	$xmlfile = $settings->temp_xml."_gr".$ch;
-	$cmdline .= $ch." ".$file." ".$xmlfile;
-}
-else if ( $type === "CS1" )
-{
-	$type = "CS";
-	$xmlfile = $settings->temp_xml."_cs1";
-	$cmdline .= "/CS ".$file." ".$xmlfile;
-}
-else if ( $type === "CS2" )
-{
-	$type = "CS";
-	$xmlfile = $settings->temp_xml."_cs2";
-	$cmdline .= "/CS ".$file." ".$xmlfile;
-}
-else if ( $type === "BS" )
-{
-	$xmlfile = $settings->temp_xml."_bs";
-	$cmdline .= "/BS ".$file." ".$xmlfile;
-}
-else exit();
+	$xmlfile = '';
+	$cmdline = $settings->epgdump.' ';
 
-$proc = new EpgrecProc( $cmdline );
-$proc->waitCommand();
+	if ( $type === 'GR' )
+	{
+		$ch = $argv[3];	// channel
+		$xmlfile = $settings->temp_xml.'_gr'.$ch;
+		$cmdline .= $ch.' '.$file.' '.$xmlfile;
+	}
+	else if ( $type === 'CS1' )
+	{
+		$type = 'CS';
+		$xmlfile = $settings->temp_xml.'_cs1';
+		$cmdline .= '/CS '.$file.' '.$xmlfile;
+	}
+	else if ( $type === 'CS2' )
+	{
+		$type = 'CS';
+		$xmlfile = $settings->temp_xml.'_cs2';
+		$cmdline .= '/CS '.$file.' '.$xmlfile;
+	}
+	else if ( $type === 'BS' )
+	{
+		$xmlfile = $settings->temp_xml.'_bs';
+		$cmdline .= '/BS '.$file.' '.$xmlfile;
+	}
+	else
+		exit;
 
-if ( file_exists( $xmlfile ) )
-{
-	parse_epgdump_file( $type, $xmlfile );
-	@unlink( $xmlfile );
+	$proc = new EpgrecProc( $cmdline );
+	$proc->waitCommand();
+
+	if ( file_exists( $xmlfile ) )
+	{
+		parse_epgdump_file( $type, $xmlfile );
+		@unlink( $xmlfile );
+	}
+	else
+	{
+		reclog( 'storeProgram:: 正常な'.$xmlfile.'が作成されなかった模様(放送間帯でないなら問題ありません)', EPGREC_WARN );
+	}
+
+	if ( file_exists( $file ) )
+		@unlink( $file );
 }
-else
+catch ( Exception $e )
 {
-	reclog( "storeProgram:: 正常な".$xmlfile."が作成されなかった模様(放送間帯でないなら問題ありません)", EPGREC_WARN );
+	reclog( 'storeProgram:: '.$e->getMessage(), EPGREC_ERROR );
+	exit( $e->getMessage() );
 }
-
-if ( file_exists( $file ) ) @unlink( $file );
-
-exit();
 ?>

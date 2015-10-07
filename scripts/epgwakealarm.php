@@ -3,22 +3,25 @@
 $script_path = dirname( __FILE__ );
 chdir( $script_path );
 include_once( dirname( $script_path ) . '/config.php');
-
-$acpi_timer_path = "/sys/class/rtc/rtc0/wakealarm";	// ここは書き換える必要があるPCがあるかもしれない
+// コマンドライン起動か判別する
+if ( ! (isset($argv[0]) && __FILE__ === realpath($argv[0])) )
+	exit;
 
 $settings = Settings::factory();
+$action = $argv[1];
+$acpi_timer_path = '/sys/class/rtc/rtc0/wakealarm';	// ここは書き換える必要があるPCがあるかもしれない
 
-$wakeupvars_text = '<?xml version="1.0" encoding="UTF-8" ?><epgwakeup></epgwakeup>';
-if ( file_exists( INSTALL_PATH. "/settings/wakeupvars.xml" ) )
-	$wakeupvars_text = file_get_contents( INSTALL_PATH. "/settings/wakeupvars.xml" );
-
-$wakeupvars = new SimpleXMLElement($wakeupvars_text);
-if (count($wakeupvars->getepg_time) == 0)
-	$wakeupvars->getepg_time = 0;
-
-if ( strcasecmp( $argv[1], "start" ) == 0 )
+try
 {
-	try
+	$wakeupvars_text = '<?xml version="1.0" encoding="UTF-8" ?><epgwakeup></epgwakeup>';
+	if ( file_exists( INSTALL_PATH. '/settings/wakeupvars.xml' ) )
+		$wakeupvars_text = file_get_contents( INSTALL_PATH. '/settings/wakeupvars.xml' );
+
+	$wakeupvars = new SimpleXMLElement($wakeupvars_text);
+	if (count($wakeupvars->getepg_time) == 0)
+		$wakeupvars->getepg_time = 0;
+
+	if ( strcasecmp( $action, 'start' ) == 0 )
 	{
 		// 規定時間以内に予約はあるか
 		$recstart_time = intval($settings->wakeup_before) + 5;
@@ -30,26 +33,18 @@ if ( strcasecmp( $argv[1], "start" ) == 0 )
 			$options = "WHERE complete <> '1' AND starttime > now() AND starttime <= (now() + INTERVAL {$recstart_time} MINUTE)";
 		$num = DBRecord::countRecords( RESERVE_TBL, $options );
 		if ( $num > 0 )
-			$wakeupvars->reason = "reserve";
+			$wakeupvars->reason = 'reserve';
 		else if ( (intval($wakeupvars->getepg_time) + intval($settings->getepg_timer) * 3600 ) <= time() )
 		{
-			$wakeupvars->reason = "getepg";
-			exec( GET_EPG_CMD." >/dev/null 2>&1" );
+			$wakeupvars->reason = 'getepg';
+			exec( GET_EPG_CMD.' >/dev/null 2>&1' );
 		}
 		else
-			$wakeupvars->reason = "other";
-		$wakeupvars->asXML(INSTALL_PATH. "/settings/wakeupvars.xml");
-		chmod(INSTALL_PATH. "/settings/wakeupvars.xml", 0666 );
+			$wakeupvars->reason = 'other';
+		$wakeupvars->asXML(INSTALL_PATH. '/settings/wakeupvars.xml');
+		chmod(INSTALL_PATH. '/settings/wakeupvars.xml', 0666 );
 	}
-	catch ( Exception $e )
-	{
-		//
-	}
-	exit();
-}
-else if( strcasecmp( $argv[1], "stop" ) == 0 )
-{
-	try
+	else if( strcasecmp( $action, 'stop' ) == 0 )
 	{
 		// 録画中はないか？
 		if ($settings->db_type == 'sqlite')
@@ -60,9 +55,9 @@ else if( strcasecmp( $argv[1], "stop" ) == 0 )
 		if ( $num != 0 )
 		{
 			// シャットダウン中止を試みる
-			exec( $settings->shutdown." -c" );
-			recLog("予約中にシャットダウンが実行された", EPGREC_WARN );
-			exit();
+			exec( $settings->shutdown.' -c' );
+			recLog( 'epgwakealarm:: 予約中にシャットダウンが実行された', EPGREC_WARN );
+			exit;
 		}
 
 		$waketime = 0;
@@ -78,9 +73,9 @@ else if( strcasecmp( $argv[1], "stop" ) == 0 )
 		if ( $next_rectime < time() )
 		{
 			// シャットダウン中止を試みる
-			exec( $settings->shutdown." -c" );
-			recLog("予約録画開始".$settings->wakeup_before."分以内にシャットダウンが実行された", EPGREC_WARN );
-			exit();
+			exec( $settings->shutdown.' -c' );
+			recLog( 'epgwakealarm:: 予約録画開始'.$settings->wakeup_before.'分以内にシャットダウンが実行された', EPGREC_WARN );
+			exit;
 		}
 
 		// 次のgetepgの時間は？
@@ -100,18 +95,18 @@ else if( strcasecmp( $argv[1], "stop" ) == 0 )
 			$waketime = $next_rectime;
 
 		// いったんリセットする
-		$fp = fopen( $acpi_timer_path, "w" );
-		fwrite($fp , "0");
+		$fp = fopen( $acpi_timer_path, 'w' );
+		fwrite($fp , '0');
 		fclose($fp);
-		
-		$fp = fopen( $acpi_timer_path, "w" );
-		fwrite($fp , "".$waketime );
+
+		$fp = fopen( $acpi_timer_path, 'w' );
+		fwrite($fp , ''.$waketime );
 		fclose($fp);
- 	}
- 	catch ( Exception $e )
- 	{
-		//
- 	}
- 	exit();
- }
+	}
+}
+catch ( Exception $e )
+{
+	reclog( 'epgwakealarm:: '.$e->getMessage(), EPGREC_ERROR );
+	exit( $e->getMessage() );
+}
 ?>

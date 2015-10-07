@@ -29,7 +29,7 @@
 <h3>CS録画の有無</h3>
 <div class="setting">
 <div class="caption">この設定を「行う」にするとCS放送を加味した動作となります。CS放送を使用しない方は「使わない」に設定してください。</div>
-<select name="cs_rec_flg" id="id_cs_rec_flg" >
+<select name="cs_rec_flg" id="id_cs_rec_flg">
   <option value="0" {if $settings->cs_rec_flg == 0} selected="selected"{/if}>行わない</option>
   <option value="1" {if $settings->cs_rec_flg == 1} selected="selected"{/if}>行う</option>
 </select>
@@ -59,7 +59,7 @@
 この機能を使って連続した番組を予約する場合、前の時間の番組の最後がとぎれる可能性がありますが、<br />
 チューナーが1台しか無くてもキーワード自動録画による連続した番組の予約が可能になります。<br />
 メリットとデメリットをよく考えて設定してください。</div>
-<select name="force_cont_rec" id="id_force_cont_rec" onchange="javascript:PRG.force_cont()" >
+<select name="force_cont_rec" id="id_force_cont_rec" onchange="javascript:PRG.force_cont()">
   <option value="0" {if $settings->force_cont_rec == 0} selected="selected"{/if}>行わない</option>
   <option value="1" {if $settings->force_cont_rec == 1} selected="selected"{/if}>行う</option>
 </select>
@@ -89,7 +89,7 @@ config.phpの$RECORD_MODEに複数の録画モードを登録し、do-record.sh�
 <div class="caption">この設定を「使う」にすると録画した番組のタイトルと概要をmediatombに反映させます。<br />
 mediatombを使用していない方は「使わない」に設定してください。<br />
 なお、この設定を利用するにはmediatomb側の設定も必要になります。詳しくはドキュメントを参照してください。</div>
-<select name="mediatomb_update" id="id_mediatomb_update" >
+<select name="mediatomb_update" id="id_mediatomb_update">
   <option value="0" {if $settings->mediatomb_update == 0} selected="selected"{/if}>使わない</option>
   <option value="1" {if $settings->mediatomb_update == 1} selected="selected"{/if}>使う</option>
 </select>

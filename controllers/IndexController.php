@@ -11,6 +11,38 @@ class IndexController extends CommonController
 	 */
 	public function indexAction()
 	{
+		if ( $this->request->getPost('token') )
+		{
+			$this->error_msg = $this->valid->user_login($this->request->getPost());
+			if (count($this->error_msg) == 0)
+			{
+				$user_data = $this->model->getUserMst($this->request->getPost('login_name'), 
+															$this->request->getPost('passwd'));
+				if (count($user_data) > 0)
+				{
+					$this->request->setSession('login_data.user_id', $user_data[0]['id']);
+					$this->request->setSession('login_data.user_name', $user_data[0]['name']);
+					$this->request->setSession('login_data.user_level', $user_data[0]['level']);
+					$this->request->saveSession('login_data');
+					$this->setNextPage($this->controller, 'program');
+					UtilLog::writeLog('ログイン成功：ID='.$user_data[0]['id'].', NAME='.$user_data[0]['name'], 'ACCESS');
+					return;
+				}
+				else
+				{
+					UtilLog::writeLog('ログイン失敗：'.print_r($this->request->getPost(), true), 'ACCESS');
+					$this->error_msg[] = 'ログイン名、または、パスワードが違います。';
+				}
+			}
+		}
+		$this->view->assign( 'sitetitle' , 'ログイン' );
+	}
+
+	/**
+	 * 番組表表示
+	 */
+	public function programAction()
+	{
 		$DAY_OF_WEEK = array( '(日)','(月)','(火)','(水)','(木)','(金)','(土)' );
 
 		// パラメータの処理
@@ -295,7 +327,7 @@ class IndexController extends CommonController
 			$this->view->assign( 'record_mode' , $this->model->getRecModeOptions() );
 			$this->view->assign( 'sel_recmode',  $this->setting->autorec_mode );
 		}
-		catch ( exception $e )
+		catch ( Exception $e )
 		{
 			exit( 'Error: '. $e->getMessage() );
 		}
@@ -495,7 +527,7 @@ class IndexController extends CommonController
 
 		try
 		{
-			$rec = new DBRecord(RESERVE_TBL, 'id', $reserve_id );
+			$rec = new DBRecord( RESERVE_TBL, 'id', $reserve_id );
 
 			if ( $this->request->getPost('title') )
 			{

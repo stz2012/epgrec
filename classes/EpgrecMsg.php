@@ -10,12 +10,12 @@ class EpgrecMsg
 	function __construct( $reserve_id )
 	{
 		$this->reserve_id = $reserve_id;
-		$this->logfile = INSTALL_PATH."/settings/recorder_".$reserve_id.".log";
+		$this->logfile = INSTALL_PATH.'/settings/recorder_'.$reserve_id.'.log';
 
 		// メッセージハンドラを得る
-		$ipc_key = ftok( RECORDER_CMD, "R" );
+		$ipc_key = ftok( RECORDER_CMD, 'R' );
 		$this->msgh_r = msg_get_queue( $ipc_key );
-		$ipc_key = ftok( RECORDER_CMD, "W" );
+		$ipc_key = ftok( RECORDER_CMD, 'W' );
 		$this->msgh_w = msg_get_queue( $ipc_key );
 	}
 
@@ -39,8 +39,8 @@ class EpgrecMsg
 	{
 		if ( DEBUG )
 		{
-			system( "ps ax >>".$this->logfile );
-			system( "echo ------- >>".$this->logfile );
+			system( 'ps ax >>'.$this->logfile );
+			system( 'echo ------- >>'.$this->logfile );
 		}
 		$status = proc_get_status( $p );
 		$cpids = $this->_getChildProcess( $status['pid'] );
@@ -48,8 +48,8 @@ class EpgrecMsg
 		if ( DEBUG )
 		{
 			foreach ( $cpids as $cpid )
-				system( "echo ".$cpid." >>".$this->logfile );
-			system( "echo ------- >>".$this->logfile );
+				system( 'echo '.$cpid.' >>'.$this->logfile );
+			system( 'echo ------- >>'.$this->logfile );
 		}
 
 		// 親から止める
@@ -67,8 +67,8 @@ class EpgrecMsg
 
 		if ( DEBUG )
 		{
-			system( "ps ax >>".$this->logfile );
-			system( "echo ------- >>".$this->logfile );
+			system( 'ps ax >>'.$this->logfile );
+			system( 'echo ------- >>'.$this->logfile );
 		}
 
 		/* プロセスがしばらく居残る場合がある
@@ -87,12 +87,12 @@ class EpgrecMsg
 	{
 		// ps を実行する
 		$d = array(
-				0 => array( 'file','/dev/null','r' ),
-				1 => array( 'pipe','w' ),
-				2 => array( 'file','/dev/null','w' ),
+				0 => array( 'file', '/dev/null', 'r' ),
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'file', '/dev/null', 'w' ),
 		);
 
-		$ps = proc_open( "/bin/ps -o pid,ppid ax" , $d, $pipes );
+		$ps = proc_open( '/bin/ps -o pid,ppid ax', $d, $pipes );
 		do
 		{
 			$st = proc_get_status( $ps );

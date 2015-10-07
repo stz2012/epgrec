@@ -18,7 +18,7 @@ class DBRecord extends ModelBase
 			$this->setConnectionInfo(self::$__settings->getConnInfo());
 			$this->initDb();
 			if ( $this->db === false )
-				throw new exception( "construct:データベースに接続できない" );
+				throw new Exception( 'construct: データベースに接続できない' );
 		}
 		$this->__table = self::$__settings->tbl_prefix.$table;
 		
@@ -38,7 +38,7 @@ class DBRecord extends ModelBase
 				$this->__record_data = $stmt->fetch(PDO::FETCH_ASSOC);
 			$stmt->closeCursor();
 			if ( $this->__record_data === false )
-				throw new exception( "construct:".$this->__table."に".$property."=".$value."はありません" );
+				throw new Exception( "construct: {$this->__table}に{$property}={$value}はありません" );
 			// 最初にヒットした行のidを使用する
 			$this->__id = $this->__record_data['id'];
 		}
@@ -46,7 +46,7 @@ class DBRecord extends ModelBase
 
 	function createTable()
 	{
-		$sql = "CREATE TABLE";
+		$sql = 'CREATE TABLE';
 		if (self::getDbType() == 'mysql')
 		{
 			$sql .= " IF NOT EXISTS {$this->__table}";
@@ -56,29 +56,15 @@ class DBRecord extends ModelBase
 			$sql .= " {$this->__table} ({$this->_getTableStruct()})";
 		$stmt = $this->db->prepare( $sql );
 		if ( $stmt->execute() === false )
-			throw new exception( "createTable:テーブル作成失敗" );
+			throw new Exception( 'createTable: テーブル作成失敗' );
 		$stmt->closeCursor();
 		$this->_createIndex();
 	}
 
-	function fetch_array( $property , $value, $options = null )
-	{
-		$retval = array();
-		$sql = "SELECT * FROM {$this->__table}";
-		$sql .= " WHERE {$property} = ?";
-		if ( $options != null ) $sql .= "AND {$options}";
-		$stmt = $this->db->prepare( $sql );
-		$param = $this->defineParamType($value);
-		$stmt->bindValue(1, $value, $param);
-		if ($stmt->execute() !== false)
-			$retval = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$stmt->closeCursor();
-		return $retval;
-	}
-
 	function __set( $property, $value )
 	{
-		if ( $property === "id" ) throw new exception( "set:idの変更は不可" );
+		if ( $property === 'id' )
+			throw new Exception( 'set: idの変更は不可' );
 		// id = 0なら空の新規レコード作成
 		if ( $this->__id == 0 )
 		{
@@ -108,7 +94,7 @@ class DBRecord extends ModelBase
 			}
 		}
 		if ( $this->__record_data === false )
-			throw new exception("set: DBの異常？" );
+			throw new Exception('set: DBの異常？' );
 		
 		if ( array_key_exists( $property, $this->__record_data ) )
 		{
@@ -116,26 +102,26 @@ class DBRecord extends ModelBase
 			$this->__f_dirty = true;
 		}
 		else
-			throw new exception("set:$property はありません" );
+			throw new Exception("set: {$property} はありません" );
 	}
 
 	function __get( $property )
 	{
 		if ( $this->__id == 0 )
-			throw new exception( "get:無効なid" );
-		if ( $property === "id" )
+			throw new Exception( 'get: 無効なid' );
+		if ( $property === 'id' )
 			return $this->__id;
 		if ( $this->__record_data === false )
-			throw new exception( "get: 無効なレコード" );
+			throw new Exception( 'get: 無効なレコード' );
 		if ( ! array_key_exists( $property, $this->__record_data ) )
-			throw new exception( "get: $propertyは存在しません" );
+			throw new Exception( "get: {$property} は存在しません" );
 		return stripslashes($this->__record_data[$property]);
 	}
 
 	function delete()
 	{
 		if ( $this->__id == 0 )
-			throw new exception( "delete:無効なid" );
+			throw new Exception( 'delete: 無効なid' );
 		$this->deleteRow($this->__table, array('id' => $this->__id));
 		$this->__id = 0;
 		$this->__record_data = false;
@@ -148,7 +134,7 @@ class DBRecord extends ModelBase
 		{ 
 			if ( $this->__f_dirty )
 			{
-				//UtilLog::writeLog("レコード更新: ".print_r($this->__record_data, true), 'DEBUG');
+				//UtilLog::writeLog('レコード更新: '.print_r($this->__record_data, true), 'DEBUG');
 				$this->updateRow($this->__table, $this->__record_data, array('id' => $this->__id));
 			}
 			$this->__f_dirty = false;
@@ -156,7 +142,7 @@ class DBRecord extends ModelBase
 	}
 
 	// DBRecordオブジェクトを返すstaticなメソッド
-	static function createRecords( $table, $options = "" )
+	static function createRecords( $table, $options = '' )
 	{
 		$retval = array();
 		try
@@ -165,7 +151,7 @@ class DBRecord extends ModelBase
 			$sql = "SELECT * FROM {$tbl->__table} {$options}";
 			$stmt = $tbl->db->prepare( $sql );
 			if ( $stmt->execute() === false )
-				throw new exception("レコードが存在しません");
+				throw new Exception('レコードが存在しません');
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
 				array_push( $retval, new self( $table, 'id', $row['id'] ) );
@@ -180,7 +166,7 @@ class DBRecord extends ModelBase
 	}
 
 	// deleteを実行する
-	static function deleteRecords( $table, $options = "" )
+	static function deleteRecords( $table, $options = '' )
 	{
 		try
 		{
@@ -188,7 +174,7 @@ class DBRecord extends ModelBase
 			$sql = "DELETE FROM {$tbl->__table} {$options}";
 			$stmt = $tbl->db->prepare( $sql );
 			if ( $stmt->execute() === false )
-				throw new exception("DELETE失敗");
+				throw new Exception('DELETE失敗');
 		}
 		catch ( Exception $e )
 		{
@@ -197,7 +183,7 @@ class DBRecord extends ModelBase
 	}
 
 	// countを実行する
-	static function countRecords( $table, $options = "" )
+	static function countRecords( $table, $options = '' )
 	{
 		$retval = 0;
 		try
@@ -206,7 +192,7 @@ class DBRecord extends ModelBase
 			$sql = "SELECT COUNT(*) FROM {$tbl->__table} {$options}";
 			$stmt = $tbl->db->prepare( $sql );
 			if ( $stmt->execute() === false )
-				throw new exception("COUNT失敗");
+				throw new Exception('COUNT失敗');
 			$arr = $stmt->fetch(PDO::FETCH_NUM);
 			$retval = $arr[0];
 			$stmt->closeCursor();
@@ -308,6 +294,14 @@ class DBRecord extends ModelBase
 				$sql .= ", level integer not null default '0'";							// エラーレベル
 				$sql .= ", message varchar(512) not null default ''";					// メッセージ
 				break;
+
+			// ユーザテーブル
+			case self::$__settings->tbl_prefix.USER_TBL:
+				$sql .= ", name varchar(64) not null default ''";						// ユーザ名
+				$sql .= ", level integer not null default '0'";							// ユーザレベル
+				$sql .= ", login_name varchar(16) not null default ''";					// ログイン名
+				$sql .= ", login_pass varchar(32) not null default ''";					// ログインパス
+				break;
 		}
 		return $sql;
 	}
@@ -321,12 +315,12 @@ class DBRecord extends ModelBase
 				$sql = "CREATE INDEX reserve_pg_idx ON {$this->__table}(program_id)";
 				$stmt = $this->db->prepare( $sql );
 				if ( $stmt->execute() === false )
-					throw new exception( "createIndex:インデックス作成失敗" );
+					throw new Exception( "createIndex: インデックス作成失敗" );
 				$stmt->closeCursor();
 				$sql = "CREATE INDEX reserve_st_idx ON {$this->__table}(starttime)";
 				$stmt = $this->db->prepare( $sql );
 				if ( $stmt->execute() === false )
-					throw new exception( "createIndex:インデックス作成失敗" );
+					throw new Exception( "createIndex: インデックス作成失敗" );
 				$stmt->closeCursor();
 				break;
 
@@ -335,12 +329,12 @@ class DBRecord extends ModelBase
 				$sql = "CREATE INDEX program_pg_idx ON {$this->__table}(program_disc)";
 				$stmt = $this->db->prepare( $sql );
 				if ( $stmt->execute() === false )
-					throw new exception( "createIndex:インデックス作成失敗" );
+					throw new Exception( "createIndex: インデックス作成失敗" );
 				$stmt->closeCursor();
 				$sql = "CREATE INDEX program_st_idx ON {$this->__table}(starttime)";
 				$stmt = $this->db->prepare( $sql );
 				if ( $stmt->execute() === false )
-					throw new exception( "createIndex:インデックス作成失敗" );
+					throw new Exception( "createIndex: インデックス作成失敗" );
 				$stmt->closeCursor();
 				break;
 		}

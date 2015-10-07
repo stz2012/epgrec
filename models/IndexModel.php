@@ -7,6 +7,29 @@
 class IndexModel extends CommonModel
 {
 	/**
+	 * ユーザマスタ取得
+	 * @param string $login_name ログイン名
+	 * @param string $login_pass ログインパス
+	 * @return array
+	 */
+	public function getUserMst($login_name, $login_pass)
+	{
+		return $this->selectRow('*',
+			$this->getFullTblName(USER_TBL),
+			array('login_name' => $login_name, 'login_pass' => sha1($login_pass))
+		);
+	}
+
+	/**
+	 * ユーザマスタ一覧取得
+	 * @return array
+	 */
+	public function getUserMstList()
+	{
+		return $this->selectRow('*', $this->getFullTblName(USER_TBL), '', array('id'));
+	}
+
+	/**
 	 * 番組表データ取得
 	 * @return array
 	 */
@@ -16,8 +39,8 @@ class IndexModel extends CommonModel
 		$sql = "SELECT a.channel AS ch_channel, a.name AS ch_name,";
 		$sql .= " a.channel_disc AS ch_disc, a.sid, a.skip, b.*,";
 		$sql .= " c.name_en AS cate_name, COALESCE(d.rsv_cnt, 0) AS rec";
-		$sql .= "  FROM {$this->setting->tbl_prefix}".CHANNEL_TBL." a";
-		$sql .= " INNER JOIN {$this->setting->tbl_prefix}".PROGRAM_TBL." b";
+		$sql .= "  FROM ".$this->getFullTblName(CHANNEL_TBL)." a";
+		$sql .= " INNER JOIN ".$this->getFullTblName(PROGRAM_TBL)." b";
 		$sql .= "    ON b.channel_id = a.id";
 		if (self::getDbType() == 'pgsql')
 		{
@@ -34,11 +57,11 @@ class IndexModel extends CommonModel
 			$sql .= " AND b.endtime > CAST(:top_time AS DATETIME)";
 			$sql .= " AND b.starttime < CAST(:last_time AS DATETIME)";
 		}
-		$sql .= "  LEFT JOIN {$this->setting->tbl_prefix}".CATEGORY_TBL." c";
+		$sql .= "  LEFT JOIN ".$this->getFullTblName(CATEGORY_TBL)." c";
 		$sql .= "    ON c.id = b.category_id";
 		$sql .= "  LEFT JOIN (";
 		$sql .= "    SELECT program_id, COUNT(*) AS rsv_cnt";
-		$sql .= "      FROM {$this->setting->tbl_prefix}".RESERVE_TBL;
+		$sql .= "      FROM ".$this->getFullTblName(RESERVE_TBL);
 		$sql .= "     WHERE complete = '0'";
 		if (self::getDbType() == 'pgsql')
 		{

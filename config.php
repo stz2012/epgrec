@@ -82,23 +82,19 @@ define( 'COMPLETE_CMD',  INSTALL_PATH . '/scripts/recomplete.php' );	// 録画�
 
 // BS/CSでEPGを取得するチャンネル
 // 通常は変える必要はありません
-// BSでepgdumpが頻繁に落ちる場合は、受信状態のいいチャンネルに変えることで
-// 改善するかもしれません
+// BSでepgdumpが頻繁に落ちる場合は、受信状態のいいチャンネルに変えることで改善するかもしれません
 define( 'BS_EPG_CHANNEL',  'BS09_0' );	// BS
 define( 'CS1_EPG_CHANNEL', 'CS8'    );	// CS1
 define( 'CS2_EPG_CHANNEL', 'CS24'   );	// CS2
 
-// 地上デジタルチャンネルテーブルsettings/gr_channel.phpが存在するならそれを
-// 優先する
+// 地上デジタルチャンネルテーブルsettings/gr_channel.phpが存在するならそれを優先する
 if ( file_exists( INSTALL_PATH.'/settings/gr_channel.php' ) )
 {
 	unset($GR_CHANNEL_MAP);
 	include_once( INSTALL_PATH.'/settings/gr_channel.php' );
 }
 
-//
 // settings/site_conf.phpがあればそれを優先する
-//
 if ( file_exists( INSTALL_PATH.'/settings/site_conf.php' ) )
 {
 	unset($GR_CHANNEL_MAP);
@@ -113,4 +109,5 @@ define( 'CHANNEL_TBL',  'channelTbl' );						// チャンネルテーブル
 define( 'CATEGORY_TBL', 'categoryTbl' );					// カテゴリテーブル
 define( 'KEYWORD_TBL',  'keywordTbl' );						// キーワードテーブル
 define( 'LOG_TBL',      'logTbl' );							// ログテーブル
+define( 'USER_TBL',     'userTbl' );						// ユーザテーブル
 ?>

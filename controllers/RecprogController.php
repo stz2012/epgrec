@@ -134,7 +134,7 @@ class RecprogController extends CommonController
 			echo '</ENTRY>';
 			echo '</ASX>';
 		}
-		catch (exception $e )
+		catch ( Exception $e )
 		{
 			exit( $e->getMessage() );
 		}
@@ -185,7 +185,7 @@ class RecprogController extends CommonController
 			}
 			fclose($fp);
 		}
-		catch (exception $e )
+		catch ( Exception $e )
 		{
 			exit( $e->getMessage() );
 		}

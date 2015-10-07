@@ -10,7 +10,7 @@ class Reservation extends ModelBase
 
 		try
 		{
-			$prec = new DBRecord( PROGRAM_TBL, "id", $program_id );
+			$prec = new DBRecord( PROGRAM_TBL, 'id', $program_id );
 			$rval = self::custom(
 				$prec->starttime,
 				$prec->endtime,
@@ -36,8 +36,8 @@ class Reservation extends ModelBase
 		$starttime,				// 開始時間Datetime型
 		$endtime,				// 終了時間Datetime型
 		$channel_id,			// チャンネルID
-		$title = "none",		// タイトル
-		$description = "none",	// 概要
+		$title = 'none',		// タイトル
+		$description = 'none',	// 概要
 		$category_id = 0,		// カテゴリID
 		$program_id = 0,		// 番組ID
 		$autorec = 0,			// 自動録画
@@ -63,7 +63,7 @@ class Reservation extends ModelBase
 		$duration = $end_time - $rec_start;
 		if ( $duration < ($settings->former_time + 60) )
 		{	// 60秒以下の番組は弾く
-			throw new Exception( "終わりつつある/終わっている番組です" );
+			throw new Exception( '終わりつつある/終わっている番組です' );
 		}
 
 		try
@@ -73,13 +73,13 @@ class Reservation extends ModelBase
 			{
 				$num = DBRecord::countRecords( RESERVE_TBL, "WHERE program_id = '{$program_id}'" );
 				if ( $num )
-					throw new Exception("同一の番組が録画予約されています");
+					throw new Exception('同一の番組が録画予約されています');
 			}
 			
-			$crec = new DBRecord( CHANNEL_TBL, "id", $channel_id );
+			$crec = new DBRecord( CHANNEL_TBL, 'id', $channel_id );
 
 			// 既存予約数 = TUNER番号
-			$tuners = ($crec->type == "GR") ? (int)($settings->gr_tuners) : (int)($settings->bs_tuners);
+			$tuners = ($crec->type == 'GR') ? (int)($settings->gr_tuners) : (int)($settings->bs_tuners);
 
 			// 影響する予約情報を集める
 			$options = "WHERE complete = '0'";
@@ -125,9 +125,9 @@ class Reservation extends ModelBase
 				}
 				if ( $mem_battings > $tuners )
 				{	// 重複が多すぎるので予約不可
-					throw new Exception( " 重複予約があります" );
+					throw new Exception( '重複予約があります' );
 				}
-				// チューナー数が足りないとき、連続予約="する"なら重複解消を試みる
+				// チューナー数が足りないとき、連続予約='する'なら重複解消を試みる
 				if ( ( $mem_battings >= $tuners ) && ( $settings->force_cont_rec == 1 ) )
 				{
 					for ( $j = 0; $j <= count($trecs) ; $j++ )
@@ -159,10 +159,10 @@ class Reservation extends ModelBase
 					{
 						if ( ( $dim_start_time[$j] < $dim_end_time[$i] ) && ( $dim_end_time[$j] >= $dim_end_time[$i] ) )
 						{
-							 $msg = $msg."\n  「".$trecs[$j]->title."」";
+							 $msg .= "\n 「{$trecs[$j]->title}」";
 						}
 					}
-					throw new Exception( " 予約が重複しています".$msg );
+					throw new Exception( '予約が重複しています'.$msg );
 				}
 				if ( $battings < $mem_battings )
 				{
@@ -216,7 +216,7 @@ class Reservation extends ModelBase
 					}
 					catch ( Exception $e )
 					{
-						throw new Exception( " 予約時刻変更(再予約)に失敗しました\n  「".$prev_title."」" );
+						throw new Exception( "予約時刻変更(再予約)に失敗しました\n  「{$prev_title}」" );
 					}
 				}
 			}
@@ -227,7 +227,7 @@ class Reservation extends ModelBase
 			// 改めてdurationをチェックしなおす
 			if ( $duration < ($settings->former_time + 60) )
 			{	// 60秒以下の番組は弾く
-				throw new Exception( "終わりつつある/終わっている番組です" );
+				throw new Exception( '終わりつつある/終わっている番組です' );
 			}
 
 			// ここからファイル名生成
@@ -248,54 +248,54 @@ class Reservation extends ModelBase
 			%SEC%	開始秒
 			%DURATION%	録画時間（秒）
 */
-			$day_of_week = array( "日","月","火","水","木","金","土" );
+			$day_of_week = array( '日','月','火','水','木','金','土' );
 			$filename = $settings->filename_format;
 			// %TITLE%	番組タイトル
-			$filename = self::_mb_str_replace("%TITLE%", trim($title), $filename);
+			$filename = self::_mb_str_replace('%TITLE%', trim($title), $filename);
 			// %ST%	開始日時
-			$filename = self::_mb_str_replace("%ST%",date("YmdHis", $start_time), $filename );
+			$filename = self::_mb_str_replace('%ST%', date('YmdHis', $start_time), $filename );
 			// %ET%	終了日時
-			$filename = self::_mb_str_replace("%ET%",date("YmdHis", $end_time), $filename );
+			$filename = self::_mb_str_replace('%ET%', date('YmdHis', $end_time), $filename );
 			// %TYPE%	GR/BS/CS
-			$filename = self::_mb_str_replace("%TYPE%",$crec->type, $filename );
+			$filename = self::_mb_str_replace('%TYPE%', $crec->type, $filename );
 			// %CH%	チャンネル番号
-			$filename = self::_mb_str_replace("%CH%","".$crec->channel, $filename );
+			$filename = self::_mb_str_replace('%CH%', ''.$crec->channel, $filename );
 			// %SID%	サービスID
-			$filename = self::_mb_str_replace("%SID%","".$crec->sid, $filename );
+			$filename = self::_mb_str_replace('%SID%', ''.$crec->sid, $filename );
 			// %DOW%	曜日（Sun-Mon）
-			$filename = self::_mb_str_replace("%DOW%",date("D", $start_time), $filename );
+			$filename = self::_mb_str_replace('%DOW%', date('D', $start_time), $filename );
 			// %DOWJ%	曜日（日-土）
-			$filename = self::_mb_str_replace("%DOWJ%",$day_of_week[(int)date("w", $start_time)], $filename );
+			$filename = self::_mb_str_replace('%DOWJ%', $day_of_week[(int)date('w', $start_time)], $filename );
 			// %YEAR%	開始年
-			$filename = self::_mb_str_replace("%YEAR%",date("Y", $start_time), $filename );
+			$filename = self::_mb_str_replace('%YEAR%', date('Y', $start_time), $filename );
 			// %MONTH%	開始月
-			$filename = self::_mb_str_replace("%MONTH%",date("m", $start_time), $filename );
+			$filename = self::_mb_str_replace('%MONTH%', date('m', $start_time), $filename );
 			// %DAY%	開始日
-			$filename = self::_mb_str_replace("%DAY%",date("d", $start_time), $filename );
+			$filename = self::_mb_str_replace('%DAY%', date('d', $start_time), $filename );
 			// %HOUR%	開始時
-			$filename = self::_mb_str_replace("%HOUR%",date("H", $start_time), $filename );
+			$filename = self::_mb_str_replace('%HOUR%', date('H', $start_time), $filename );
 			// %MIN%	開始分
-			$filename = self::_mb_str_replace("%MIN%",date("i", $start_time), $filename );
+			$filename = self::_mb_str_replace('%MIN%', date('i', $start_time), $filename );
 			// %SEC%	開始秒
-			$filename = self::_mb_str_replace("%SEC%",date("s", $start_time), $filename );
+			$filename = self::_mb_str_replace('%SEC%', date('s', $start_time), $filename );
 			// %DURATION%	録画時間（秒）
-			$filename = self::_mb_str_replace("%DURATION%","".$duration, $filename );
+			$filename = self::_mb_str_replace('%DURATION%', ''.$duration, $filename );
 			// あると面倒くさそうな文字を全部_に
-//			$filename = preg_replace("/[ \.\/\*:<>\?\\|()\'\"&]/u","_", trim($filename) );
+			//$filename = preg_replace("/[ \.\/\*:<>\?\\|()\'\"&]/u", '_', trim($filename) );
 			// preg_replaceがUTF-8に対応できない環境があるようなのでmb_ereg_replaceに戻す
-			$filename = mb_ereg_replace("[ \./\*:<>\?\\|()\'\"&]","_", trim($filename) );
+			$filename = mb_ereg_replace("[ \./\*:<>\?\\|()\'\"&]", '_', trim($filename) );
 
 			// 文字コード変換
-			if ( defined("FILESYSTEM_ENCODING") )
+			if ( defined('FILESYSTEM_ENCODING') )
 			{
-				$filename = mb_convert_encoding( $filename, FILESYSTEM_ENCODING, "UTF-8" );
+				$filename = mb_convert_encoding( $filename, FILESYSTEM_ENCODING, 'UTF-8' );
 			}
 			$filename .= $RECORD_MODE["$mode"]['suffix'];
-			$thumbname = $filename.".jpg";
+			$thumbname = $filename.'.jpg';
 
 			// サムネール
-			$gen_thumbnail = INSTALL_PATH."/scripts/gen-thumbnail.sh";
-			if ( defined("GEN_THUMBNAIL") ) 
+			$gen_thumbnail = INSTALL_PATH.'/scripts/gen-thumbnail.sh';
+			if ( defined('GEN_THUMBNAIL') ) 
 				$gen_thumbnail = GEN_THUMBNAIL;
 
 			// 予約レコードを埋める
@@ -317,28 +317,28 @@ class Reservation extends ModelBase
 			$rrec->update();
 
 			// 予約実行
-			$cmdline = $settings->at." ".date("H:i m/d/Y", $at_start);
-			$descriptor = array( 0 => array( "pipe", "r" ),
-								 1 => array( "pipe", "w" ),
-								 2 => array( "pipe", "w" ),
+			$cmdline = $settings->at.' '.date('H:i m/d/Y', $at_start);
+			$descriptor = array( 0 => array( 'pipe', 'r' ),
+								 1 => array( 'pipe', 'w' ),
+								 2 => array( 'pipe', 'w' ),
 			);
-			$env = array( "CHANNEL"  => $crec->channel,
-						  "DURATION" => $duration,
-						  "OUTPUT"   => INSTALL_PATH.$settings->spool."/".$filename,
-						  "TYPE"     => $crec->type,
-						  "TUNER"    => $tuner,
-						  "MODE"     => $mode,
-						  "THUMB"    => INSTALL_PATH.$settings->thumbs."/".$thumbname,
-						  "FORMER"   => "".$settings->former_time,
-						  "FFMPEG"   => "".$settings->ffmpeg,
-						  "SID"      => $crec->sid,
+			$env = array( 'CHANNEL'  => $crec->channel,
+						  'DURATION' => $duration,
+						  'OUTPUT'   => INSTALL_PATH.$settings->spool.'/'.$filename,
+						  'TYPE'     => $crec->type,
+						  'TUNER'    => $tuner,
+						  'MODE'     => $mode,
+						  'THUMB'    => INSTALL_PATH.$settings->thumbs.'/'.$thumbname,
+						  'FORMER'   => ''.$settings->former_time,
+						  'FFMPEG'   => ''.$settings->ffmpeg,
+						  'SID'      => $crec->sid,
 			);
 
 			// ATで予約する
 			$process = proc_open( $cmdline , $descriptor, $pipes, INSTALL_PATH.$settings->spool, $env );
 			if ( is_resource( $process ) )
 			{
-				fwrite($pipes[0], RECORDER_CMD." ".$rrec->id."\n" );
+				fwrite($pipes[0], RECORDER_CMD.' '.$rrec->id."\n" );
 				fclose($pipes[0]);
 				// 標準エラーを取る
 				$rstring = stream_get_contents($pipes[2]);
@@ -349,8 +349,8 @@ class Reservation extends ModelBase
 			else
 			{
 				$rrec->delete();
-				reclog( "Reservation::custom atの実行に失敗した模様", EPGREC_ERROR);
-				throw new Exception("AT実行エラー");
+				reclog( 'Reservation::custom atの実行に失敗した模様', EPGREC_ERROR );
+				throw new Exception('AT実行エラー');
 			}
 
 			// job番号を取り出す
@@ -361,21 +361,21 @@ class Reservation extends ModelBase
 				array_push( $rarr, $tok );
 				$tok = strtok( " \n" );
 			}
-			$key = array_search("job", $rarr);
+			$key = array_search('job', $rarr);
 			if ( $key !== false )
 			{
 				if ( is_numeric( $rarr[$key+1]) )
 				{
 					$rrec->job = $rarr[$key+1];
-					reclog( "Reservation::custom ジョブ番号".$rrec->job."に録画ジョブを登録");
+					reclog( 'Reservation::custom ジョブ番号'.$rrec->job.'に録画ジョブを登録' );
 					return $rrec->job;			// 成功
 				}
 			}
 
 			// エラー
 			$rrec->delete();
-			reclog( "Reservation::custom job番号の取得に失敗",EPGREC_ERROR );
-			throw new Exception( "job番号の取得に失敗" );
+			reclog( 'Reservation::custom job番号の取得に失敗', EPGREC_ERROR );
+			throw new Exception( 'job番号の取得に失敗' );
 		}
 		catch ( Exception $e )
 		{
@@ -396,7 +396,7 @@ class Reservation extends ModelBase
 	{
 		try
 		{
-			$rec = new DBRecord( KEYWORD_TBL, "id", $keyword_id );
+			$rec = new DBRecord( KEYWORD_TBL, 'id', $keyword_id );
 
 			$programs = self::getSearchData(
 				$rec->keyword,
@@ -414,7 +414,7 @@ class Reservation extends ModelBase
 				{
 					if ( $isCancel )
 					{
-						$reserve = new DBRecord( RESERVE_TBL, "program_id", $r['id'] );
+						$reserve = new DBRecord( RESERVE_TBL, 'program_id', $r['id'] );
 						// 自動予約されたもののみ削除
 						if ( $reserve->autorec )
 						{
@@ -426,7 +426,7 @@ class Reservation extends ModelBase
 						if ( $r['autorec'] )
 						{
 							self::simple( $r['id'], $rec->id, $rec->autorec_mode );
-							reclog( "Reservation::keyword キーワードID".$rec->id."の録画が予約された");
+							reclog( 'Reservation::keyword キーワードID'.$rec->id.'の録画が予約された' );
 						}
 					}
 					usleep( 100 ); // あんまり時間を空けないのもどう?
@@ -439,7 +439,7 @@ class Reservation extends ModelBase
 		}
 		catch ( Exception $e )
 		{
-			reclog("Reservation::keyword キーワード自動予約でDB接続またはアクセスに失敗した模様", EPGREC_ERROR );
+			reclog( 'Reservation::keyword キーワード自動予約でDB接続またはアクセスに失敗した模様', EPGREC_ERROR );
 			throw $e;
 		}
 	}
@@ -454,71 +454,71 @@ class Reservation extends ModelBase
 		{
 			if ( $reserve_id )
 			{
-				$rec = new DBRecord( RESERVE_TBL, "id" , $reserve_id );
+				$rec = new DBRecord( RESERVE_TBL, 'id' , $reserve_id );
 			}
 			else if ( $program_id )
 			{
-				$rec = new DBRecord( RESERVE_TBL, "program_id" , $program_id );
+				$rec = new DBRecord( RESERVE_TBL, 'program_id' , $program_id );
 			}
 			if ( $rec == null )
 			{
-				throw new Exception("IDの指定が無効です");
+				throw new Exception( 'IDの指定が無効です' );
 			}
 			if ( ! $rec->complete )
 			{
 				if ( toTimestamp($rec->starttime) < (time() + PADDING_TIME + $settings->former_time) )
 				{
-					reclog("Reservation::cancel 実行中の予約ID".$rec->id."の取り消しが実行された" );
+					reclog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しが実行された' );
 
 					// recorderとの通信を試みる
-					$ipc_key = ftok( RECORDER_CMD, "R" );
+					$ipc_key = ftok( RECORDER_CMD, 'R' );
 					
 					/* php 5.3以降じゃないとmsg_queue_existsは使えない
 					if ( ! msg_queue_exists( $ipc_key ) )
 					{
 						// メッセージキューがない
-						reclog( "Reservation::cancel 実行中と推測される予約".$rec->id."が実行されていない", EPGREC_ERROR );
+						reclog( 'Reservation::cancel 実行中と推測される予約'.$rec->id.'が実行されていない', EPGREC_ERROR );
 						$rec->complete = 1;
-						throw new RecException( "Reserve:: 実行中と推測される予約が実行されていません。再度、削除を試みてください。", EPGREC_ERROR );
+						throw new Exception( '実行中と推測される予約が実行されていません。再度、削除を試みてください。' );
 					}
 					else
 					{
 					*/
 						$msgh_r = msg_get_queue( $ipc_key );
-						$ipc_key = ftok( RECORDER_CMD, "W" );
+						$ipc_key = ftok( RECORDER_CMD, 'W' );
 						$msgh_w = msg_get_queue( $ipc_key );
 
 						// 終了を指示
-						msg_send( $msgh_r, (int)$rec->id, "terminate" );
+						msg_send( $msgh_r, (int)$rec->id, 'terminate' );
 						sleep(1);
 						for ( $i = 0; $i < 60; $i++ )
 						{
 							$r = msg_receive($msgh_w, (int)$rec->id , $msgtype, 1024, $message, TRUE, MSG_IPC_NOWAIT | MSG_NOERROR);
 							if ( $r )
 							{
-								if ( $message == "success" )
+								if ( $message == 'success' )
 								{
-									reclog( "Reserve:: 実行中の予約ID".$rec->id."の取り消しに成功した模様" );
+									reclog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに成功した模様' );
 									break;
 								}
-								else if ( $message == "error" )
+								else if ( $message == 'error' )
 								{
-									reclog( "Reserve:: 実行中の予約ID".$rec->id."の取り消しに失敗", EPGREC_ERROR );
-									throw new RecException("実行中の予約取り消しに失敗しました。しばらく時間をおいてから再度、取り消してください", EPGREC_ERROR );
+									reclog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに失敗', EPGREC_ERROR );
+									throw new Exception( '実行中の予約取り消しに失敗しました。しばらく時間をおいてから再度、取り消してください' );
 								}
 								// それ以外のメッセージは無視して待つ
 							}
 							sleep(1);
 						}
 						if ( $i >= 60 )
-							throw new RecException("実行中の予約取り消しに失敗しました。しばらく時間をおいてから再度、取り消してください", EPGREC_ERROR );
+							throw new Exception( '実行中の予約取り消しに失敗しました。しばらく時間をおいてから再度、取り消してください' );
 //					}
 				}
 				else
 				{
 					// まだ実行されていない予約ならatを削除しとく
-					exec( $settings->atrm . " " . $rec->job );
-					reclog("Reservation::cancel ジョブ番号".$rec->job."を削除");
+					exec( $settings->atrm . ' ' . $rec->job );
+					reclog( 'Reservation::cancel ジョブ番号'.$rec->job.'を削除' );
 					$rec->delete();
 				}
 			}
@@ -530,7 +530,7 @@ class Reservation extends ModelBase
 		}
 		catch ( Exception $e )
 		{
-			reclog("Reservation::cancel 予約キャンセルでDB接続またはアクセスに失敗した模様", EPGREC_ERROR );
+			reclog( 'Reservation::cancel 予約キャンセルでDB接続またはアクセスに失敗した模様', EPGREC_ERROR );
 			throw $e;
 		}
 	}
@@ -540,9 +540,9 @@ class Reservation extends ModelBase
 	 * @return array
 	 */
 	public static function getSearchData(
-		$keyword = "", 
+		$keyword = '', 
 		$use_regexp = false,
-		$tuner_type = "*", 
+		$tuner_type = '*', 
 		$channel_id = 0,
 		$category_id = 0,
 		$prgtime = 24,
@@ -619,15 +619,15 @@ class Reservation extends ModelBase
 		$sql .= " ORDER BY starttime ASC";
 		$sql .= " LIMIT :search_limit";
 		$stmt = self::$connInst->prepare($sql);
-		$stmt->bindValue(':search_time', date("Y-m-d H:i:s", time() + $settings->padding_time + 60));
-		if ( $keyword != "" )
+		$stmt->bindValue(':search_time', date('Y-m-d H:i:s', time() + $settings->padding_time + 60));
+		if ( $keyword != '' )
 		{
 			if ( $use_regexp )
 				$stmt->bindValue(':keyword', $keyword);
 			else
 				$stmt->bindValue(':keyword', "%{$keyword}%");
 		}
-		if ( $tuner_type != "*" )
+		if ( $tuner_type != '*' )
 			$stmt->bindValue(':tuner_type', $tuner_type);
 		if ( $channel_id != 0 )
 			$stmt->bindValue(':channel_id', $channel_id, PDO::PARAM_INT);
@@ -635,8 +635,8 @@ class Reservation extends ModelBase
 			$stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
 		if ( $prgtime != 24 )
 		{
-			$stmt->bindValue(':prgtime_from', sprintf("%02d:00:00", $prgtime));
-			$stmt->bindValue(':prgtime_to',   sprintf("%02d:59:59", $prgtime));
+			$stmt->bindValue(':prgtime_from', sprintf('%02d:00:00', $prgtime));
+			$stmt->bindValue(':prgtime_to',   sprintf('%02d:59:59', $prgtime));
 		}
 		if ( $weekofday != 0 )
 			$stmt->bindValue(':weekofday', $weekofday, PDO::PARAM_INT);
@@ -649,7 +649,7 @@ class Reservation extends ModelBase
 	}
 
 	// マルチバイトstr_replace
-	private static function _mb_str_replace($search, $replace, $target, $encoding = "UTF-8" )
+	private static function _mb_str_replace($search, $replace, $target, $encoding = 'UTF-8' )
 	{
 		$notArray = !is_array($target) ? TRUE : FALSE;
 		$target = $notArray ? array($target) : $target;

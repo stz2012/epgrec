@@ -50,7 +50,7 @@ class SettingController extends CommonController
 		{
 			$this->setting->post($POST_DATA);
 			$this->setting->save();
-			jdialog( '設定が保存されました', HOME_URL );
+			jdialog( '設定が保存されました。', $this->getCurrentUri(false) );
 		}
 		else
 			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}" );
