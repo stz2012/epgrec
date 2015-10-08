@@ -150,7 +150,7 @@ class DBRecord extends CommonModel
 			$tbl = new self( $table );
 			$sql = "SELECT * FROM {$tbl->__table} {$options}";
 			$stmt = $tbl->db->prepare( $sql );
-			$stmt->execute()
+			$stmt->execute();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
 				array_push( $retval, new self( $table, 'id', $row['id'] ) );
@@ -176,7 +176,7 @@ class DBRecord extends CommonModel
 			$tbl = new self( $table );
 			$sql = "DELETE FROM {$tbl->__table} {$options}";
 			$stmt = $tbl->db->prepare( $sql );
-			$stmt->execute()
+			$stmt->execute();
 		}
 		catch ( Exception $e )
 		{
@@ -198,7 +198,7 @@ class DBRecord extends CommonModel
 			$tbl = new self( $table );
 			$sql = "SELECT COUNT(*) FROM {$tbl->__table} {$options}";
 			$stmt = $tbl->db->prepare( $sql );
-			$stmt->execute()
+			$stmt->execute();
 			$arr = $stmt->fetch(PDO::FETCH_NUM);
 			$retval = $arr[0];
 			$stmt->closeCursor();
@@ -226,7 +226,7 @@ class DBRecord extends CommonModel
 			else
 				$sql .= " {$this->__table} ({$this->_getTableStruct()})";
 			$stmt = $this->db->prepare( $sql );
-			$stmt->execute()
+			$stmt->execute();
 			$stmt->closeCursor();
 			$this->_createIndex();
 		}
@@ -381,11 +381,11 @@ class DBRecord extends CommonModel
 			case $this->getFullTblName(RESERVE_TBL):
 				$sql = "CREATE INDEX reserve_pg_idx ON {$this->__table}(program_id)";
 				$stmt = $this->db->prepare( $sql );
-				$stmt->execute()
+				$stmt->execute();
 				$stmt->closeCursor();
 				$sql = "CREATE INDEX reserve_st_idx ON {$this->__table}(starttime)";
 				$stmt = $this->db->prepare( $sql );
-				$stmt->execute()
+				$stmt->execute();
 				$stmt->closeCursor();
 				break;
 
@@ -393,11 +393,11 @@ class DBRecord extends CommonModel
 			case $this->getFullTblName(PROGRAM_TBL):
 				$sql = "CREATE INDEX program_pg_idx ON {$this->__table}(program_disc)";
 				$stmt = $this->db->prepare( $sql );
-				$stmt->execute()
+				$stmt->execute();
 				$stmt->closeCursor();
 				$sql = "CREATE INDEX program_st_idx ON {$this->__table}(starttime)";
 				$stmt = $this->db->prepare( $sql );
-				$stmt->execute()
+				$stmt->execute();
 				$stmt->closeCursor();
 				break;
 		}
