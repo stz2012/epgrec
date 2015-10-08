@@ -1,16 +1,31 @@
 <?php
+/**
+ * Epgrecメッセージクラス
+ */
 class EpgrecMsg
 {
+	/**
+	 * @var int 予約ID
+	 */
 	protected $reserve_id;
-	protected $msgh_r = null;		// 受信用メッセージハンドラ
-	protected $msgh_w = null;		// 送信用メッセージハンドラ
-	protected $logfile = null;
 
-	// コンストラクタ
+	/**
+	 * @var resource 受信用メッセージハンドラ
+	 */
+	protected $msgh_r = null;
+
+	/**
+	 * @var resource 送信用メッセージハンドラ
+	 */
+	protected $msgh_w = null;
+
+	/**
+	 * コンストラクタ
+	 * @param int $reserve_id 予約ID
+	 */
 	function __construct( $reserve_id )
 	{
 		$this->reserve_id = $reserve_id;
-		$this->logfile = INSTALL_PATH.'/settings/recorder_'.$reserve_id.'.log';
 
 		// メッセージハンドラを得る
 		$ipc_key = ftok( RECORDER_CMD, 'R' );
@@ -19,7 +34,10 @@ class EpgrecMsg
 		$this->msgh_w = msg_get_queue( $ipc_key );
 	}
 
-	// ノンブロッキングメッセージ受信
+	/**
+	 * メッセージ受信（ノンブロッキング）
+	 * @return mixed メッセージ
+	 */
 	public function recvMessage()
 	{
 		$r = msg_receive($this->msgh_r, (int)$this->reserve_id , $msgtype, 1024, $message, TRUE, MSG_IPC_NOWAIT | MSG_NOERROR);
@@ -27,30 +45,25 @@ class EpgrecMsg
 		return null;
 	}
 
-	// メッセージ送信
+	/**
+	 * メッセージ送信
+	 * @param string $msg メッセージ
+	 */
 	public function sendMessage( $msg )
 	{
 		msg_send( $this->msgh_w, (int)$this->reserve_id, $msg );
 		sleep(1);	// 相手が受信してくれそうな時間だけ待つ
 	}
 
-	// 指定したプロセスハンドルを子プロセスを含め終了させる
+	/**
+	 * プロセス終了（子プロセスも含む）
+	 * @param resource $p 親プロセスハンドル
+	 * @return bool
+	 */
 	public function termProcess( $p )
 	{
-		if ( DEBUG )
-		{
-			system( 'ps ax >>'.$this->logfile );
-			system( 'echo ------- >>'.$this->logfile );
-		}
 		$status = proc_get_status( $p );
 		$cpids = $this->_getChildProcess( $status['pid'] );
-
-		if ( DEBUG )
-		{
-			foreach ( $cpids as $cpid )
-				system( 'echo '.$cpid.' >>'.$this->logfile );
-			system( 'echo ------- >>'.$this->logfile );
-		}
 
 		// 親から止める
 		@proc_terminate( $p );
@@ -65,24 +78,14 @@ class EpgrecMsg
 				posix_kill( $cpid, SIGKILL );	// sigkill
 		}
 
-		if ( DEBUG )
-		{
-			system( 'ps ax >>'.$this->logfile );
-			system( 'echo ------- >>'.$this->logfile );
-		}
-
-		/* プロセスがしばらく居残る場合がある
-		foreach ( $cpids as $cpid ) {
-			$ret = posix_kill( $cpid, SIGTERM );	// sigterm
-			if ( $ret ) return false;				// 恐らくプロセスが存在するのでエラー
-		}
-		*/
 		return true;	// 保証できない
 	}
 
-	// 指定したプロセスIDが生成した子プロセスのpidリストを返す
-	// こういうやり方しかないのか？
-	//
+	/**
+	 * 指定したプロセスIDが生成した子プロセスのpidリスト取得
+	 * @param int $ppid プロセスID
+	 * @return array pidリスト
+	 */
 	private function _getChildProcess( $ppid )
 	{
 		// ps を実行する
@@ -120,10 +123,13 @@ class EpgrecMsg
 			foreach ( $ccpids as $ccpid )
 				array_push( $cpids, $ccpid );
 		}
+
 		return $cpids;
 	}
 
-	// デストラクタ
+	/**
+	 * デストラクタ
+	 */
 	function __destruct()
 	{
 		msg_remove_queue( $this->msgh_r );	// メッセージハンドラ開放

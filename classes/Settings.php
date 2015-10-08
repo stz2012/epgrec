@@ -1,8 +1,20 @@
 <?php
+/**
+ * Epgrec設定クラス
+ * @package SimpleXMLElement
+ * @subpackage Settings
+ */
 class Settings extends SimpleXMLElement
 {
+	/**
+	 * @constant 設定ファイル名
+	 */
 	const CONFIG_XML = '/settings/config.xml';
 
+	/**
+	 * 設定取得
+	 * @return object 
+	 */
 	public static function factory()
 	{
 		if ( file_exists( INSTALL_PATH . self::CONFIG_XML ) )
@@ -17,6 +29,10 @@ class Settings extends SimpleXMLElement
 		}
 	}
 
+	/**
+	 * デフォルト設定取得
+	 * @return object 
+	 */
 	public static function getDefaults()
 	{
 		$xmlfile = '<?xml version="1.0" encoding="UTF-8" ?><epgrec></epgrec>';
@@ -105,6 +121,10 @@ class Settings extends SimpleXMLElement
 		return $xml;
 	}
 
+	/**
+	 * DB接続情報取得
+	 * @return array 
+	 */
 	public function getConnInfo()
 	{
 		return array(
@@ -117,12 +137,21 @@ class Settings extends SimpleXMLElement
 		);
 	}
 
+	/**
+	 * プロパティ存在チェック
+	 * @param string $property プロパティ名
+	 * @return bool 
+	 */
 	public function exists( $property )
 	{
 		$xml_def = self::getDefaults();
 		return (int)count( $xml_def->{$property} );
 	}
 
+	/**
+	 * データをセット
+	 * @param array $POST_DATA 
+	 */
 	public function post( $POST_DATA )
 	{
 		if (!is_array($POST_DATA))
@@ -134,6 +163,9 @@ class Settings extends SimpleXMLElement
 		}
 	}
 
+	/**
+	 * XMLを保存
+	 */
 	public function save()
 	{
 		$this->asXML(INSTALL_PATH . self::CONFIG_XML);

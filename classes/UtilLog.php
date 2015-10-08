@@ -7,9 +7,44 @@
 class UtilLog
 {
 	/**
+	 * @constant ログレベル：情報
+	 */
+	const LV_INFO = 0;
+
+	/**
+	 * @constant ログレベル：警告
+	 */
+	const LV_WARN = 1;
+
+	/**
+	 * @constant ログレベル：エラー
+	 */
+	const LV_ERROR = 2;
+
+	/**
+	 * ログメッセージの出力
+	 * @param string $msg   メッセージ
+	 * @param int    $level ログレベル
+	 */
+	public static function outLog( $message , $level = self::LV_INFO )
+	{
+		try
+		{
+			$log = new DBRecord( LOG_TBL );
+			$log->logtime = date('Y-m-d H:i:s');
+			$log->level   = $level;
+			$log->message = $message;
+		}
+		catch ( Exception $e )
+		{
+			self::writeLog('ログ出力失敗: '.print_r($e, true));
+		}
+	}
+
+	/**
 	 * ログメッセージの保存
 	 * @param string $msg メッセージ
-	 * @param string prefix ファイル名プレフィックス
+	 * @param string $prefix ファイル名プレフィックス
 	 */
 	public static function writeLog($msg, $prefix='ERROR')
 	{

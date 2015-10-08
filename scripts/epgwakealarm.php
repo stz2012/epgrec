@@ -56,7 +56,7 @@ try
 		{
 			// シャットダウン中止を試みる
 			exec( $settings->shutdown.' -c' );
-			recLog( 'epgwakealarm:: 予約中にシャットダウンが実行された', EPGREC_WARN );
+			recLog( 'epgwakealarm:: 予約中にシャットダウンが実行された', UtilLog::LV_WARN );
 			exit;
 		}
 
@@ -74,7 +74,7 @@ try
 		{
 			// シャットダウン中止を試みる
 			exec( $settings->shutdown.' -c' );
-			recLog( 'epgwakealarm:: 予約録画開始'.$settings->wakeup_before.'分以内にシャットダウンが実行された', EPGREC_WARN );
+			recLog( 'epgwakealarm:: 予約録画開始'.$settings->wakeup_before.'分以内にシャットダウンが実行された', UtilLog::LV_WARN );
 			exit;
 		}
 
@@ -106,7 +106,7 @@ try
 }
 catch ( Exception $e )
 {
-	reclog( 'epgwakealarm:: '.$e->getMessage(), EPGREC_ERROR );
+	UtilLog::outLog( 'epgwakealarm:: '.$e->getMessage(), UtilLog::LV_ERROR );
 	exit( $e->getMessage() );
 }
 ?>

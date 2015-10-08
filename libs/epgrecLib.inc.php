@@ -1,58 +1,7 @@
 <?php
-// ライブラリ
-
-define( 'EPGREC_INFO' , 0 );
-define( 'EPGREC_WARN' , 1 );
-define( 'EPGREC_ERROR', 2 );
-
-$PDO_DRIVER_MAP = array(
-	'mysql'  => 'MySQL',
-	'pgsql'  => 'PostgreSQL',
-	'sqlite' => 'SQLite'
-);
-
-function reclog( $message , $level = EPGREC_INFO )
-{
-	try
-	{
-		$log = new DBRecord( LOG_TBL );
-		$log->logtime = date('Y-m-d H:i:s');
-		$log->level = $level;
-		$log->message = $message;
-	}
-	catch ( Exception $e )
-	{
-		UtilLog::writeLog('ログ出力失敗: '.print_r($e, true));
-	}
-}
-
-function toTimestamp( $param )
-{
-	sscanf( $param, '%4d-%2d-%2d %2d:%2d:%2d', $yyyy, $mm, $dd, $hh, $ii, $ss );
-	return mktime( $hh, $ii, $ss, $mm, $dd, $yyyy );
-}
-
-function toDatetime( $timestamp )
-{
-	return date('Y-m-d H:i:s', $timestamp);
-}
-
-function toDatetime2( $param )
-{
-	$param = str_replace(' +0900', '', $param);
-	sscanf( $param, '%4d%2d%2d%2d%2d%2d', $yyyy, $mm, $dd, $hh, $ii, $ss );
-	return toDatetime( mktime( $hh, $ii, $ss, $mm, $dd, $yyyy ) );
-}
-
-function jdialog( $message, $url = 'index.php' )
-{
-    header( 'Content-Type: text/html;charset=utf-8' );
-    exit( "<script type=\"text/javascript\">\n" .
-          "<!--\n".
-         "alert(\"". $message . "\");\n".
-         "window.open(\"".$url."\",\"_self\");".
-         "// -->\n</script>" );
-}
+/**
+ * Epgrecライブラリ
+ */
 
 /**
  * クラスのオートロード
@@ -64,6 +13,59 @@ function custom_autoloader($className)
 	require_once $file_name;
 }
 
+/**
+ * 日時文字列 → タイムスタンプ変換
+ * @param string $param 日時文字列
+ * @return int タイムスタンプ
+ */
+function toTimestamp( $param )
+{
+	sscanf( $param, '%4d-%2d-%2d %2d:%2d:%2d', $yyyy, $mm, $dd, $hh, $ii, $ss );
+	return mktime( $hh, $ii, $ss, $mm, $dd, $yyyy );
+}
+
+/**
+ * タイムスタンプ → 日時文字列変換
+ * @param int $param タイムスタンプ
+ * @return string 日時文字列
+ */
+function toDatetime( $timestamp )
+{
+	return date('Y-m-d H:i:s', $timestamp);
+}
+
+/**
+ * EPG日時情報 → 日時文字列変換
+ * @param string $param EPG日時情報（YYYYMMDDHHIISS +0900）
+ * @return string 日時文字列
+ */
+function toDatetime2( $param )
+{
+	$param = str_replace(' +0900', '', $param);
+	sscanf( $param, '%4d%2d%2d%2d%2d%2d', $yyyy, $mm, $dd, $hh, $ii, $ss );
+	return toDatetime( mktime( $hh, $ii, $ss, $mm, $dd, $yyyy ) );
+}
+
+/**
+ * JSダイアログ表示
+ * @param string $message メッセージ
+ * @param string $url     転送先URL
+ */
+function jdialog( $message, $url = HOME_URL )
+{
+	header( 'Content-Type: text/html;charset=utf-8' );
+	exit( "<script type=\"text/javascript\">\n".
+	      "<!--\n".
+	      "alert(\"". $message . "\");\n".
+	      "window.open(\"".$url."\", \"_self\");\n".
+	      "// -->\n".
+	      "</script>" );
+}
+
+/**
+ * インストール環境チェック
+ * @param string $contents 出力情報
+ */
 function check_epgrec_env( &$contents = '' )
 {
 	$err_flg = false;
@@ -135,28 +137,42 @@ function check_epgrec_env( &$contents = '' )
 	return ( $err_flg == false );
 }
 
-// パーミッションを返す
-function check_permission( $file )
+/**
+ * パーミッション情報取得
+ * @param string $path パス
+ * @return string パーミッション
+ */
+function check_permission( $path )
 {
-	$ss = @stat( $file );
+	$ss = @stat( $path );
 	return sprintf('%o', ($ss['mode'] & 000777));
 }
 
-function check_epgdump_file( $file )
+/**
+ * Epgdump変換データのチェック
+ * @param string $xmlfile XMLファイルパス
+ * @return bool 
+ */
+function check_epgdump_file( $xmlfile )
 {
 	// ファイルがないなら無問題
-	if ( ! file_exists( $file ) ) return true;
+	if ( ! file_exists( $xmlfile ) ) return true;
 
 	// 1時間以上前のファイルなら削除してやり直す
-	if ( (time() - filemtime( $file )) > 3600 )
+	if ( (time() - filemtime( $xmlfile )) > 3600 )
 	{
-		@unlink( $file );
+		@unlink( $xmlfile );
 		return true;
 	}
 
 	return false;
 }
 
+/**
+ * Epgdump変換データの解析
+ * @param string $type    チューナー種別
+ * @param string $xmlfile XMLファイルパス
+ */
 function parse_epgdump_file( $type, $xmlfile )
 {
 	$settings = Settings::factory();
@@ -166,7 +182,7 @@ function parse_epgdump_file( $type, $xmlfile )
 	$xml = @simplexml_load_file( $xmlfile );
 	if ( $xml === false )
 	{
-		reclog( "parse_epgdump_file:: 正常な{$xmlfile}が作成されなかった模様(放送間帯でないなら問題ありません)", EPGREC_WARN );
+		UtilLog::outLog( "parse_epgdump_file:: 正常な{$xmlfile}が作成されなかった模様(放送間帯でないなら問題ありません)", UtilLog::LV_WARN );
 		return;	// XMLが読み取れないなら何もしない
 	}
 
@@ -197,7 +213,7 @@ function parse_epgdump_file( $type, $xmlfile )
 				$rec->sid = $ch_map["$ch_disc"]['sid'];
 				$rec->update();
 				$ch_map["$ch_disc"]['id'] = $rec->id;
-				reclog( "parse_epgdump_file:: 新規チャンネル {$rec->name} を追加" );
+				UtilLog::outLog( "parse_epgdump_file:: 新規チャンネル {$rec->name} を追加" );
 			}
 			else
 			{
@@ -217,7 +233,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		}
 		catch ( Exception $e )
 		{
-			reclog( 'parse_epgdump_file:: DBの接続またはチャンネルテーブルの書き込みに失敗', EPGREC_ERROR );
+			UtilLog::outLog( 'parse_epgdump_file:: DBの接続またはチャンネルテーブルの書き込みに失敗', UtilLog::LV_ERROR );
 			throw $e;
 		}
 	}
@@ -229,7 +245,7 @@ function parse_epgdump_file( $type, $xmlfile )
 		$channel_disc = (string)$program['channel']; 
 		if ( ! array_key_exists( "$channel_disc", $ch_map ) )
 		{
-			reclog( "parse_epgdump_file:: チャンネルレコード {$channel_disc} が発見できない", EPGREC_ERROR );
+			UtilLog::outLog( "parse_epgdump_file:: チャンネルレコード {$channel_disc} が発見できない", UtilLog::LV_ERROR );
 			continue;
 		}
 		if ( $ch_map["$channel_disc"]['skip'] == 1 )
@@ -263,14 +279,14 @@ function parse_epgdump_file( $type, $xmlfile )
 				$cat_rec->name_en = $cat_en;
 				$cat_rec->category_disc = $category_disc;
 				$cat_rec->update();
-				reclog("parse_epgdump_file:: 新規カテゴリ {$cat_rec->name_jp} を追加" );
+				UtilLog::outLog("parse_epgdump_file:: 新規カテゴリ {$cat_rec->name_jp} を追加" );
 			}
 			else
 				$cat_rec = new DBRecord( CATEGORY_TBL, 'category_disc' , $category_disc );
 		}
 		catch ( Exception $e )
 		{
-			reclog( 'parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様', EPGREC_ERROR );
+			UtilLog::outLog( 'parse_epgdump_file:: カテゴリテーブルのアクセスに失敗した模様', UtilLog::LV_ERROR );
 			throw $e;
 		}
 
@@ -280,8 +296,7 @@ function parse_epgdump_file( $type, $xmlfile )
 			//
 			$num = DBRecord::countRecords( PROGRAM_TBL, "WHERE program_disc = '{$program_disc}'" );
 			if ( $num == 0 )
-			{
-				// 新規番組
+			{	// 新規番組
 				// 重複チェック 同時間帯にある番組
 				$options = "WHERE channel_disc = '{$channel_disc}'";
 				if ($settings->db_type == 'pgsql')
@@ -313,13 +328,13 @@ function parse_epgdump_file( $type, $xmlfile )
 							// すでに開始されている録画は無視する
 							if ( time() > (toTimestamp($reserve->starttime) - PADDING_TIME - $settings->former_time) )
 							{
-								reclog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は録画開始後に時間変更が発生した可能性がある', EPGREC_WARN );
+								UtilLog::outLog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は録画開始後に時間変更が発生した可能性がある', UtilLog::LV_WARN );
 							}
 							else
 							{
 								if ( $reserve->autorec )
 								{
-									reclog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は時間変更の可能性があり予約取り消し' );
+									UtilLog::outLog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は時間変更の可能性があり予約取り消し' );
 									Reservation::cancel( $reserve->id );
 								}
 							}
@@ -329,10 +344,11 @@ function parse_epgdump_file( $type, $xmlfile )
 							// 無視
 						}
 						// 番組削除
-						reclog( 'parse_epgdump_file:: 放送時間重複が発生した番組ID'.$rec->id.' '.$rec->type.$rec->channel.$rec->title.'を削除' );
+						UtilLog::outLog( 'parse_epgdump_file:: 放送時間重複が発生した番組ID'.$rec->id.' '.$rec->type.$rec->channel.$rec->title.'を削除' );
 						$rec->delete();
 					}
 				}
+
 				// 番組内容登録
 				$rec = new DBRecord( PROGRAM_TBL );
 				$rec->channel_disc = $channel_disc;
@@ -364,7 +380,7 @@ function parse_epgdump_file( $type, $xmlfile )
 						$reserve->title = $title;
 						$reserve->description = $desc;
 						$reserve->update();
-						reclog( "parse_epgdump_file:: 予約ID {$reserve->id} のEPG情報が更新された" );
+						UtilLog::outLog( "parse_epgdump_file:: 予約ID {$reserve->id} のEPG情報が更新された" );
 					}
 				}
 				catch ( Exception $e )
@@ -376,14 +392,16 @@ function parse_epgdump_file( $type, $xmlfile )
 		}
 		catch ( Exception $e )
 		{
-			reclog( 'parse_epgdump_file:: プログラムテーブルに問題が生じた模様', EPGREC_ERROR );
+			UtilLog::outLog( 'parse_epgdump_file:: プログラムテーブルに問題が生じた模様', UtilLog::LV_ERROR );
 			throw $e;
 		}
 	}
 	// Programme取得完了
 }
 
-// 不要なプログラムの削除
+/**
+ * 不要なプログラムの削除
+ */
 function garbageClean()
 {
 	$settings = Settings::factory();
@@ -412,7 +430,9 @@ function garbageClean()
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
 }
 
-// キーワード自動録画予約
+/**
+ * キーワード自動録画予約
+ */
 function doKeywordReservation()
 {
  	$recs = array();
@@ -430,7 +450,10 @@ function doKeywordReservation()
 	}
 }
 
-// 省電力
+/**
+ * 省電力機能
+ * @param bool $isGetEpg getEpg実行時かどうか
+ */
 function doPowerReduce($isGetEpg = false)
 {
 	$settings = Settings::factory();
@@ -472,7 +495,7 @@ function doPowerReduce($isGetEpg = false)
 				exec( $settings->shutdown . ' -h +'.$settings->wakeup_before );
 			}
 
-			// getepg終了時を書込み
+			// getEpg終了時を書込み
 			if ($isGetEpg)
 			{
 				$wakeupvars->getepg_time = time();
@@ -480,24 +503,5 @@ function doPowerReduce($isGetEpg = false)
 			}
 		}
 	}
-}
-
-function filesize_n($path)
-{
-	$size = @filesize($path);
-	if ( $size <= 0 )
-	{
-		ob_start();
-		system('ls -al "'.$path.'" | awk \'BEGIN {FS=" "}{print $5}\'');
-		$size = ob_get_clean();
-	}
-	return human_filesize($size);
-}
-
-function human_filesize($bytes, $decimals = 2)
-{
-	$sz = 'BKMGTP';
-	$factor = floor((strlen($bytes) - 1) / 3);
-	return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
 }
 ?>

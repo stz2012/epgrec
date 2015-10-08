@@ -1,11 +1,19 @@
 <?php
-// 予約クラス
+/**
+ * 予約クラス
+ * @package ModelBase
+ * @subpackage Reservation
+ */
 class Reservation extends ModelBase
 {
-	// 簡易予約
+	/**
+	 * 簡易予約
+	 * @param int $program_id  番組ID
+	 * @param int $autorec     自動録画
+	 * @param int $mode        録画モード
+	 */
 	public static function simple( $program_id , $autorec = 0, $mode = 0)
 	{
-		$settings = Settings::factory();
 		$rval = 0;
 
 		try
@@ -31,18 +39,30 @@ class Reservation extends ModelBase
 		return $rval;
 	}
 
-	// カスタマイズ予約
+	/**
+	 * カスタマイズ予約
+	 * @param string $starttime   開始時間
+	 * @param string $endtime     終了時間
+	 * @param int    $channel_id  チャンネルID
+	 * @param string $title       タイトル
+	 * @param string $description 概要
+	 * @param int    $category_id カテゴリID
+	 * @param int    $program_id  番組ID
+	 * @param int    $autorec     自動録画
+	 * @param int    $mode        録画モード
+	 * @param int    $dirty       チャンネルID
+	 */
 	public static function custom(
-		$starttime,				// 開始時間Datetime型
-		$endtime,				// 終了時間Datetime型
-		$channel_id,			// チャンネルID
-		$title = 'none',		// タイトル
-		$description = 'none',	// 概要
-		$category_id = 0,		// カテゴリID
-		$program_id = 0,		// 番組ID
-		$autorec = 0,			// 自動録画
-		$mode = 0,				// 録画モード
-		$dirty = 0				// ダーティフラグ
+		$starttime,
+		$endtime,
+		$channel_id,
+		$title = 'none',
+		$description = 'none',
+		$category_id = 0,
+		$program_id = 0,
+		$autorec = 0,
+		$mode = 0,
+		$dirty = 0
 	) {
 		global $RECORD_MODE;
 		$settings = Settings::factory();
@@ -99,7 +119,7 @@ class Reservation extends ModelBase
 				$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS DATETIME)";
 				$options .= " AND endtime > CAST('".toDatetime($rec_start)."' AS DATETIME)";
 			}
-			$trecs = DBRecord::createRecords(RESERVE_TBL, $options);
+			$trecs = DBRecord::createRecords( RESERVE_TBL, $options );
 			// 情報を配列に入れる
 			for ( $i = 0; $i < count($trecs) ; $i++ )
 			{
@@ -349,7 +369,7 @@ class Reservation extends ModelBase
 			else
 			{
 				$rrec->delete();
-				reclog( 'Reservation::custom atの実行に失敗した模様', EPGREC_ERROR );
+				UtilLog::outLog( 'Reservation::custom atの実行に失敗した模様', UtilLog::LV_ERROR );
 				throw new Exception('AT実行エラー');
 			}
 
@@ -367,14 +387,14 @@ class Reservation extends ModelBase
 				if ( is_numeric( $rarr[$key+1]) )
 				{
 					$rrec->job = $rarr[$key+1];
-					reclog( 'Reservation::custom ジョブ番号'.$rrec->job.'に録画ジョブを登録' );
+					UtilLog::outLog( 'Reservation::custom ジョブ番号'.$rrec->job.'に録画ジョブを登録' );
 					return $rrec->job;			// 成功
 				}
 			}
 
 			// エラー
 			$rrec->delete();
-			reclog( 'Reservation::custom job番号の取得に失敗', EPGREC_ERROR );
+			UtilLog::outLog( 'Reservation::custom job番号の取得に失敗', UtilLog::LV_ERROR );
 			throw new Exception( 'job番号の取得に失敗' );
 		}
 		catch ( Exception $e )
@@ -391,7 +411,11 @@ class Reservation extends ModelBase
 		}
 	}
 
-	// キーワード自動予約
+	/**
+	 * キーワード自動予約
+	 * @param int  $keyword_id キーワードID
+	 * @param bool $isCancel   キャンセルかどうか
+	 */
 	public static function keyword( $keyword_id, $isCancel=false )
 	{
 		try
@@ -426,7 +450,7 @@ class Reservation extends ModelBase
 						if ( $r['autorec'] )
 						{
 							self::simple( $r['id'], $rec->id, $rec->autorec_mode );
-							reclog( 'Reservation::keyword キーワードID'.$rec->id.'の録画が予約された' );
+							UtilLog::outLog( 'Reservation::keyword キーワードID'.$rec->id.'の録画が予約された' );
 						}
 					}
 					usleep( 100 ); // あんまり時間を空けないのもどう?
@@ -439,12 +463,16 @@ class Reservation extends ModelBase
 		}
 		catch ( Exception $e )
 		{
-			reclog( 'Reservation::keyword キーワード自動予約でDB接続またはアクセスに失敗した模様', EPGREC_ERROR );
+			UtilLog::outLog( 'Reservation::keyword キーワード自動予約でDB接続またはアクセスに失敗した模様', UtilLog::LV_ERROR );
 			throw $e;
 		}
 	}
 
-	// 予約キャンセル
+	/**
+	 * 予約キャンセル
+	 * @param int $reserve_id  予約ID
+	 * @param int $program_id  番組ID
+	 */
 	public static function cancel( $reserve_id = 0, $program_id = 0 )
 	{
 		$settings = Settings::factory();
@@ -468,7 +496,7 @@ class Reservation extends ModelBase
 			{
 				if ( toTimestamp($rec->starttime) < (time() + PADDING_TIME + $settings->former_time) )
 				{
-					reclog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しが実行された' );
+					UtilLog::outLog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しが実行された' );
 
 					// recorderとの通信を試みる
 					$ipc_key = ftok( RECORDER_CMD, 'R' );
@@ -477,7 +505,7 @@ class Reservation extends ModelBase
 					if ( ! msg_queue_exists( $ipc_key ) )
 					{
 						// メッセージキューがない
-						reclog( 'Reservation::cancel 実行中と推測される予約'.$rec->id.'が実行されていない', EPGREC_ERROR );
+						UtilLog::outLog( 'Reservation::cancel 実行中と推測される予約'.$rec->id.'が実行されていない', UtilLog::LV_ERROR );
 						$rec->complete = 1;
 						throw new Exception( '実行中と推測される予約が実行されていません。再度、削除を試みてください。' );
 					}
@@ -498,12 +526,12 @@ class Reservation extends ModelBase
 							{
 								if ( $message == 'success' )
 								{
-									reclog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに成功した模様' );
+									UtilLog::outLog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに成功した模様' );
 									break;
 								}
 								else if ( $message == 'error' )
 								{
-									reclog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに失敗', EPGREC_ERROR );
+									UtilLog::outLog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに失敗', UtilLog::LV_ERROR );
 									throw new Exception( '実行中の予約取り消しに失敗しました。しばらく時間をおいてから再度、取り消してください' );
 								}
 								// それ以外のメッセージは無視して待つ
@@ -518,7 +546,7 @@ class Reservation extends ModelBase
 				{
 					// まだ実行されていない予約ならatを削除しとく
 					exec( $settings->atrm . ' ' . $rec->job );
-					reclog( 'Reservation::cancel ジョブ番号'.$rec->job.'を削除' );
+					UtilLog::outLog( 'Reservation::cancel ジョブ番号'.$rec->job.'を削除' );
 					$rec->delete();
 				}
 			}
@@ -530,13 +558,21 @@ class Reservation extends ModelBase
 		}
 		catch ( Exception $e )
 		{
-			reclog( 'Reservation::cancel 予約キャンセルでDB接続またはアクセスに失敗した模様', EPGREC_ERROR );
+			UtilLog::outLog( 'Reservation::cancel 予約キャンセルでDB接続またはアクセスに失敗した模様', UtilLog::LV_ERROR );
 			throw $e;
 		}
 	}
 
 	/**
 	 * 番組検索データ取得
+	 * @param string $keyword     検索語句
+	 * @param bool   $use_regexp  正規表現使用可否
+	 * @param string $tuner_type  チューナ種別
+	 * @param int    $channel_id  チャンネルID
+	 * @param int    $category_id カテゴリID
+	 * @param int    $prgtime     開始時
+	 * @param int    $weekofday   曜日
+	 * @param int    $limit       件数リミット
 	 * @return array
 	 */
 	public static function getSearchData(
@@ -562,6 +598,12 @@ class Reservation extends ModelBase
 		$sql .= "  LEFT JOIN (";
 		$sql .= "    SELECT program_id, COUNT(*) AS rsv_cnt";
 		$sql .= "      FROM {$settings->tbl_prefix}".RESERVE_TBL;
+		if (self::getDbType() == 'pgsql')
+			$sql .= "     WHERE starttime > CAST(:search_time AS TIMESTAMP)";
+		else if (self::getDbType() == 'sqlite')
+			$sql .= "     WHERE datetime(starttime) > datetime(:search_time)";
+		else
+			$sql .= "     WHERE starttime > CAST(:search_time AS DATETIME)";
 		$sql .= "     GROUP BY program_id";
 		$sql .= "  ) d";
 		$sql .= "    ON d.program_id = a.id";
@@ -601,8 +643,7 @@ class Reservation extends ModelBase
 			if (self::getDbType() == 'sqlite')
 			{
 				$sql .= " AND strftime('%H:%M:%S', starttime)";
-				$sql .= " BETWEEN strftime('%H:%M:%S', :prgtime_from)";
-				$sql .= " AND strftime('%H:%M:%S', :prgtime_to)";
+				$sql .= " BETWEEN strftime('%H:%M:%S', :prgtime_from) AND strftime('%H:%M:%S', :prgtime_to)";
 			}
 			else
 				$sql .= " AND CAST(starttime AS TIME) BETWEEN CAST(:prgtime_from AS TIME) AND CAST(:prgtime_to AS TIME)";

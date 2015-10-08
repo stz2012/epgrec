@@ -23,12 +23,11 @@ class SettingController extends CommonController
 	 */
 	public function systemAction()
 	{
-		global $PDO_DRIVER_MAP;
 		$this->view->assign( 'settings',     $this->setting );
 		$this->view->assign( 'install_path', INSTALL_PATH );
 		$this->view->assign( 'sitetitle',    'システム設定' );
 		$this->view->assign( 'post_to',      "{$this->getCurrentUri(false)}/save" );
-		$this->view->assign( 'pdo_driver',   $PDO_DRIVER_MAP );
+		$this->view->assign( 'pdo_driver',   $this->model->getPdoDriverOptions() );
 	}
 
 	/**

@@ -18,7 +18,7 @@ try
 	if ( file_exists( INSTALL_PATH .$settings->spool . '/'. $rrec->path ) )
 	{
 		// 予約完了
-		reclog( 'recomplete:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画が完了' );
+		UtilLog::outLog( 'recomplete:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画が完了' );
 		
 		if ( $settings->mediatomb_update == 1 )
 		{
@@ -39,13 +39,13 @@ try
 	else
 	{
 		// 予約失敗
-		reclog( 'recomplete:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画に失敗した模様', EPGREC_ERROR );
+		UtilLog::outLog( 'recomplete:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画に失敗した模様', UtilLog::LV_ERROR );
 		$rrec->delete();
 	}
 }
 catch ( Exception $e )
 {
-	reclog( 'recomplete:: '.$e->getMessage() , EPGREC_ERROR );
+	UtilLog::outLog( 'recomplete:: '.$e->getMessage() , UtilLog::LV_ERROR );
 	exit( $e->getMessage() );
 }
 ?>

@@ -28,7 +28,7 @@ try
 }
 catch ( Exception $e )
 {
-	reclog( 'mediatomb:: '.$e->getMessage() , EPGREC_ERROR );
+	UtilLog::outLog( 'mediatomb:: '.$e->getMessage() , UtilLog::LV_ERROR );
 	exit( $e->getMessage() );
 }
 ?>

@@ -161,7 +161,7 @@ abstract class ControllerBase
 			UtilLog::writeLog('初期化エラー：'.$e->getMessage());
 			exit;
 		}
-		
+
 		try
 		{
 			// 共通前処理

@@ -106,7 +106,7 @@ try
 }
 catch ( Exception $e )
 {
-	reclog( 'getEpg:: '.$e->getMessage() , EPGREC_ERROR );
+	UtilLog::outLog( 'getEpg:: '.$e->getMessage() , UtilLog::LV_ERROR );
 	exit( $e->getMessage() );
 }
 ?>

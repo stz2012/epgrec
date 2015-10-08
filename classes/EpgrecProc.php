@@ -1,33 +1,70 @@
 <?php
+/**
+ * Epgrecプロセスクラス
+ */
 class EpgrecProc
 {
+	/**
+	 * @var string コマンド
+	 */
 	private $procCmd;
+
+	/**
+	 * @var array 環境変数
+	 */
 	private $procEnv;
+
+	/**
+	 * @var resource プロセスリソース
+	 */
 	private $procRes = null;
+
+	/**
+	 * @var int プロセスID
+	 */
 	private $procId = -1;
+
+	/**
+	 * @var array サブプロセス
+	 */
 	private $procSub = array();
+
+	/**
+	 * @var bool メインプロセスが実行中かどうか
+	 */
 	private $isRunMain = false;
+
+	/**
+	 * @var bool サブプロセスが実行中かどうか
+	 */
 	private $isRunSub = false;
 
-	// コンストラクタ
+	/**
+	 * コンストラクタ
+	 * @param string $cmd コマンド
+	 * @param array $env 環境変数
+	 */
 	function __construct( $cmd, $env = null )
 	{
 		$this->procCmd = $cmd;
 		$this->procEnv = $env;
 	}
 
-	// コマンド開始
+	/**
+	 * コマンド開始
+	 * @return mixed 
+	 */
 	public function startCommand()
 	{
-		$descspec = array(
+		$descSpec = array(
 			0 => array( 'file', '/dev/null', 'r' ),
 			1 => array( 'file', '/dev/null', 'w' ),
 			2 => array( 'file', '/dev/null', 'w' ),
 		);
 		if ( $this->procRes == null )
 		{
-			$this->procRes = proc_open( $this->procCmd, $descspec, $pipes, INSTALL_PATH, $this->procEnv );
-			//UtilLog::writeLog("EpgrecProc.php: PID={$this->getPID()} 開始", 'DEBUG');
+			$this->procRes = proc_open( $this->procCmd, $descSpec, $pipes, INSTALL_PATH, $this->procEnv );
+			//UtilLog::writeLog("EpgrecProc::startCommand PID={$this->getPID()} 開始", 'DEBUG');
 			$this->isRunMain = true;
 		}
 		if ( is_resource( $this->procRes ) )
@@ -36,7 +73,10 @@ class EpgrecProc
 			return false;
 	}
 
-	// コマンド実行待ち
+	/**
+	 * コマンド終了待ち
+	 * @return bool true: 正常終了、false: 異常終了
+	 */
 	public function waitCommand()
 	{
 		if ( ! $this->startCommand() )
@@ -48,7 +88,7 @@ class EpgrecProc
 			{
 				if ( $this->isRunMain )
 				{
-					//UtilLog::writeLog("EpgrecProc.php: PID={$status['pid']} 終了", 'DEBUG');
+					//UtilLog::writeLog("EpgrecProc::waitCommand PID={$status['pid']} 終了", 'DEBUG');
 					$this->isRunMain = false;
 				}
 				break;
@@ -59,13 +99,19 @@ class EpgrecProc
 		return true;
 	}
 
-	// サブコマンド追加
+	/**
+	 * サブコマンド追加
+	 * @param string $cmd コマンド
+	 */
 	public function addSubCmd( $cmd )
 	{
 		$this->procSub[] = new self( $cmd );
 	}
 
-	// プロセスID取得
+	/**
+	 * プロセスID取得
+	 * @return int 
+	 */
 	public function getPID()
 	{
 		if ( $this->procId == -1 && is_resource( $this->procRes ) )
@@ -76,7 +122,10 @@ class EpgrecProc
 		return $this->procId;
 	}
 
-	// 実行中かどうか
+	/**
+	 * 実行中かどうか
+	 * @return bool 
+	 */
 	public function isRunning()
 	{
 		if ( ! $this->startCommand() )
@@ -86,7 +135,7 @@ class EpgrecProc
 		{
 			if ( $this->isRunMain )
 			{
-				//UtilLog::writeLog("EpgrecProc.php: PID={$status['pid']} 終了", 'DEBUG');
+				//UtilLog::writeLog("EpgrecProc::isRunning PID={$status['pid']} 終了", 'DEBUG');
 				$this->isRunMain = false;
 			}
 			if ( count($this->procSub) != 0 )
@@ -108,7 +157,10 @@ class EpgrecProc
 		return true;
 	}
 
-	// サブコマンド実行中かどうか
+	/**
+	 * サブコマンド実行中かどうか
+	 * @return bool 
+	 */
 	public function isRunningSub()
 	{
 		return $this->isRunSub;

@@ -23,11 +23,37 @@ class CommonModel extends ModelBase
 	/**
 	 * 実テーブル名を取得
 	 * @param string $table
-	 * return string
+	 * @return string
 	 */
 	public function getFullTblName($table)
 	{
 		return $this->setting->tbl_prefix.$table;
+	}
+
+	/**
+	 * PDOドライバ一覧取得
+	 * @return array
+	 */
+	public function getPdoDriverOptions()
+	{
+		$ret = array();
+		$drivers = PDO::getAvailableDrivers();
+		foreach ( $drivers as $val )
+		{
+			switch ( $val )
+			{
+				case 'mysql':
+					$ret[$val] = 'MySQL';
+					break;
+				case 'pgsql':
+					$ret[$val] = 'PostgreSQL';
+					break;
+				case 'sqlite':
+					$ret[$val] = 'SQLite';
+					break;
+			}
+		}
+		return $ret;
 	}
 
 	/**
@@ -62,7 +88,7 @@ class CommonModel extends ModelBase
 	}
 
 	/**
-	 * 局一覧取得
+	 * TV局一覧取得
 	 * @return array
 	 */
 	public function getStationOptions()

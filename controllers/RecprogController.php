@@ -63,7 +63,7 @@ class RecprogController extends CommonController
 			if (file_exists(INSTALL_PATH.$this->setting->spool.'/'.$r['path']))
 			{
 				// 録画ファイルのサイズを計算
-				$r['fsize'] = filesize_n(INSTALL_PATH.$this->setting->spool.'/'.$r['path']);
+				$r['fsize'] = $this->_filesize(INSTALL_PATH.$this->setting->spool.'/'.$r['path']);
 			}
 			else
 			{
@@ -190,6 +190,25 @@ class RecprogController extends CommonController
 			exit( $e->getMessage() );
 		}
 		exit;
+	}
+
+	private function _filesize($path)
+	{
+		$size = @filesize($path);
+		if ( $size <= 0 )
+		{
+			ob_start();
+			system('ls -al "'.$path.'" | awk \'BEGIN {FS=" "}{print $5}\'');
+			$size = ob_get_clean();
+		}
+		return $this->human_filesize($size);
+	}
+
+	private function _human_filesize($bytes, $decimals = 2)
+	{
+		$sz = 'BKMGTP';
+		$factor = floor((strlen($bytes) - 1) / 3);
+		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
 	}
 }
 ?>

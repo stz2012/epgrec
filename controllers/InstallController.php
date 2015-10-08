@@ -38,13 +38,12 @@ class InstallController extends CommonController
 	 */
 	public function step2Action()
 	{
-		global $PDO_DRIVER_MAP;
 		$this->view->assign( 'settings',     $this->setting );
 		$this->view->assign( 'install_path', INSTALL_PATH );
 		$this->view->assign( 'post_to',      "{$this->getCurrentUri(false)}/step3" );
 		$this->view->assign( 'sitetitle',    'インストールステップ２' );
 		$this->view->assign( 'message',      'システム設定を行います。このページの設定が正しく行われないとepgrecは機能しません。' );
-		$this->view->assign( 'pdo_driver',   $PDO_DRIVER_MAP );
+		$this->view->assign( 'pdo_driver',   $this->model->getPdoDriverOptions() );
 	}
 
 	/**

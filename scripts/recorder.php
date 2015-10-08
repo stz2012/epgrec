@@ -25,7 +25,7 @@ try
 		$rrec->complete = 1;	// 終わったことにする
 		throw new Exception( 'なぜか過去の録画予約が実行された' );
 	}
-	reclog( 'recorder:: 録画ID'.$rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画ジョブ開始' );
+	UtilLog::outLog( 'recorder:: 録画ID'.$rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画ジョブ開始' );
 
 	// tuner
 	$options = "WHERE complete = '0'";
@@ -93,7 +93,7 @@ try
 	$proch = false;
 	if ( ( $proch = EpgrecProcMng::execCommand(DO_RECORD, $env_rec) ) !== false )
 	{
-		reclog( 'recorder:: 録画ID'.$rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画開始' );
+		UtilLog::outLog( 'recorder:: 録画ID'.$rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画開始' );
 
 		// 録画完了待ち
 		$rec_cont = true;
@@ -111,12 +111,12 @@ try
 						if ( $msg_obj->termProcess( $proch ) == false )
 						{
 							$msg_obj->sendMessage('error');
-							reclog( 'recorder:: 録画コマンドを停止できません', EPGREC_WARN );
+							UtilLog::outLog( 'recorder:: 録画コマンドを停止できません', UtilLog::LV_WARN );
 						}
 						else
 						{
 							$msg_obj->sendMessage('success');
-							reclog( 'recorder:: 録画ID'.$rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画が中断された' );
+							UtilLog::outLog( 'recorder:: 録画ID'.$rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画が中断された' );
 							$rec_cont = false;
 						}
 						break;
@@ -154,7 +154,7 @@ try
 
 	if ( file_exists( INSTALL_PATH .$settings->spool . '/'. $rrec->path ) )
 	{	// 予約完了
-		reclog( 'recorder:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画終了' );
+		UtilLog::outLog( 'recorder:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画終了' );
 
 		// サムネール作成
 		if ( $settings->use_thumbs == 1 )
@@ -181,7 +181,7 @@ try
 	}
 	else
 	{	// 予約失敗
-		reclog( 'recorder:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画に失敗した模様', EPGREC_ERROR );
+		UtilLog::outLog( 'recorder:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画に失敗した模様', UtilLog::LV_ERROR );
 	}
 	$msg_obj = null;
 
@@ -189,7 +189,7 @@ try
 }
 catch ( Exception $e )
 {
-	reclog( 'recorder:: '.$e->getMessage(), EPGREC_ERROR );
+	UtilLog::outLog( 'recorder:: '.$e->getMessage(), UtilLog::LV_ERROR );
 	exit( $e->getMessage() );
 }
 ?>

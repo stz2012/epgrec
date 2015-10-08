@@ -1,23 +1,40 @@
 <?php
+/**
+ * Epgrecプロセス管理クラス
+ */
 class EpgrecProcMng
 {
+	/**
+	 * @var array コマンドキュー
+	 */
 	protected $procQueue = array();
 
-	// コマンド実行
+	/**
+	 * コマンド実行
+	 * @param string $cmd コマンド
+	 * @param array $env 環境変数
+	 */
 	public static function execCommand( $cmd, $env = null)
 	{
 		$p = new EpgrecProc( $cmd, $env );
 		return $p->startCommand();
 	}
 
-	// コマンドキュー追加
+	/**
+	 * コマンドキュー追加
+	 * @param object $proc 追加するキュー
+	 */
 	public function addQueue( $proc )
 	{
 		if ( $proc instanceof EpgrecProc )
 			$this->procQueue[] = $proc;
+		else
+			throw new Exception( 'EpgrecProcMng:: 不正なキュー形式です' );
 	}
 
-	// コマンドキュー待ち
+	/**
+	 * コマンドキュー待ち
+	 */
 	public function waitQueue()
 	{
 		$counter = 0;

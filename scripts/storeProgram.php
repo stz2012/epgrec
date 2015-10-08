@@ -55,7 +55,7 @@ try
 	}
 	else
 	{
-		reclog( 'storeProgram:: 正常な'.$xmlfile.'が作成されなかった模様(放送間帯でないなら問題ありません)', EPGREC_WARN );
+		UtilLog::outLog( 'storeProgram:: 正常な'.$xmlfile.'が作成されなかった模様(放送間帯でないなら問題ありません)', UtilLog::LV_WARN );
 	}
 
 	if ( file_exists( $file ) )
@@ -63,7 +63,7 @@ try
 }
 catch ( Exception $e )
 {
-	reclog( 'storeProgram:: '.$e->getMessage(), EPGREC_ERROR );
+	UtilLog::outLog( 'storeProgram:: '.$e->getMessage(), UtilLog::LV_ERROR );
 	exit( $e->getMessage() );
 }
 ?>
