@@ -16,7 +16,7 @@ class IndexController extends CommonController
 			$this->error_msg = $this->valid->user_login($this->request->getPost());
 			if (count($this->error_msg) == 0)
 			{
-				$user_data = $this->model->getUserMst($this->request->getPost('login_name'), 
+				$user_data = $this->model->getUserData($this->request->getPost('login_name'), 
 															$this->request->getPost('passwd'));
 				if (count($user_data) > 0)
 				{
@@ -186,7 +186,7 @@ class IndexController extends CommonController
 		$get_param['time'] = date( 'YmdH', $top_time );
 
 		// カテゴリ一覧
-		$crec = $this->model->selectRow('*', $this->model->getFullTblName(CATEGORY_TBL), '');
+		$crec = $this->model->getCategoryData();
 		$cats = array();
 		$num = 0;
 		foreach ( $crec as $r )
@@ -532,11 +532,7 @@ class IndexController extends CommonController
 				{
 					$title = trim( $this->request->getPost('title'));
 					$title .= '('.date('Y/m/d', toTimestamp($rec->starttime)).')';
-					$this->model->updateRow('mt_cds_object', array('dc_title' => $title),
-																array('metadata' => array(
-																		'operator' => 'regexp',
-																		   'value' => 'epgrec:id='.$reserve_id.'$'))
-					);
+					$this->model->updMediaTombData($reserve_id, array('dc_title' => $title));
 				}
 			}
 
@@ -548,11 +544,7 @@ class IndexController extends CommonController
 				{
 					$desc = 'dc:description='.trim( $this->request->getPost('description'));
 					$desc .= '&epgrec:id='.$reserve_id;
-					$this->model->updateRow('mt_cds_object', array('metadata' => $desc),
-																array('metadata' => array(
-																		'operator' => 'regexp',
-																		   'value' => 'epgrec:id='.$reserve_id.'$'))
-					);
+					$this->model->updMediaTombData($reserve_id, array('metadata' => $desc));
 				}
 			}
 		}

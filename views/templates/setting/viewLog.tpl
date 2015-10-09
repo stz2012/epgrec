@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<p><a href="{$home_url}index">設定せずに番組表に戻る</a> / <a href="{$home_url}setting">環境設定へ</a> / <a href="{$home_url}setting/system">システム設定へ</a></p>
+<p><a href="{$home_url}setting">環境設定へ</a> / <a href="{$home_url}setting/system">システム設定へ</a> / <a href="{$home_url}setting/userList">ユーザ一覧へ</a></p>
 </div>
 
 <div class="container nonborderbox">

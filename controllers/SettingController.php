@@ -31,12 +31,39 @@ class SettingController extends CommonController
 	}
 
 	/**
+	 * ユーザ一覧
+	 */
+	public function userListAction()
+	{
+		$this->view->assign( 'sitetitle' , 'ユーザ一覧' );
+		$this->view->assign( 'users',      $this->model->getUserList() );
+	}
+
+	/**
+	 * ユーザ編集
+	 */
+	public function userEditAction()
+	{
+		$user_id = $this->request->getQuery('user_id');
+		if ($user_id != '')
+		{
+			$this->view->assign( 'sitetitle' , 'ユーザ編集' );
+			$this->view->assign( 'user_data',  $this->model->getUserInfo($user_id) );
+		}
+		else
+		{
+			jdialog( '不正なアクセスです。', "{$this->getCurrentUri(false)}/userList" );
+			exit;
+		}
+	}
+
+	/**
 	 * ログ表示
 	 */
 	public function viewLogAction()
 	{
 		$this->view->assign( 'sitetitle' , 'epgrec動作ログ' );
-		$this->view->assign( 'logs', $this->model->selectRow('*', $this->model->getFullTblName(LOG_TBL), '', 'logtime DESC') );
+		$this->view->assign( 'logs',       $this->model->getLogList() );
 	}
 
 	/**

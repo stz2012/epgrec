@@ -7,26 +7,17 @@
 class IndexModel extends CommonModel
 {
 	/**
-	 * ユーザマスタ取得
+	 * ユーザデータ取得
 	 * @param string $login_name ログイン名
 	 * @param string $login_pass ログインパス
 	 * @return array
 	 */
-	public function getUserMst($login_name, $login_pass)
+	public function getUserData($login_name, $login_pass)
 	{
 		return $this->selectRow('*',
 			$this->getFullTblName(USER_TBL),
 			array('login_name' => $login_name, 'login_pass' => sha1($login_pass))
 		);
-	}
-
-	/**
-	 * ユーザマスタ一覧取得
-	 * @return array
-	 */
-	public function getUserMstList()
-	{
-		return $this->selectRow('*', $this->getFullTblName(USER_TBL), '', array('id'));
 	}
 
 	/**
@@ -92,6 +83,20 @@ class IndexModel extends CommonModel
 		$program_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$stmt->closeCursor();
 		return $program_data;
+	}
+
+	/**
+	 * MediaTombデータ更新
+	 * @param int $reserve_id ログイン名
+	 * @param array $login_pass ログインパス
+	 * @return array
+	 */
+	public function updMediaTombData($reserve_id, $upd_data)
+	{
+		$this->updateRow('mt_cds_object', $upd_data,
+											array('metadata' => array(
+													'operator' => 'regexp',
+													   'value' => 'epgrec:id='.$reserve_id.'$')));
 	}
 }
 ?>

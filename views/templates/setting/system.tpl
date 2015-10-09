@@ -5,7 +5,7 @@
 {if $message|default:'' != ''}
 {$message}
 {else}
-<p><a href="{$home_url}index">設定せずに番組表に戻る</a> / <a href="{$home_url}setting">環境設定へ</a> / <a href="{$home_url}setting/viewLog">動作ログを見る</a></p>
+<p><a href="{$home_url}setting">環境設定へ</a> / <a href="{$home_url}setting/userList">ユーザ一覧へ</a> / <a href="{$home_url}setting/viewLog">動作ログを見る</a></p>
 {/if}
 </div>
 

@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<p><a href="{$home_url}index">番組表に戻る</a>/<a href="{$this_class->getCurrentUri(false)}/keyword">自動録画キーワード管理へ</a></p>
+<p><a href="{$home_url}index/program">番組表に戻る</a>/<a href="{$this_class->getCurrentUri(false)}/keyword">自動録画キーワード管理へ</a></p>
 </div>
 
 <div class="container">

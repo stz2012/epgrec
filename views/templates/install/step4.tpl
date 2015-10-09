@@ -1,1 +1,1 @@
-{include file='setting/useredit.tpl'}
+{include file='setting/userEdit.tpl'}

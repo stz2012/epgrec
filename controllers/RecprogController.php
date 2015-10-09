@@ -58,7 +58,7 @@ class RecprogController extends CommonController
 			if ( time() > (toTimestamp($r['endtime']) + 600) && $r['complete'] == 0 )
 			{
 				// 終わったことにする
-				$this->model->updateRow($this->model->getFullTblName(RESERVE_TBL), array('complete' => 1), array('id' => $r['id']));
+				$this->model->setRecordFinished($r['id']);
 			}
 			if (file_exists(INSTALL_PATH.$this->setting->spool.'/'.$r['path']))
 			{
@@ -68,7 +68,7 @@ class RecprogController extends CommonController
 			else
 			{
 				// 録画ファイルが存在しない予約は消去
-				$this->model->deleteRow($this->model->getFullTblName(RESERVE_TBL), array('id' => $r['id']));
+				$this->model->delReserveData($r['id']);
 				continue;
 			}
 			array_push( $records, $r );

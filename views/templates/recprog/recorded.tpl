@@ -2,7 +2,7 @@
 
 <div class="container">
 <h2>{$sitetitle}</h2>
-<p><a href="{$home_url}index">番組表に戻る</a></p>
+<p><a href="{$home_url}index/program">番組表に戻る</a></p>
 </div>
 
 <div class="container">

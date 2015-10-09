@@ -22,12 +22,60 @@ class CommonModel extends ModelBase
 
 	/**
 	 * 実テーブル名を取得
-	 * @param string $table
+	 * @param string $table 
 	 * @return string
 	 */
 	public function getFullTblName($table)
 	{
 		return $this->setting->tbl_prefix.$table;
+	}
+
+	/**
+	 * カテゴリ一覧取得
+	 * @return array
+	 */
+	public function getCategoryData()
+	{
+		return $this->selectRow('*', $this->getFullTblName(CATEGORY_TBL), '', 'id');
+	}
+
+	/**
+	 * ログ一覧取得
+	 * @return array
+	 */
+	public function getLogList()
+	{
+		return $this->selectRow('*', $this->getFullTblName(LOG_TBL), '', 'logtime DESC');
+	}
+
+	/**
+	 * ユーザ一覧取得
+	 * @return array
+	 */
+	public function getUserList()
+	{
+		$ret = array();
+		$recs = $this->selectRow('*', $this->getFullTblName(USER_TBL), '', 'id');
+		foreach ( $recs as $r )
+		{
+			$param = array();
+			$param['user_id'] = $r['id'];
+			$r['link'] = UtilString::buildQueryString($param);
+			array_push( $ret, $r );
+		}
+		return $ret;
+	}
+
+	/**
+	 * ユーザ情報取得
+	 * @param int $user_id 
+	 * @return array
+	 */
+	public function getUserInfo($user_id)
+	{
+		$recs = $this->selectRow('*', $this->getFullTblName(USER_TBL), array('id' => $user_id));
+		$recs[0]['login_pass'] = '';
+		return $recs[0];
 	}
 
 	/**

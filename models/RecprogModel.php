@@ -8,6 +8,7 @@ class RecprogModel extends CommonModel
 {
 	/**
 	 * 予約データ取得
+	 * @param array $POST_DATA POSTデータ
 	 * @return array
 	 */
 	public function getReserveData($POST_DATA)
@@ -48,6 +49,7 @@ class RecprogModel extends CommonModel
 
 	/**
 	 * 録画済みデータ取得
+	 * @param array $POST_DATA POSTデータ
 	 * @return array
 	 */
 	public function getRecordedData($POST_DATA)
@@ -84,6 +86,26 @@ class RecprogModel extends CommonModel
 		$recorded_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		$stmt->closeCursor();
 		return $recorded_data;
+	}
+
+	/**
+	 * 録画完了とする
+	 * @param int $reserve_id 予約ID
+	 * @return array
+	 */
+	public function setRecordFinished($reserve_id)
+	{
+		$this->updateRow($this->getFullTblName(RESERVE_TBL), array('complete' => 1), array('id' => $reserve_id));
+	}
+
+	/**
+	 * 予約を削除する
+	 * @param int $reserve_id 予約ID
+	 * @return array
+	 */
+	public function delReserveData($reserve_id)
+	{
+		$this->deleteRow($this->getFullTblName(RESERVE_TBL), array('id' => $reserve_id));
 	}
 }
 ?>
