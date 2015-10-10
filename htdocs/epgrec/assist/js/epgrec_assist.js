@@ -1968,6 +1968,8 @@ $(function(){
 	case 'setting' :
 	case 'setting_index' :
 	case 'setting_system' :
+	case 'setting_userlist' :
+	case 'setting_useredit' :
 	case 'setting_viewlog' :
 		ER_sub.__PAGE = 'envsetting';
 		if ( ASSIST_INI.envsetting ) {ER_sub.SETTING.ini();}

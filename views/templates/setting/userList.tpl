@@ -7,7 +7,7 @@
 
 <div class="container nonborderbox">
 {if count($users)}
-<table id="user_table" class="table">
+<table id="log_table" class="table">
 <thead>
  <tr>
   <th>ユーザ名</th>
