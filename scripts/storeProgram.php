@@ -55,7 +55,7 @@ try
 	}
 	else
 	{
-		UtilLog::outLog( 'storeProgram:: 正常な'.$xmlfile.'が作成されなかった模様(放送間帯でないなら問題ありません)', UtilLog::LV_WARN );
+		UtilLog::outLog( "storeProgram:: 正常なXML {$xmlfile} が作成されなかった模様(放送間帯でないなら問題ありません)", UtilLog::LV_WARN );
 	}
 
 	if ( file_exists( $file ) )

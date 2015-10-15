@@ -258,7 +258,7 @@ class DBRecord extends CommonModel
 		{ 
 			if ( $this->__f_dirty )
 			{
-				//UtilLog::writeLog('レコード更新: '.print_r($this->__record_data, true), 'DEBUG');
+				UtilLog::writeLog('レコード更新: '.print_r($this->__record_data, true), 'DEBUG');
 				$this->updateRow($this->__table, $this->__record_data, array('id' => $this->__id));
 			}
 			$this->__f_dirty = false;

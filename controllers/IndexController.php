@@ -94,7 +94,7 @@ class IndexController extends CommonController
 			 	// 空きを埋める
 				if ( $st >= 0 && ($last_time - $prev_end) > 0 )
 				{
-					$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
+					$height = ($last_time - $prev_end) * (int)$this->setting->height_per_hour / 3600;
 					$programs[$st]['list'][$num]['category_name'] = 'none';
 					$programs[$st]['list'][$num]['height'] = $height;
 					$programs[$st]['list'][$num]['title'] = '';
@@ -124,7 +124,7 @@ class IndexController extends CommonController
 				// 前プログラムとの空きを調べる
 				if ( ($prg_starttime - $prev_end) > 0 )
 				{
-					$height = ($prg_starttime - $prev_end) * $this->setting->height_per_hour / 3600;
+					$height = ($prg_starttime - $prev_end) * (int)$this->setting->height_per_hour / 3600;
 					$programs[$st]['list'][$num]['category_name'] = 'none';
 					$programs[$st]['list'][$num]['height'] = $height;
 					$programs[$st]['list'][$num]['title'] = '';
@@ -146,7 +146,7 @@ class IndexController extends CommonController
 					// $last_time より遅く終わる番組
 					$height = $height - ($prg_endtime - $last_time);
 				}
-				$height = $height * $this->setting->height_per_hour / 3600;
+				$height = $height * (int)$this->setting->height_per_hour / 3600;
 
 				// プログラムを埋める
 				$programs[$st]['list'][$num]['category_name'] = $prg['cate_name'];
@@ -165,7 +165,7 @@ class IndexController extends CommonController
 	 	// 空きを埋める
 		if ( $st >= 0 && ($last_time - $prev_end) > 0 )
 		{
-			$height = ($last_time - $prev_end) * $this->setting->height_per_hour / 3600;
+			$height = ($last_time - $prev_end) * (int)$this->setting->height_per_hour / 3600;
 			$programs[$st]['list'][$num]['category_name'] = 'none';
 			$programs[$st]['list'][$num]['height'] = $height;
 			$programs[$st]['list'][$num]['title'] = '';
@@ -175,7 +175,7 @@ class IndexController extends CommonController
 	 	}
 
 		// 局の幅
-		$ch_set_width = (int)($this->setting->ch_set_width);
+		$ch_set_width = (int)$this->setting->ch_set_width;
 		// 全体の幅
 		$chs_width = $ch_set_width * $num_ch;
 
@@ -200,7 +200,7 @@ class IndexController extends CommonController
 		// タイプ選択
 		$types = array();
 		$i = 0;
-		if ( $this->setting->gr_tuners != 0 )
+		if ( (int)$this->setting->gr_tuners != 0 )
 		{
 			$types[$i]['selected'] = ( $type == 'GR' ) ? 'class="selected"' : '';
 			$get_param['type'] = 'GR';
@@ -208,7 +208,7 @@ class IndexController extends CommonController
 			$types[$i]['name'] = '地上デジタル';
 			$i++;
 		}
-		if ( $this->setting->bs_tuners != 0 )
+		if ( (int)$this->setting->bs_tuners != 0 )
 		{
 			$types[$i]['selected'] = ( $type == 'BS' ) ? 'class="selected"' : '';
 			$get_param['type'] = 'BS';
@@ -217,7 +217,7 @@ class IndexController extends CommonController
 			$i++;
 
 			// CS
-			if ( $this->setting->cs_rec_flg != 0 )
+			if ( (int)$this->setting->cs_rec_flg != 0 )
 			{
 				$types[$i]['selected'] = ( $type == 'CS' ) ? 'class="selected"' : '';
 				$get_param['type'] = 'CS';
@@ -273,10 +273,10 @@ class IndexController extends CommonController
 
 		$this->view->assign( 'tvtimes',         $tvtimes );
 		$this->view->assign( 'programs',        $programs );
-		$this->view->assign( 'ch_set_width',    (int)($this->setting->ch_set_width) );
+		$this->view->assign( 'ch_set_width',    (int)$this->setting->ch_set_width );
 		$this->view->assign( 'chs_width',       $chs_width );
-		$this->view->assign( 'height_per_hour', $this->setting->height_per_hour );
-		$this->view->assign( 'height_per_min',  $this->setting->height_per_hour / 60 );
+		$this->view->assign( 'height_per_hour', (int)$this->setting->height_per_hour );
+		$this->view->assign( 'height_per_min',  (int)$this->setting->height_per_hour / 60 );
 		$this->view->assign( 'num_ch',          $num_ch );
 		$this->view->assign( 'num_all_ch' ,     count( $channel_map ) );
 		$this->view->assign( 'sitetitle',       '番組表' );
@@ -320,7 +320,7 @@ class IndexController extends CommonController
 			$this->view->assign( 'categorys' ,   $this->model->getCategoryOptions() );
 			$this->view->assign( 'sel_category', $prec->category_id );
 			$this->view->assign( 'record_mode' , $this->model->getRecModeOptions() );
-			$this->view->assign( 'sel_recmode',  $this->setting->autorec_mode );
+			$this->view->assign( 'sel_recmode',  (int)$this->setting->autorec_mode );
 		}
 		catch ( Exception $e )
 		{
@@ -360,7 +360,7 @@ class IndexController extends CommonController
 
 		try
 		{
-			Reservation::simple( $program_id , 0, $this->setting->autorec_mode);
+			Reservation::simple( $program_id , 0, (int)$this->setting->autorec_mode );
 		}
 		catch ( Exception $e )
 		{
@@ -464,7 +464,7 @@ class IndexController extends CommonController
 				{
 					if ( $this->request->getPost('delete_file') == 1 )
 					{
-						$path = INSTALL_PATH.'/'.$this->setting->spool.'/'.$rec->path;
+						$path = INSTALL_PATH.'/'.(string)$this->setting->spool.'/'.$rec->path;
 					}
 				}
 			}
@@ -528,7 +528,7 @@ class IndexController extends CommonController
 			{
 				$rec->title = trim( $this->request->getPost('title') );
 				$rec->dirty = 1;
-				if ( ($this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
+				if ( ((int)$this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
 				{
 					$title = trim( $this->request->getPost('title'));
 					$title .= '('.date('Y/m/d', toTimestamp($rec->starttime)).')';
@@ -540,7 +540,7 @@ class IndexController extends CommonController
 			{
 				$rec->description = trim( $this->request->getPost('description') );
 				$rec->dirty = 1;
-				if ( ($this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
+				if ( ((int)$this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
 				{
 					$desc = 'dc:description='.trim( $this->request->getPost('description'));
 					$desc .= '&epgrec:id='.$reserve_id;

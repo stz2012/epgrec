@@ -29,7 +29,7 @@ try
 
 	// tuner
 	$options = "WHERE complete = '0'";
-	$options .= " AND " . ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS')";
+	$options .= " AND " . (($crec->type == 'GR') ? "type = 'GR'" : "(type = 'BS' OR type = 'CS')");
 	$options .= " AND id <> '{$rrec->id}'";
 	if ($settings->db_type == 'pgsql')
 	{

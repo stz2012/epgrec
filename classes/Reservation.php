@@ -103,7 +103,7 @@ class Reservation extends ModelBase
 
 			// 影響する予約情報を集める
 			$options = "WHERE complete = '0'";
-			$options .= " AND " . ($crec->type == "GR") ? "type = 'GR' " : "(type = 'BS' OR type = 'CS')";
+			$options .= " AND " . (($crec->type == 'GR') ? "type = 'GR'" : "(type = 'BS' OR type = 'CS')");
 			if (self::getDbType() == 'pgsql')
 			{
 				$options .= " AND starttime < CAST('".toDatetime($end_time)."' AS TIMESTAMP)";
