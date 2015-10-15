@@ -182,7 +182,7 @@ function parse_epgdump_file( $type, $xmlfile )
 	$xml = @simplexml_load_file( $xmlfile );
 	if ( $xml === false )
 	{
-		UtilLog::outLog( "parse_epgdump_file:: 正常な{$xmlfile}が作成されなかった模様(放送間帯でないなら問題ありません)", UtilLog::LV_WARN );
+		UtilLog::outLog( "parse_epgdump_file:: 正常なXMLファイル {$xmlfile} が作成されなかった模様(放送間帯でないなら問題ありません)", UtilLog::LV_WARN );
 		return;	// XMLが読み取れないなら何もしない
 	}
 
@@ -328,13 +328,13 @@ function parse_epgdump_file( $type, $xmlfile )
 							// すでに開始されている録画は無視する
 							if ( time() > (toTimestamp($reserve->starttime) - PADDING_TIME - $settings->former_time) )
 							{
-								UtilLog::outLog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は録画開始後に時間変更が発生した可能性がある', UtilLog::LV_WARN );
+								UtilLog::outLog( "parse_epgdump_file:: 録画ID {$reserve->id} {$reserve->channel} {$reserve->title} は録画開始後に時間変更が発生した可能性がある", UtilLog::LV_WARN );
 							}
 							else
 							{
 								if ( $reserve->autorec )
 								{
-									UtilLog::outLog( 'parse_epgdump_file:: 録画ID'.$reserve->id.':'.$reserve->type.$reserve->channel.$reserve->title.'は時間変更の可能性があり予約取り消し' );
+									UtilLog::outLog( "parse_epgdump_file:: 録画ID {$reserve->id} {$reserve->channel} {$reserve->title} は時間変更の可能性があり予約取り消し" );
 									Reservation::cancel( $reserve->id );
 								}
 							}
@@ -344,7 +344,7 @@ function parse_epgdump_file( $type, $xmlfile )
 							// 無視
 						}
 						// 番組削除
-						UtilLog::outLog( 'parse_epgdump_file:: 放送時間重複が発生した番組ID'.$rec->id.' '.$rec->type.$rec->channel.$rec->title.'を削除' );
+						UtilLog::outLog( "parse_epgdump_file:: 放送時間重複が発生した番組ID {$rec->id} {$rec->channel} {$rec->title} を削除" );
 						$rec->delete();
 					}
 				}
@@ -380,7 +380,7 @@ function parse_epgdump_file( $type, $xmlfile )
 						$reserve->title = $title;
 						$reserve->description = $desc;
 						$reserve->update();
-						UtilLog::outLog( "parse_epgdump_file:: 予約ID {$reserve->id} のEPG情報が更新された" );
+						UtilLog::outLog( "parse_epgdump_file:: 予約ID {$reserve->id} {$reserve->channel} {$reserve->title} のEPG情報が更新された" );
 					}
 				}
 				catch ( Exception $e )
