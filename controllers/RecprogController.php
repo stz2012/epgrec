@@ -105,7 +105,7 @@ class RecprogController extends CommonController
 
 			$start_time = toTimestamp($rrec->starttime);
 			$end_time = toTimestamp($rrec->endtime );
-			$duration = $end_time - $start_time + $this->setting->former_time;
+			$duration = $end_time - $start_time + (int)$this->setting->former_time;
 
 			$dh = $duration / 3600;
 			$duration = $duration % 3600;

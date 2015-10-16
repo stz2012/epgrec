@@ -379,21 +379,21 @@ class IndexController extends CommonController
 			$program_id = $this->request->getPost('program_id');
 
 		if (!(
-		   $this->request->getPost('shour')       && 
-		   $this->request->getPost('smin')        &&
-		   $this->request->getPost('smonth')      &&
-		   $this->request->getPost('sday')        &&
-		   $this->request->getPost('syear')       &&
-		   $this->request->getPost('ehour')       &&
-		   $this->request->getPost('emin')        &&
-		   $this->request->getPost('emonth')      &&
-		   $this->request->getPost('eday')        &&
-		   $this->request->getPost('eyear')       &&
-		   $this->request->getPost('channel_id')  &&
-		   $this->request->getPost('title')       &&
-		   $this->request->getPost('description') &&
-		   $this->request->getPost('category_id') &&
-		   $this->request->getPost('record_mode'))
+		   $this->request->getPost('shour')       != '' &&
+		   $this->request->getPost('smin')        != '' &&
+		   $this->request->getPost('smonth')      != '' &&
+		   $this->request->getPost('sday')        != '' &&
+		   $this->request->getPost('syear')       != '' &&
+		   $this->request->getPost('ehour')       != '' &&
+		   $this->request->getPost('emin')        != '' &&
+		   $this->request->getPost('emonth')      != '' &&
+		   $this->request->getPost('eday')        != '' &&
+		   $this->request->getPost('eyear')       != '' &&
+		   $this->request->getPost('channel_id')  != '' &&
+		   $this->request->getPost('title')       != '' &&
+		   $this->request->getPost('description') != '' &&
+		   $this->request->getPost('category_id') != '' &&
+		   $this->request->getPost('record_mode') != '')
 		) {
 			exit( 'Error: 予約に必要な値がセットされていません' );
 		}
