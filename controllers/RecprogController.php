@@ -201,7 +201,7 @@ class RecprogController extends CommonController
 			system('ls -al "'.$path.'" | awk \'BEGIN {FS=" "}{print $5}\'');
 			$size = ob_get_clean();
 		}
-		return $this->human_filesize($size);
+		return $this->_human_filesize($size);
 	}
 
 	private function _human_filesize($bytes, $decimals = 2)

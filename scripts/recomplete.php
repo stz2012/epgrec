@@ -18,7 +18,7 @@ try
 	if ( file_exists( INSTALL_PATH .$settings->spool . '/'. $rrec->path ) )
 	{
 		// 予約完了
-		UtilLog::outLog( 'recomplete:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画が完了' );
+		UtilLog::outLog( "recomplete:: 予約ID：{$rrec->id} {$rrec->channel} {$rrec->title} の録画が完了" );
 		
 		if ( $settings->mediatomb_update == 1 )
 		{
@@ -39,7 +39,7 @@ try
 	else
 	{
 		// 予約失敗
-		UtilLog::outLog( 'recomplete:: 予約ID'. $rrec->id .':'.$rrec->type.$rrec->channel.$rrec->title.'の録画に失敗した模様', UtilLog::LV_ERROR );
+		UtilLog::outLog( "recomplete:: 予約ID：{$rrec->id} {$rrec->channel} {$rrec->title} の録画に失敗した模様", UtilLog::LV_ERROR );
 		$rrec->delete();
 	}
 }

@@ -328,13 +328,13 @@ function parse_epgdump_file( $type, $xmlfile )
 							// すでに開始されている録画は無視する
 							if ( time() > (toTimestamp($reserve->starttime) - PADDING_TIME - $settings->former_time) )
 							{
-								UtilLog::outLog( "parse_epgdump_file:: 録画ID {$reserve->id} {$reserve->channel} {$reserve->title} は録画開始後に時間変更が発生した可能性がある", UtilLog::LV_WARN );
+								UtilLog::outLog( "parse_epgdump_file:: 録画ID：{$reserve->id} {$reserve->channel} {$reserve->title} は録画開始後に時間変更が発生した可能性がある", UtilLog::LV_WARN );
 							}
 							else
 							{
 								if ( $reserve->autorec )
 								{
-									UtilLog::outLog( "parse_epgdump_file:: 録画ID {$reserve->id} {$reserve->channel} {$reserve->title} は時間変更の可能性があり予約取り消し" );
+									UtilLog::outLog( "parse_epgdump_file:: 録画ID：{$reserve->id} {$reserve->channel} {$reserve->title} は時間変更の可能性があり予約取り消し" );
 									Reservation::cancel( $reserve->id );
 								}
 							}
@@ -344,7 +344,7 @@ function parse_epgdump_file( $type, $xmlfile )
 							// 無視
 						}
 						// 番組削除
-						UtilLog::outLog( "parse_epgdump_file:: 放送時間重複が発生した番組ID {$rec->id} {$rec->channel} {$rec->title} を削除" );
+						UtilLog::outLog( "parse_epgdump_file:: 放送時間重複が発生した番組ID：{$rec->id} {$rec->channel} {$rec->title} を削除" );
 						$rec->delete();
 					}
 				}
@@ -380,7 +380,7 @@ function parse_epgdump_file( $type, $xmlfile )
 						$reserve->title = $title;
 						$reserve->description = $desc;
 						$reserve->update();
-						UtilLog::outLog( "parse_epgdump_file:: 予約ID {$reserve->id} {$reserve->channel} {$reserve->title} のEPG情報が更新された" );
+						UtilLog::outLog( "parse_epgdump_file:: 予約ID：{$reserve->id} {$reserve->channel} {$reserve->title} のEPG情報が更新された" );
 					}
 				}
 				catch ( Exception $e )

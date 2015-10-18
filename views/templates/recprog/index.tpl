@@ -42,10 +42,10 @@
   <td id="stid_{$reserve.id}">{$reserve.starttime}</td>
   <td>{$reserve.endtime}</td>
   <td>{$reserve.mode}</td>
-  <td style="cursor: pointer" id="tid_{$reserve.id}" onClick="javascript:PRG.editdialog('{$reserve.id}')">{$reserve.title|escape}</td>
-  <td style="cursor: pointer" id="did_{$reserve.id}" onClick="javascript:PRG.editdialog('{$reserve.id}')">{$reserve.description|escape}</td>
+  <td style="cursor: pointer" id="tid_{$reserve.id}" onclick="javascript:PRG.editdialog('{$reserve.id}')">{$reserve.title|escape}</td>
+  <td style="cursor: pointer" id="did_{$reserve.id}" onclick="javascript:PRG.editdialog('{$reserve.id}')">{$reserve.description|escape}</td>
   <td>{if $reserve.autorec}{$reserve.autorec}{/if}</td>
-  <td><input type="button" value="削除" onClick="javascript:PRG.rec('{$reserve.id}')" /></td>
+  <td><input type="button" value="削除" onclick="javascript:PRG.rec('{$reserve.id}')" /></td>
  </tr>
 {/foreach}
 </tbody>

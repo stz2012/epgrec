@@ -17,7 +17,7 @@
   <th>ch</th>
   <th>カテゴリ</th>
   <th>曜日</th>
-  <th>開始時</ht>
+  <th>開始時</th>
   <th>録画モード</th>
   <th>削除</th>
  </tr>
@@ -34,7 +34,7 @@
   <td>{$keyword.weekofday}</td>
   <td>{$keyword.prgtime}</td>
   <td>{$keyword.autorec_mode}</td>
-  <td><input type="button" value="削除" onClick="javascript:PRG.delkey('{$keyword.id}')" /></td>
+  <td><input type="button" value="削除" onclick="javascript:PRG.delkey('{$keyword.id}')" /></td>
  </tr>
 {/foreach}
 </tbody>
