@@ -1482,7 +1482,7 @@ ER_sub.DISKINF = {
 	},
 	_getDiskInfo : function() {
 		var that = this;
-		$.getJSON(INISet.prgHomeURL+'assist/tools/diskinfo.php',{},function(data){
+		$.getJSON(INISet.prgDiskInfoURL,{},function(data){
 			that._reDiskInfo(data.disk_total, data.disk_free);
 		});
 	},

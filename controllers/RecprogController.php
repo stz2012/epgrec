@@ -53,7 +53,7 @@ class RecprogController extends CommonController
 			$r['title']       = UtilString::getSanitizeData($r['title']);
 			$r['description'] = UtilString::getSanitizeData($r['description']);
 			$r['thumb_src']   = "{$this->setting->install_url}/thumbs/{$r['id']}.jpg";
-			$r['thumb_alt']   = UtilString::getSanitizeData($r['title'])
+			$r['thumb_alt']   = UtilString::getSanitizeData($r['title']);
 			$r['mode']        = $RECORD_MODE[$r['mode']]['name'];
 			// 録画終了時間を１０分過ぎているのに、完了フラグが立ってない場合
 			if ( time() > (toTimestamp($r['endtime']) + 600) && $r['complete'] == 0 )
@@ -190,6 +190,20 @@ class RecprogController extends CommonController
 		{
 			exit( $e->getMessage() );
 		}
+		exit;
+	}
+
+	/**
+	 * ディスク情報取得
+	 */
+	public function getDiskInfoAction()
+	{
+		$disk = INSTALL_PATH . $this->setting->spool;
+		$param = array();
+		$param['disk_total'] = disk_total_space($disk);
+		$param['disk_free']  = disk_free_space($disk);
+		header('Content-Type: application/json; charset=utf-8');
+		echo json_encode($param);
 		exit;
 	}
 
