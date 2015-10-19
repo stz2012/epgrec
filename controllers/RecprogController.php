@@ -52,7 +52,7 @@ class RecprogController extends CommonController
 			$r['asf']         = $this->getCurrentUri(false).'/viewer?'.UtilString::buildQueryString($param);
 			$r['title']       = UtilString::getSanitizeData($r['title']);
 			$r['description'] = UtilString::getSanitizeData($r['description']);
-			$r['thumb_src']   = "{$this->setting->install_url}/thumbs/{$r['id']}.jpg";
+			$r['thumb_src']   = HOME_URL."thumbs/{$r['id']}.jpg";
 			$r['thumb_alt']   = UtilString::getSanitizeData($r['title']);
 			$r['mode']        = $RECORD_MODE[$r['mode']]['name'];
 			// 録画終了時間を１０分過ぎているのに、完了フラグが立ってない場合
@@ -122,13 +122,9 @@ class RecprogController extends CommonController
 			echo '<ASX version = "3.0">';
 			echo '<PARAM NAME = "Encoding" VALUE = "UTF-8" />';
 			echo '<ENTRY>';
-			if ( ! $rrec->complete )
-			{
-				$param = array();
-				$param['reserve_id'] = $rrec->id;
-				echo '<REF HREF="'.$this->getCurrentUri(false).'/sendStream?'.UtilString::buildQueryString($param).'" />';
-			}
-			echo '<REF HREF="'.$this->setting->install_url.$this->setting->spool.'/'.$rrec->path .'" />';
+			$param = array();
+			$param['reserve_id'] = $rrec->id;
+			echo '<REF HREF="'.$this->getCurrentUri(false).'/sendStream?'.UtilString::buildQueryString($param).'" />';
 			echo '<TITLE>'.$title.'</TITLE>';
 			echo '<ABSTRACT>'.$abstract.'</ABSTRACT>';
 			echo '<DURATION VALUE="'.sprintf( '%02d:%02d:%02d', $dh, $dm, $ds ).'" />';

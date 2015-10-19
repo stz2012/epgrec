@@ -1004,6 +1004,7 @@ ER_sub.RESERVED = {
 		ER_sub.topMenu();
 
 		this.reMake($tgs);
+		$('#reservation_table').before(ER_sub.tableMultiFunc('RESERVED'));
 		ER_sub.TBL_SCROLLABLE.ini('reservation_table');
 		$(window).resize(ER_sub.TBL_SCROLLABLE.reSize);
 
@@ -1216,6 +1217,7 @@ ER_sub.RECORDED = {
 		}
 
 		this.reMake($tgs);
+		$('#reservation_table').before(ER_sub.tableMultiFunc('RECORDED'));
 		ER_sub.TBL_SCROLLABLE.ini('reservation_table');
 		$(window).resize(ER_sub.TBL_SCROLLABLE.reSize);
 

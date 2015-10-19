@@ -53,8 +53,6 @@ class Settings extends SimpleXMLElement
 		// テーブル接頭辞
 		$xml->tbl_prefix = 'Recorder_';
 
-		// インストールURL
-		$xml->install_url = 'http://localhost/epgrec';
 		// 録画保存ディレクトリ
 		$xml->spool = '/video';
 		// サムネールの使用

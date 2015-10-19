@@ -162,7 +162,7 @@ try
 			$gen_thumbnail = INSTALL_PATH.'/scripts/gen-thumbnail.sh';
 			if ( defined('GEN_THUMBNAIL') ) 
 				$gen_thumbnail = GEN_THUMBNAIL;
-			@exec($gen_thumbnail);
+			EpgrecProcMng::execCommand($gen_thumbnail, $env_rec);
 		}
 
 		// MediaTomb更新

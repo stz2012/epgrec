@@ -9,8 +9,8 @@
 絞り込み：
 <form method="post" action="{$this_class->getCurrentUri()}">
 <input type="hidden" name="do_search" value="1" />
-検索語句<input type="text" size="20" name="search" value="{$search}" /><br />
-正規表現使用<input type="checkbox" name="use_regexp" value="1" {if $use_regexp}checked{/if} />
+検索語句<input type="text" name="search" value="{$search}" style="width:480px;" />
+正規表現使用<input type="checkbox" name="use_regexp" value="1" {if $use_regexp}checked{/if} /><br />
 種別{html_options name="type" options=$types selected=$sel_type}
 局{html_options name="station" options=$stations selected=$sel_station}
 カテゴリ{html_options name="category_id" options=$categorys selected=$sel_category}

@@ -9,7 +9,7 @@
 絞り込み：
 <form method="post" action="{$this_class->getCurrentUri()}">
 <input type="hidden" name="do_search" value="1" />
-検索語句<input type="text" size="20" name="search" value="{$search}" />
+検索語句<input type="text" name="search" value="{$search}" style="width:250px;" />
 局{html_options name="station" options=$stations selected=$sel_station}
 カテゴリ{html_options name="category_id" options=$categorys selected=$sel_category}
 <input type="submit" value="絞り込む" />

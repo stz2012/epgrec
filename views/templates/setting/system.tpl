@@ -60,19 +60,12 @@ epgrecの再インストールを旧テーブルを使用せずに行うよう�
 
 <h2>インストール関連設定</h2>
 
-<h3>インストールURL</h3>
-<div class="setting">
-<div class="caption">epgrecをLAN内のクライアントから参照することができるURLを設定します。<br />
-http://localhost…のままで利用することも可能ですが、その場合はビデオの視聴等がサーバー上でしかできないなどの制限が生じます。</div>
-<input type="text" name="install_url" value="{$settings->install_url}" size="40" class="required" />
-</div>
-
 <h3>録画保存ディレクトリ</h3>
 <div class="setting">
-<div class="caption">録画ファイルを保存するディレクトリを{$install_path}からの相対ディレクトリで設定します。<br />
+<div class="caption">録画ファイルを保存するディレクトリを {$install_path} からの相対ディレクトリで設定します。<br />
 先頭に/が必ず必要です。設定するディレクトリには十分な空き容量があり、書き込み権が必要です。<br />
 また、URLで参照可能なディレクトリなディレクトリを設定しないとASFによる録画の視聴ができません。<br />
-デフォルトは/video（つまり{$install_path}/video）で、とくに問題がなければデフォルトを推奨します。</div>
+デフォルトは/video（つまり {$install_path}/video ）で、とくに問題がなければデフォルトを推奨します。</div>
 <input type="text" name="spool" value="{$settings->spool}" size="15" class="required" />
 </div>
 
@@ -94,7 +87,7 @@ http://localhost…のままで利用することも可能ですが、その場�
 
 <h3>サムネール保存ディレクトリ</h3>
 <div class="setting">
-<div class="caption">サムネールを保存するディレクトリを{$install_path}からの相対パスで設定します。<br />
+<div class="caption">サムネールを保存するディレクトリを {$install_path} からの相対パスで設定します。<br />
 設定の方法、条件は録画保存ディレクトリと同様です。</div>
 <input type="text" id="id_thumbs" name="thumbs" value="{$settings->thumbs}" size="15" class="required" />
 </div>
