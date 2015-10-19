@@ -57,7 +57,7 @@ try
 		'TYPE'       => $crec->type,
 		'TUNER'      => $tuner,
 		'MODE'       => $rrec->mode,
-		'THUMB'      => INSTALL_PATH.$settings->thumbs.'/'.$rrec->path.'.jpg',
+		'THUMB'      => INSTALL_PATH.$settings->thumbs.'/'.$rrec->id.'.jpg',
 		'FORMER'     => ''.$settings->former_time,
 		'FFMPEG'     => ''.$settings->ffmpeg,
 		'SID'        => $crec->sid,

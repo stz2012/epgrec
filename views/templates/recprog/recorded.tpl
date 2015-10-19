@@ -39,7 +39,7 @@
   <td>{$rec.starttime}</td>
   <td>{$rec.station_name}</td>
   <td>{$rec.mode}</td>
-  {if $use_thumbs == 1}<td><a href="{$rec.asf}">{$rec.thumb}</a></td>{/if}
+  {if $use_thumbs == 1}<td><a href="{$rec.asf}"><img src="{$rec.thumb_src}" alt="{$rec.thumb_alt}" /></a></td>{/if}
   <td><a href="{$rec.asf}" id="tid_{$rec.id}">{$rec.title}</a></td>
   <td><a href="{$rec.asf}" id="did_{$rec.id}">{$rec.description}</a></td>
   <td>{$rec.fsize}</td>

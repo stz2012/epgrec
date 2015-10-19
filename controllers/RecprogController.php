@@ -50,9 +50,10 @@ class RecprogController extends CommonController
 			$param = array();
 			$param['reserve_id'] = $r['id'];
 			$r['asf']         = $this->getCurrentUri(false).'/viewer?'.UtilString::buildQueryString($param);
-			$r['title']       = htmlspecialchars($r['title'], ENT_QUOTES);
-			$r['description'] = htmlspecialchars($r['description'], ENT_QUOTES);
-			$r['thumb']       = '<img src="'.$this->setting->install_url.$this->setting->thumbs.'/'.htmlentities($r['path'], ENT_QUOTES, 'UTF-8').'.jpg" />';
+			$r['title']       = UtilString::getSanitizeData($r['title']);
+			$r['description'] = UtilString::getSanitizeData($r['description']);
+			$r['thumb_src']   = "{$this->setting->install_url}/thumbs/{$r['id']}.jpg";
+			$r['thumb_alt']   = UtilString::getSanitizeData($r['title'])
 			$r['mode']        = $RECORD_MODE[$r['mode']]['name'];
 			// 録画終了時間を１０分過ぎているのに、完了フラグが立ってない場合
 			if ( time() > (toTimestamp($r['endtime']) + 600) && $r['complete'] == 0 )
@@ -113,8 +114,8 @@ class RecprogController extends CommonController
 			$duration = $duration % 60;
 			$ds = $duration;
 			
-			$title    = htmlspecialchars(str_replace(array("\r\n", "\r", "\n"), '', $rrec->title),ENT_QUOTES);
-			$abstract = htmlspecialchars(str_replace(array("\r\n", "\r", "\n"), '', $rrec->description),ENT_QUOTES);
+			$title    = UtilString::getSanitizeData(str_replace(array("\r\n", "\r", "\n"), '', $rrec->title));
+			$abstract = UtilString::getSanitizeData(str_replace(array("\r\n", "\r", "\n"), '', $rrec->description));
 			
 			header('Content-type: video/x-ms-asf; charset="UTF-8"');
 			header('Content-Disposition: inline; filename="'.$rrec->path.'.asx"');
