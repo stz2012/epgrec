@@ -93,7 +93,7 @@ class Reservation extends ModelBase
 			{
 				$num = DBRecord::countRecords( RESERVE_TBL, "WHERE program_id = '{$program_id}'" );
 				if ( $num )
-					throw new Exception('同一の番組が録画予約されています');
+					throw new Exception( '同一の番組が録画予約されています' );
 			}
 			
 			$crec = new DBRecord( CHANNEL_TBL, 'id', $channel_id );
@@ -387,7 +387,7 @@ class Reservation extends ModelBase
 				if ( is_numeric( $rarr[$key+1]) )
 				{
 					$rrec->job = $rarr[$key+1];
-					UtilLog::outLog( 'Reservation::custom ジョブ番号'.$rrec->job.'に録画ジョブを登録' );
+					UtilLog::outLog( 'Reservation::custom ジョブ番号：'.$rrec->job.'に録画ジョブを登録' );
 					return $rrec->job;			// 成功
 				}
 			}
@@ -450,7 +450,7 @@ class Reservation extends ModelBase
 						if ( $r['autorec'] )
 						{
 							self::simple( $r['id'], $rec->id, $rec->autorec_mode );
-							UtilLog::outLog( 'Reservation::keyword キーワードID'.$rec->id.'の録画が予約された' );
+							UtilLog::outLog( 'Reservation::keyword キーワードID：'.$rec->id.'の録画が予約された' );
 						}
 					}
 					usleep( 100 ); // あんまり時間を空けないのもどう?
@@ -496,7 +496,7 @@ class Reservation extends ModelBase
 			{
 				if ( toTimestamp($rec->starttime) < (time() + PADDING_TIME + $settings->former_time) )
 				{
-					UtilLog::outLog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しが実行された' );
+					UtilLog::outLog( 'Reservation::cancel 実行中の予約ID：'.$rec->id.'の取り消しが実行された' );
 
 					// recorderとの通信を試みる
 					$ipc_key = ftok( RECORDER_CMD, 'R' );
@@ -505,7 +505,7 @@ class Reservation extends ModelBase
 					if ( ! msg_queue_exists( $ipc_key ) )
 					{
 						// メッセージキューがない
-						UtilLog::outLog( 'Reservation::cancel 実行中と推測される予約'.$rec->id.'が実行されていない', UtilLog::LV_ERROR );
+						UtilLog::outLog( 'Reservation::cancel 実行中と推測される予約ID：'.$rec->id.'が実行されていない', UtilLog::LV_ERROR );
 						$rec->complete = 1;
 						throw new Exception( '実行中と推測される予約が実行されていません。再度、削除を試みてください。' );
 					}
@@ -526,12 +526,12 @@ class Reservation extends ModelBase
 							{
 								if ( $message == 'success' )
 								{
-									UtilLog::outLog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに成功した模様' );
+									UtilLog::outLog( 'Reservation::cancel 実行中の予約ID：'.$rec->id.'の取り消しに成功した模様' );
 									break;
 								}
 								else if ( $message == 'error' )
 								{
-									UtilLog::outLog( 'Reservation::cancel 実行中の予約ID'.$rec->id.'の取り消しに失敗', UtilLog::LV_ERROR );
+									UtilLog::outLog( 'Reservation::cancel 実行中の予約ID：'.$rec->id.'の取り消しに失敗', UtilLog::LV_ERROR );
 									throw new Exception( '実行中の予約取り消しに失敗しました。しばらく時間をおいてから再度、取り消してください' );
 								}
 								// それ以外のメッセージは無視して待つ
