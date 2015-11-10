@@ -523,29 +523,15 @@ class IndexController extends CommonController
 		try
 		{
 			$rec = new DBRecord( RESERVE_TBL, 'id', $reserve_id );
-
 			if ( $this->request->getPost('title') )
 			{
 				$rec->title = trim( $this->request->getPost('title') );
 				$rec->dirty = 1;
-				if ( ((int)$this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
-				{
-					$title = trim( $this->request->getPost('title'));
-					$title .= '('.date('Y/m/d', toTimestamp($rec->starttime)).')';
-					$this->model->updMediaTombData($reserve_id, array('dc_title' => $title));
-				}
 			}
-
 			if ( $this->request->getPost('description') )
 			{
 				$rec->description = trim( $this->request->getPost('description') );
 				$rec->dirty = 1;
-				if ( ((int)$this->setting->mediatomb_update == 1) && ($rec->complete == 1) )
-				{
-					$desc = 'dc:description='.trim( $this->request->getPost('description'));
-					$desc .= '&epgrec:id='.$reserve_id;
-					$this->model->updMediaTombData($reserve_id, array('metadata' => $desc));
-				}
 			}
 		}
 		catch ( Exception $e )

@@ -79,6 +79,64 @@ class CommonModel extends ModelBase
 	}
 
 	/**
+	 * 録画中かどうか
+	 * @return bool
+	 */
+	public function isRecordingNow()
+	{
+		$sql = "SELECT COUNT(id)";
+		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
+		$sql .= " WHERE complete <> '1'";
+		if ($this->setting->db_type == 'sqlite')
+		{
+			$sql .= " AND datetime(starttime) <= datetime('now', 'localtime')";
+			$sql .= " AND datetime(endtime) >= datetime('now', 'localtime')";
+		}
+		else
+		{
+			$sql .= " AND starttime <= now()";
+			$sql .= " AND endtime >= now()";
+		}
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		$cnt = $stmt->fetchColumn();
+		$stmt->closeCursor();
+		return ($cnt > 0);
+	}
+
+	/**
+	 * 何分以内に予約が存在するかどうか
+	 * @param int $minutes 
+	 * @return bool
+	 */
+	public function isExistReservationWithInMinutes($minutes)
+	{
+		$sql = "SELECT COUNT(id)";
+		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
+		$sql .= " WHERE complete <> '1'";
+		if ($this->setting->db_type == 'pgsql')
+		{
+			$sql .= " AND starttime >= now()";
+			$sql .= " AND starttime <= (now() + INTERVAL '{$minutes} MINUTE')";
+		}
+		else if ($this->setting->db_type == 'sqlite')
+		{
+			$sql .= " AND datetime(starttime) >= datetime('now', 'localtime')";
+			$sql .= " AND datetime(starttime) <= datetime('now', '+{$minutes} minutes', 'localtime')";
+		}
+		else
+		{
+			$sql .= " AND starttime >= now()";
+			$sql .= " AND starttime <= (now() + INTERVAL {$minutes} MINUTE)";
+		}
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		$cnt = $stmt->fetchColumn();
+		$stmt->closeCursor();
+		return ($cnt > 0);
+	}
+
+	/**
 	 * PDOドライバ一覧取得
 	 * @return array
 	 */

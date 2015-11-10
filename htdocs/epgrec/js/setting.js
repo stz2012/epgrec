@@ -7,6 +7,22 @@ var PRG = {
 			$('#id_rec_switch_time').attr('disabled',false);
 		}
 	},
+	drivers:function() {
+		if( $('#id_db_type' ).val() == 'sqlite' ) {
+			$('#id_db_host').attr('disabled','disabled');
+			$('#id_db_port').attr('disabled','disabled');
+			$('#id_db_user').attr('disabled','disabled');
+			$('#id_db_pass').attr('disabled','disabled');
+			$('#id_db_name').attr('disabled','disabled');
+		}
+		else {
+			$('#id_db_host').attr('disabled',false);
+			$('#id_db_port').attr('disabled',false);
+			$('#id_db_user').attr('disabled',false);
+			$('#id_db_pass').attr('disabled',false);
+			$('#id_db_name').attr('disabled',false);
+		}
+	},
 	thumbs:function() {
 		if( $('#id_use_thumbs' ).val() == 0 ) {
 			$('#id_ffmpeg').attr('disabled','disabled');
@@ -21,16 +37,10 @@ var PRG = {
 		if( $('#id_use_power_reduce').val() == 0 ) {
 			$('#id_getepg_timer').attr('disabled','disabled');
 			$('#id_wakeup_before').attr('disabled','disabled');
-			$('#id_www_group').attr('disabled','disabled');
-			$('#id_www_user').attr('disabled','disabled');
-			$('#id_shutdown').attr('disabled','disabled');
 		}
 		else {
 			$('#id_getepg_timer').attr('disabled',false);
 			$('#id_wakeup_before').attr('disabled',false);
-			$('#id_www_group').attr('disabled',false);
-			$('#id_www_user').attr('disabled',false);
-			$('#id_shutdown').attr('disabled',false);
 		}
 	}
 };

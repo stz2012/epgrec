@@ -84,17 +84,6 @@ config.phpの$RECORD_MODEに複数の録画モードを登録し、do-record.sh�
 </select>
 </div>
 
-<h3>mediatomb連係機能</h3>
-<div class="setting">
-<div class="caption">この設定を「使う」にすると録画した番組のタイトルと概要をmediatombに反映させます。<br />
-mediatombを使用していない方は「使わない」に設定してください。<br />
-なお、この設定を利用するにはmediatomb側の設定も必要になります。詳しくはドキュメントを参照してください。</div>
-<select name="mediatomb_update" id="id_mediatomb_update">
-  <option value="0" {if $settings->mediatomb_update == 0} selected="selected"{/if}>使わない</option>
-  <option value="1" {if $settings->mediatomb_update == 1} selected="selected"{/if}>使う</option>
-</select>
-</div>
-
 <h3>録画ファイル名の形式</h3>
 <div class="setting">
 <div class="caption">epgrecは録画ファイル名をカスタマイズすることができます。<br />

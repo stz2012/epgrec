@@ -91,7 +91,7 @@ class ModelBase
 			{
 				$dsn = sprintf(
 					'sqlite:%s',
-					self::$connInfo['dbname']
+					DB_FILEPATH
 				);
 				try
 				{

@@ -1,0 +1,5 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+02,32 * * * *   root	/var/www/epgrec/scripts/auto-getepg.sh
+28,58 * * * *   root	/var/www/epgrec/scripts/auto-shutdown.sh

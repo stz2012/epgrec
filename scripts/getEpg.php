@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -q
 <?php
 $script_path = dirname( __FILE__ );
 chdir( $script_path );
@@ -11,13 +11,10 @@ try
 	$procMng = new EpgrecProcMng();
 
 	// ユーザー/グループの切り替えを試みる
-	if (intval($settings->use_power_reduce) != 0 )
-	{
-		$userinfo = posix_getpwnam( $settings->www_user );
-		$groupinfo = posix_getgrnam( $settings->www_group );
-		posix_setgid( $groupinfo['gid'] );
-		posix_setuid( $userinfo['uid'] );
-	}
+	$userinfo = posix_getpwnam( $settings->www_user );
+	$groupinfo = posix_getgrnam( $settings->www_group );
+	posix_setgid( $groupinfo['gid'] );
+	posix_setuid( $userinfo['uid'] );
 
 	$temp_data_bs  = $settings->temp_data.'.bs';
 	$temp_data_cs1 = $settings->temp_data.'.cs1';
@@ -102,7 +99,6 @@ try
 
 	garbageClean();			// 不要プログラム削除
 	doKeywordReservation();	// キーワード予約
-	doPowerReduce(true);	// 省電力
 }
 catch ( Exception $e )
 {

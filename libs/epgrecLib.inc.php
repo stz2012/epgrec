@@ -4,16 +4,6 @@
  */
 
 /**
- * クラスのオートロード
- * @param string $className クラス名
- */
-function custom_autoloader($className)
-{
-	$file_name = preg_replace('/[^a-z_A-Z0-9]/u', '', $className) . '.php';
-	require_once $file_name;
-}
-
-/**
  * 日時文字列 → タイムスタンプ変換
  * @param string $param 日時文字列
  * @return int タイムスタンプ
@@ -51,7 +41,7 @@ function toDatetime2( $param )
  * @param string $message メッセージ
  * @param string $url     転送先URL
  */
-function jdialog( $message, $url = HOME_URL )
+function jdialog( $message, $url = BASE_URI )
 {
 	header( 'Content-Type: text/html;charset=utf-8' );
 	exit( "<script type=\"text/javascript\">\n".
@@ -89,15 +79,13 @@ function check_epgrec_env( &$contents = '' )
 		INSTALL_PATH.'/video',
 		INSTALL_PATH.'/views/templates_c',
 	);
-	$gen_thumbnail = INSTALL_PATH.'/scripts/gen-thumbnail.sh';
-	if ( defined('GEN_THUMBNAIL') )
-		$gen_thumbnail = GEN_THUMBNAIL;
 	$exec_files = array(
 		DO_RECORD,
-		RECORDER_CMD,
+		GEN_THUMBNAIL,
 		GET_EPG_CMD,
 		STORE_PRG_CMD,
-		$gen_thumbnail,
+		RECORDER_CMD,
+		COMPLETE_CMD
 	);
 
 	$contents .= '<br />';
@@ -146,6 +134,26 @@ function check_permission( $path )
 {
 	$ss = @stat( $path );
 	return sprintf('%o', ($ss['mode'] & 000777));
+}
+
+/**
+ * ACPIタイマー設定
+ * @param string $wake_datetime 起動時間文字列
+ */
+function set_wakealarm( $wake_datetime )
+{
+	// ACPIタイマーパス（環境によっては要変更）
+	$ACPI_TIMER_PATH = '/sys/class/rtc/rtc0/wakealarm';
+
+	// いったんリセットする
+	$fp = fopen( $ACPI_TIMER_PATH, 'w' );
+	fwrite($fp , '0');
+	fclose($fp);
+
+	// 起動時間を書込（UTC時間）
+	$fp = fopen( $ACPI_TIMER_PATH, 'w' );
+	fwrite($fp , ''.toTimestamp($wake_datetime));
+	fclose($fp);
 }
 
 /**
@@ -446,61 +454,6 @@ function doKeywordReservation()
 		catch ( Exception $e )
 		{
 			// 無視
-		}
-	}
-}
-
-/**
- * 省電力機能
- * @param bool $isGetEpg getEpg実行時かどうか
- */
-function doPowerReduce($isGetEpg = false)
-{
-	$settings = Settings::factory();
-	if ( intval($settings->use_power_reduce) != 0 )
-	{
-		if ( file_exists(INSTALL_PATH. '/settings/wakeupvars.xml') )
-		{
-			$wakeupvars_text = file_get_contents( INSTALL_PATH. '/settings/wakeupvars.xml' );
-			$wakeupvars = new SimpleXMLElement($wakeupvars_text);
-			if ($settings->db_type == 'pgsql')
-				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL '1 DAY') AND endtime > now()";
-			else if ($settings->db_type == 'sqlite')
-				$options = "WHERE complete <> '1' AND datetime(starttime) < datetime('now', '+1 days', 'localtime') AND datetime(endtime) > datetime('now', 'localtime')";
-			else
-				$options = "WHERE complete <> '1' AND starttime < (now() + INTERVAL 1 DAY) AND endtime > now()";
-
-			// 起動理由を調べる
-			if ( strcasecmp( 'getepg', $wakeupvars->reason ) == 0 )
-			{
-				// 1時間以内に録画はないか？
-				$num = DBRecord::countRecords( RESERVE_TBL, $options );
-				if ( $num != 0 )
-				{	// 録画があるなら録画起動にして終了
-					$wakeupvars->reason = 'reserve';
-				}
-				else
-				{
-					exec( $settings->shutdown . ' -h +'.$settings->wakeup_before );
-				}
-			}
-			else if ( strcasecmp( 'reserve', $wakeupvars->reason ) == 0 )
-			{
-				// 1時間以内に録画はないか？
-				$num = DBRecord::countRecords( RESERVE_TBL, $options );
-				if ( $num != 0 )
-				{	// 録画があるなら何もしない
-					exit();
-				}
-				exec( $settings->shutdown . ' -h +'.$settings->wakeup_before );
-			}
-
-			// getEpg終了時を書込み
-			if ($isGetEpg)
-			{
-				$wakeupvars->getepg_time = time();
-				$wakeupvars->asXML(INSTALL_PATH. '/settings/wakeupvars.xml');
-			}
 		}
 	}
 }

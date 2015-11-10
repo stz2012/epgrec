@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -q
 <?php
 $script_path = dirname( __FILE__ );
 chdir( $script_path );
@@ -164,28 +164,12 @@ try
 				$gen_thumbnail = GEN_THUMBNAIL;
 			EpgrecProcMng::execCommand($gen_thumbnail, $env_rec);
 		}
-
-		// MediaTomb更新
-		if ( $settings->mediatomb_update == 1 )
-		{
-			// タイトル更新
-			$title = $rrec->title.'('.date('Y/m/d').')';
-			$db_obj->updateRow('mt_cds_object', array('dc_title' => $title),
-														array('dc_title' => $rrec->path));
-			// 説明更新
-			$desc = 'dc:description='.trim($rrec->description);
-			$desc .= '&epgrec:id='.$reserve_id;
-			$db_obj->updateRow('mt_cds_object', array('metadata' => $desc),
-														array('dc_title' => $rrec->path));
-		}
 	}
 	else
 	{	// 予約失敗
 		UtilLog::outLog( "recorder:: 予約ID：{$rrec->id} {$rrec->channel} {$rrec->title} の録画に失敗した模様", UtilLog::LV_ERROR );
 	}
 	$msg_obj = null;
-
-	doPowerReduce();	// 省電力
 }
 catch ( Exception $e )
 {

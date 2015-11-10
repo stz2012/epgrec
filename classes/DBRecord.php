@@ -199,8 +199,7 @@ class DBRecord extends CommonModel
 			$sql = "SELECT COUNT(*) FROM {$tbl->__table} {$options}";
 			$stmt = $tbl->db->prepare( $sql );
 			$stmt->execute();
-			$arr = $stmt->fetch(PDO::FETCH_NUM);
-			$retval = $arr[0];
+			$retval = $stmt->fetchColumn();
 			$stmt->closeCursor();
 		}
 		catch ( Exception $e )

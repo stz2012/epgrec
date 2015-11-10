@@ -52,7 +52,7 @@ class RecprogController extends CommonController
 			$r['asf']         = $this->getCurrentUri(false).'/viewer?'.UtilString::buildQueryString($param);
 			$r['title']       = UtilString::getSanitizeData($r['title']);
 			$r['description'] = UtilString::getSanitizeData($r['description']);
-			$r['thumb_src']   = HOME_URL."thumbs/{$r['id']}.jpg";
+			$r['thumb_src']   = BASE_URI."thumbs/{$r['id']}.jpg";
 			$r['thumb_alt']   = UtilString::getSanitizeData($r['title']);
 			$r['mode']        = $RECORD_MODE[$r['mode']]['name'];
 			// 録画終了時間を１０分過ぎているのに、完了フラグが立ってない場合

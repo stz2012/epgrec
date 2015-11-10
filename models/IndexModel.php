@@ -84,19 +84,5 @@ class IndexModel extends CommonModel
 		$stmt->closeCursor();
 		return $program_data;
 	}
-
-	/**
-	 * MediaTombデータ更新
-	 * @param int $reserve_id ログイン名
-	 * @param array $login_pass ログインパス
-	 * @return array
-	 */
-	public function updMediaTombData($reserve_id, $upd_data)
-	{
-		$this->updateRow('mt_cds_object', $upd_data,
-											array('metadata' => array(
-													'operator' => 'regexp',
-													   'value' => 'epgrec:id='.$reserve_id.'$')));
-	}
 }
 ?>

@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -q
 <?php
 $script_path = dirname( __FILE__ );
 chdir( $script_path );

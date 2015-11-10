@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/php -q
 <?php
 $script_path = dirname( __FILE__ );
 chdir( $script_path );
@@ -19,22 +19,6 @@ try
 	{
 		// 予約完了
 		UtilLog::outLog( "recomplete:: 予約ID：{$rrec->id} {$rrec->channel} {$rrec->title} の録画が完了" );
-		
-		if ( $settings->mediatomb_update == 1 )
-		{
-			// ちょっと待った方が確実っぽい
-			@exec('sync');
-			sleep(15);
-			// タイトル更新
-			$title = $rrec->title.'('.date('Y/m/d').')';
-			$db_obj->updateRow('mt_cds_object', array('dc_title' => $title),
-														array('dc_title' => $rrec->path));
-			// 説明更新
-			$desc = 'dc:description='.trim($rrec->description);
-			$desc .= '&epgrec:id='.$reserve_id;
-			$db_obj->updateRow('mt_cds_object', array('metadata' => $desc),
-														array('dc_title' => $rrec->path));
-		}
 	}
 	else
 	{

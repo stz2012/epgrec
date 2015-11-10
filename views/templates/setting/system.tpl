@@ -17,38 +17,38 @@
 <h3>データベースドライバー名</h3>
 <div class="setting">
 <div class="caption">データベースのドライバー名を選択してください。</div>
-{html_options name="db_type" options=$pdo_driver selected=$settings->db_type}
+{html_options name="db_type" id="id_db_type" options=$pdo_driver selected=$settings->db_type onchange="javascript:PRG.drivers()"}
 </div>
 
 <h3>データベースホスト名</h3>
 <div class="setting">
 <div class="caption">データベースのホスト名を入力してください。</div>
-<input type="text" name="db_host" value="{$settings->db_host}" size="15" class="required" />
+<input type="text" name="db_host" id="id_db_host" value="{$settings->db_host}" size="15" class="required" />
 </div>
 
 <h3>データベースポート</h3>
 <div class="setting">
 <div class="caption">データベースのポートを入力してください。</div>
-<input type="text" name="db_port" value="{$settings->db_port}" size="15" class="required" />
+<input type="text" name="db_port" id="id_db_port" value="{$settings->db_port}" size="15" class="required" />
 </div>
 
 <h3>データベース接続ユーザー名</h3>
 <div class="setting">
 <div class="caption">データベースの接続に使用するユーザー名を入力してください。</div>
-<input type="text" name="db_user" value="{$settings->db_user}" size="15" class="required" />
+<input type="text" name="db_user" id="id_db_user" value="{$settings->db_user}" size="15" class="required" />
 </div>
 
 <h3>データベース接続パスワード</h3>
 <div class="setting">
 <div class="caption">データベースの接続に使用するパスワードを入力してください。</div>
-<input type="password" name="db_pass" value="{$settings->db_pass}" size="15" class="required" />
+<input type="password" name="db_pass" id="id_db_pass" value="{$settings->db_pass}" size="15" class="required" />
 </div>
 
 <h3>使用データベース名</h3>
 <div class="setting">
 <div class="caption">使用するデータベース名を設定します。<br />
 設定するデータベースは接続ユーザーがテーブルの作成等を行う権限を持っている必要があります。</div>
-<input type="text" name="db_name" value="{$settings->db_name}" size="15" class="required" />
+<input type="text" name="db_name" id="id_db_name" value="{$settings->db_name}" size="15" class="required" />
 </div>
 
 <h3>テーブル接頭辞</h3>
@@ -111,6 +111,13 @@ epgrecの再インストールを旧テーブルを使用せずに行うよう�
 <div><b>sleep：</b><input type="text" name="sleep" value="{$settings->sleep}" size="30" class="required" /></div>
 </div>
 
+<h3>Webサーバーのユーザーおよびグループ名</h3>
+<div class="setting">
+<div class="caption">Webサーバーのユーザー名およびグループ名を設定してください。</div>
+<div><b>ユーザー名：</b><input type="text" name="www_user" value="{$settings->www_user}" size="30" class="required" /></div>
+<div><b>グループ名：</b><input type="text" name="www_group" value="{$settings->www_group}" size="30" class="required" /></div>
+</div>
+
 <h3>省電力の設定</h3>
 <div class="setting">
 <div class="caption">シャットダウンからの復帰および起動をACPIタイマーを使って行い録画機の消費電力を低減させます。<br />
@@ -134,19 +141,6 @@ ACPIタイマーが使えないPCで設定を行った場合、録画は正常�
 <div class="setting">
 <div class="caption">EPGを取得する間隔を時間単位で設定します。省電力が有効なときに使う値です。</div>
 <input type="text" name="getepg_timer" id="id_getepg_timer" value="{$settings->getepg_timer}" size="2" class="required digits" />
-</div>
-
-<h3>Webサーバーのユーザーおよびグループ名</h3>
-<div class="setting">
-<div class="caption">Webサーバーのユーザー名およびグループ名を設定してください。省電力が有効なときに使う値です。</div>
-<div><b>グループ名：</b><input type="text" name="www_group" id="id_www_group" value="{$settings->www_group}" size="30" class="required" /></div>
-<div><b>ユーザー名：</b><input type="text" name="www_user" id="id_www_user"  value="{$settings->www_user}" size="30" class="required" /></div>
-</div>
-
-<h3>シャットダウンコマンド</h3>
-<div class="setting">
-<div class="caption">シャットダウンさせるコマンドを設定してください。省電力が有効なときに使う値です。</div>
-<div><b>グループ名：</b><input type="text" name="shutdown" id="id_shutdown" value="{$settings->shutdown}" size="40" class="required" /></div>
 </div>
 
 <input type="hidden" name="token" value="{$token}" />

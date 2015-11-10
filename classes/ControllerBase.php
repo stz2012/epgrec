@@ -293,7 +293,7 @@ abstract class ControllerBase
 	protected function postAction()
 	{
 		// デフォルトで割り当てるSmarty変数
-		$this->view->assign('home_url',   HOME_URL);
+		$this->view->assign('home_url',   BASE_URI);
 		$this->view->assign('this_class', $this);
 		$this->view->assign('post_data',  $this->request->getPost());
 		$this->view->assign('sess_data',  $this->session);

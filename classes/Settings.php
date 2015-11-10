@@ -7,21 +7,15 @@
 class Settings extends SimpleXMLElement
 {
 	/**
-	 * @constant 設定ファイル名
-	 */
-	const CONFIG_XML = '/settings/config.xml';
-
-	/**
 	 * 設定取得
 	 * @return object 
 	 */
 	public static function factory()
 	{
-		if ( file_exists( INSTALL_PATH . self::CONFIG_XML ) )
+		$xmlfile = UtilSQLite::getOptionXml();
+		if ( $xmlfile != '' ) )
 		{	// 既存ファイル読込
-			$xmlfile = file_get_contents(INSTALL_PATH . self::CONFIG_XML);
-			$xml = new self($xmlfile);
-			return $xml;
+			return new self($xmlfile);
 		}
 		else
 		{	// 初回起動
@@ -73,18 +67,16 @@ class Settings extends SimpleXMLElement
 		$xml->atrm = '/usr/bin/atrm';
 		// 使用コマンドのパス設定：sleep
 		$xml->sleep = '/bin/sleep';
+		// Webサーバーのユーザー名
+		$xml->www_user = 'www-data';
+		// Webサーバーのグループ名
+		$xml->www_group = 'www-data';
 		// 省電力の設定
 		$xml->use_power_reduce = 0;
 		// 録画スタート前に起動させる時間（分）
-		$xml->wakeup_before = 10;
+		$xml->wakeup_before = 45;
 		// EPGを取得する間隔（時間）
-		$xml->getepg_timer = 4;
-		// Webサーバーのグループ名
-		$xml->www_group = 'www-data';
-		// Webサーバーのユーザー名
-		$xml->www_user = 'www-data';
-		// シャットダウンコマンド
-		$xml->shutdown = 'sudo /sbin/shutdown';
+		$xml->getepg_timer = 6;
 
 		// 地デジチューナーの台数
 		$xml->gr_tuners = 1;
@@ -102,8 +94,6 @@ class Settings extends SimpleXMLElement
 		$xml->rec_switch_time = 5;
 		// 優先する録画モード
 		$xml->autorec_mode = 0;
-		// mediatomb連係機能
-		$xml->mediatomb_update = 0;
 		// 録画ファイル名の形式
 		$xml->filename_format = '%TYPE%%CH%_%ST%_%ET%';
 		// ページに表示する番組表の長さ（時間）
@@ -166,7 +156,7 @@ class Settings extends SimpleXMLElement
 	 */
 	public function save()
 	{
-		$this->asXML(INSTALL_PATH . self::CONFIG_XML);
+		UtilSQLite::updOptionXml($this->asXML());
 	}
 }
 ?>

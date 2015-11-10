@@ -1,2 +1,0 @@
-www-data ALL=NOPASSWD: /sbin/shutdown
-root    ALL=(ALL:ALL) ALL
