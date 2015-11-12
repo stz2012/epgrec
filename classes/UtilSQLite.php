@@ -258,7 +258,7 @@ SQL_TEXT;
 			$db_obj = new self();
 			$sql = "INSERT INTO ".strtolower($table)." (event_comment)";
 			$sql .= " VALUES (?)";
-			$stmt = $db_obj->prepare($sql);
+			$stmt = $db_obj->db->prepare($sql);
 			$stmt->bindValue(1, $comment);
 			$stmt->execute();
 			$stmt->closeCursor();
