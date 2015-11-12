@@ -36,13 +36,7 @@ try
 	$db_obj = new UtilSQLite();
 
 	// 起動してから１時間未満の場合
-	$sql = "SELECT COUNT(event_id)";
-	$sql .= " FROM wakeup";
-	$sql .= " WHERE DATETIME(event_date) > DATETIME('now', '-1 hours', 'localtime')";
-	$stmt = $db_obj->db->query($sql);
-	$cnt = $stmt->fetchColumn();
-	$stmt->closeCursor();
-	if ($cnt > 0)
+	if ($db_obj->isExistEventWithInHours('wakeup', 1))
 	{
 		UtilSQLite::outEventLog('chkstatus', '【自動終了チェック】起動してから１時間未満');
 		exit(1);
