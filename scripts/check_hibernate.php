@@ -21,24 +21,7 @@ try
 	$db_obj->setSetting($settings);
 
 	// 現在以降の予約で直近開始時刻の{$settings->wakeup_before}分前の時刻を取得
-	$sql = "SELECT";
-	if ($settings->db_type == 'pgsql')
-		$sql .= " (starttime - INTERVAL '{$settings->wakeup_before} MINUTE') AS waketime";
-	else if ($settings->db_type == 'sqlite')
-		$sql .= " datetime('now', '-{$settings->wakeup_before} minutes', 'localtime') AS waketime";
-	else
-		$sql .= " (starttime - INTERVAL {$settings->wakeup_before} MINUTE) AS waketime";
-	$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
-	$sql .= " WHERE complete <> '1'";
-	if ($settings->db_type == 'sqlite')
-		$sql .= " AND datetime(starttime) >= datetime('now', 'localtime')";
-	else
-		$sql .= " AND starttime >= now()";
-	$sql .= " ORDER BY starttime";
-	$stmt = $db_obj->db->prepare($sql);
-	$stmt->execute();
-	$waketime = $stmt->fetchColumn();
-	$stmt->closeCursor();
+	$waketime = $db_obj->getImmediateReserveTimeBeforeMinutes($settings->wakeup_before);
 	if ($waketime > 0)
 	{
 		UtilSQLite::outEventLog('chkstatus', '【ハイバネートチェック】次回予約データが存在した');

@@ -23,29 +23,7 @@ try
 	}
 
 	// 現在から１時間以内に録画予約がある
-	$sql = "SELECT starttime";
-	$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
-	$sql .= " WHERE complete <> '1'";
-	if ($settings->db_type == 'pgsql')
-	{
-		$sql .= " AND starttime >= now()";
-		$sql .= " AND starttime <= (now() + INTERVAL '1 HOUR')";
-	}
-	else if ($settings->db_type == 'sqlite')
-	{
-		$sql .= " AND datetime(starttime) >= datetime('now', 'localtime')";
-		$sql .= " AND datetime(starttime) <= datetime('now', '+1 hours', 'localtime')";
-	}
-	else
-	{
-		$sql .= " AND starttime >= now()";
-		$sql .= " AND starttime <= (now() + INTERVAL 1 HOUR)";
-	}
-	$sql .= " ORDER BY starttime";
-	$stmt = $this->db->prepare($sql);
-	$stmt->execute();
-	$starttime = $stmt->fetchColumn();
-	$stmt->closeCursor();
+	$starttime = $db_obj->getReserveTimeWithInMinutes(60);
 	if ($starttime > 0)
 	{
 		$diff_val = toTimestamp($starttime) - time();

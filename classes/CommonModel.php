@@ -137,6 +137,67 @@ class CommonModel extends ModelBase
 	}
 
 	/**
+	 * 何分以内の予約時間を取得
+	 * @param int $minutes 
+	 * @return int
+	 */
+	public function getReserveTimeWithInMinutes($minutes)
+	{
+		$sql = "SELECT starttime";
+		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
+		$sql .= " WHERE complete <> '1'";
+		if ($this->setting->db_type == 'pgsql')
+		{
+			$sql .= " AND starttime >= now()";
+			$sql .= " AND starttime <= (now() + INTERVAL '{$minutes} MINUTE')";
+		}
+		else if ($this->setting->db_type == 'sqlite')
+		{
+			$sql .= " AND datetime(starttime) >= datetime('now', 'localtime')";
+			$sql .= " AND datetime(starttime) <= datetime('now', '+{$minutes} minutes', 'localtime')";
+		}
+		else
+		{
+			$sql .= " AND starttime >= now()";
+			$sql .= " AND starttime <= (now() + INTERVAL {$minutes} MINUTE)";
+		}
+		$sql .= " ORDER BY starttime";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		$starttime = $stmt->fetchColumn();
+		$stmt->closeCursor();
+		return $starttime;
+	}
+
+	/**
+	 * 直近の予約時間の何分前を取得
+	 * @param int $minutes 
+	 * @return int
+	 */
+	public function getImmediateReserveTimeBeforeMinutes($minutes)
+	{
+		$sql = "SELECT";
+		if ($this->setting->db_type == 'pgsql')
+			$sql .= " (starttime - INTERVAL '{$minutes} MINUTE') AS waketime";
+		else if ($this->setting->db_type == 'sqlite')
+			$sql .= " datetime('now', '-{$minutes} minutes', 'localtime') AS waketime";
+		else
+			$sql .= " (starttime - INTERVAL {$minutes} MINUTE) AS waketime";
+		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
+		$sql .= " WHERE complete <> '1'";
+		if ($this->setting->db_type == 'sqlite')
+			$sql .= " AND datetime(starttime) >= datetime('now', 'localtime')";
+		else
+			$sql .= " AND starttime >= now()";
+		$sql .= " ORDER BY starttime";
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		$waketime = $stmt->fetchColumn();
+		$stmt->closeCursor();
+		return $starttime;
+	}
+
+	/**
 	 * PDOドライバ一覧取得
 	 * @return array
 	 */
