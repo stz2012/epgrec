@@ -228,7 +228,7 @@ SQL_TEXT;
 			$sql = "SELECT COUNT(event_id)";
 			$sql .= " FROM {$table_name}";
 			$sql .= " WHERE DATETIME(event_date) > DATETIME('now', '-{$hours} hours', 'localtime')";
-			$stmt = $db_obj->prepare($sql);
+			$stmt = $db_obj->db->prepare($sql);
 			$stmt->execute();
 			$cnt = $stmt->fetchColumn();
 			$stmt->closeCursor();
