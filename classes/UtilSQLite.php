@@ -213,6 +213,36 @@ SQL_TEXT;
 	}
 
 	/**
+	 * 何時間以内にイベントが存在するかどうか
+	 * @param string $table_name 
+	 * @param int $minutes 
+	 * @return bool
+	 */
+	public static function isExistEventWithInHours($table_name, $hours)
+	{
+		$retval = false;
+
+		try
+		{
+			$db_obj = new self();
+			$sql = "SELECT COUNT(event_id)";
+			$sql .= " FROM {$table_name}";
+			$sql .= " WHERE DATETIME(event_date) > DATETIME('now', '-{$hours} hours', 'localtime')";
+			$stmt = $db_obj->prepare($sql);
+			$stmt->execute();
+			$cnt = $stmt->fetchColumn();
+			$stmt->closeCursor();
+			$retval = ($cnt > 0);
+		}
+		catch (PDOException $e)
+		{
+			UtilLog::writeLog($e->getMessage());
+		}
+
+		return $retval;
+	}
+
+	/**
 	 * イベントログ出力
 	 * @param string $table   テーブル名
 	 * @param string $comment コメント

@@ -33,10 +33,8 @@ try
 		exit(1);
 	}
 
-	$db_obj = new UtilSQLite();
-
 	// 起動してから１時間未満の場合
-	if ($db_obj->isExistEventWithInHours('wakeup', 1))
+	if (UtilSQLite::isExistEventWithInHours('wakeup', 1))
 	{
 		UtilSQLite::outEventLog('chkstatus', '【自動終了チェック】起動してから１時間未満');
 		exit(1);

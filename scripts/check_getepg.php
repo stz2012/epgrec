@@ -39,10 +39,8 @@ try
 		}
 	}
 
-	$db_obj = new UtilSQLite();
-
 	// 最終取得してから{$settings->getepg_timer}時間未満の場合
-	if ($db_obj->isExistEventWithInHours('recorder', $settings->getepg_timer))
+	if (UtilSQLite::isExistEventWithInHours('recorder', $settings->getepg_timer))
 	{
 		UtilSQLite::outEventLog('chkstatus', "【EPGデータ取得チェック】最終取得してから {$settings->getepg_timer} 時間未満");
 		exit(1);
