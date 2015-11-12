@@ -13,7 +13,7 @@ class Settings extends SimpleXMLElement
 	public static function factory()
 	{
 		$xmlfile = UtilSQLite::getOptionXml();
-		if ( $xmlfile != '' ) )
+		if ( $xmlfile != '' )
 		{	// 既存ファイル読込
 			return new self($xmlfile);
 		}

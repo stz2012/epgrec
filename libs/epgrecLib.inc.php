@@ -186,6 +186,22 @@ function parse_epgdump_file( $type, $xmlfile )
 	$settings = Settings::factory();
 	$ch_map = array();
 
+	// チューナー種別チェック
+	switch ( $type )
+	{
+		case 'GR':
+		case 'BS':
+		case 'CS':
+			break;
+		case 'CS1':
+		case 'CS2':
+			$type = 'CS';
+			break;
+		default:
+			UtilLog::outLog( "parse_epgdump_file:: 不正なチューナー種別です", UtilLog::LV_ERROR );
+			return;
+	}
+
 	// XML parse
 	$xml = @simplexml_load_file( $xmlfile );
 	if ( $xml === false )

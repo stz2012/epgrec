@@ -89,7 +89,7 @@ epgrecの再インストールを旧テーブルを使用せずに行うよう�
 <div class="setting">
 <div class="caption">サムネールを保存するディレクトリを {$install_path} からの相対パスで設定します。<br />
 設定の方法、条件は録画保存ディレクトリと同様です。</div>
-<input type="text" id="id_thumbs" name="thumbs" value="{$settings->thumbs}" size="15" class="required" />
+<input type="text" id="id_thumbs" name="thumbs" value="{$settings->thumbs}" size="40" class="required" />
 </div>
 
 <h3>EPG取得用テンポラリファイルの設定</h3>

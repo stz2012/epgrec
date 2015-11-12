@@ -7,9 +7,9 @@
 EPGの受信には20～50分程度はかかります。初回受信が終了するまで番組表は表示できません。</p>
 
 <p>EPG受信後、/etc/cron.d/以下にcronによるEPG受信の自動実行を設定する必要があります。<br />
-Debian/Ubuntu用の設定ファイルは{$install_path}/docs/cron.d/getepgです。Debian/Ubuntuをお使いの方は<br />
+Debian/Ubuntu用の設定ファイルは{$install_path}/docs/cron.d/epgrecです。Debian/Ubuntuをお使いの方は<br />
 <pre>
-$ sudo cp {$install_path}/docs/cron.d/getepg /etc/cron.d/ [Enter]
+$ sudo cp {$install_path}/docs/cron.d/epgrec /etc/cron.d/ [Enter]
 </pre>
 という具合にコピーするだけで動作するでしょう。<br />
 それ以外のディストリビューションをお使いの方はDebian/Ubuntu用の設定ファイルを参考に、適切にcronの設定を行ってください。</p>

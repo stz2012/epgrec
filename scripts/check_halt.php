@@ -15,6 +15,10 @@ try
 	$db_obj = new CommonModel();
 	$db_obj->setSetting($settings);
 
+	// 省電力の設定がOFFの場合
+	if ($settings->use_power_reduce == 0)
+		exit(1);
+
 	// 現在録画中である
 	if ($db_obj->isRecordingNow())
 	{

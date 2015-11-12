@@ -8,7 +8,7 @@ if ( ! (isset($argv[0]) && __FILE__ === realpath($argv[0])) )
 	exit;
 
 $settings = Settings::factory();
-$type = $argv[1];	// BS CS1 CS2 GR
+$type = $argv[1];	// GR BS CS1 CS2
 $file = $argv[2];	// TSファイル
 
 try
@@ -22,25 +22,18 @@ try
 	if ( $type === 'GR' )
 	{
 		$ch = $argv[3];	// channel
-		$xmlfile = $settings->temp_xml.'_gr'.$ch;
+		$xmlfile = $settings->temp_xml.'.gr'.$ch;
 		$cmdline .= $ch.' '.$file.' '.$xmlfile;
-	}
-	else if ( $type === 'CS1' )
-	{
-		$type = 'CS';
-		$xmlfile = $settings->temp_xml.'_cs1';
-		$cmdline .= '/CS '.$file.' '.$xmlfile;
-	}
-	else if ( $type === 'CS2' )
-	{
-		$type = 'CS';
-		$xmlfile = $settings->temp_xml.'_cs2';
-		$cmdline .= '/CS '.$file.' '.$xmlfile;
 	}
 	else if ( $type === 'BS' )
 	{
-		$xmlfile = $settings->temp_xml.'_bs';
+		$xmlfile = $settings->temp_xml.'.bs';
 		$cmdline .= '/BS '.$file.' '.$xmlfile;
+	}
+	else if ( $type === 'CS1' || $type === 'CS2' )
+	{
+		$xmlfile = $settings->temp_xml.'.'.strtolower($type);
+		$cmdline .= '/CS '.$file.' '.$xmlfile;
 	}
 	else
 		exit;

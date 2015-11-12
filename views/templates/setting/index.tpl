@@ -119,7 +119,7 @@ config.phpの$RECORD_MODEに複数の録画モードを登録し、do-record.sh�
 なお、ファイルシステムがUTF-8以外の文字コードで、ファイル名に日本語を交ぜる場合、<br />
 config.php内の定数FILESYSTEM_ENCODINGに文字コードを設定することができます。<br />
 ただし、UTF-8以外の文字コードはテストを行っていないため推奨しません。</div>
-<input type="text" name="filename_format" value="{$settings->filename_format}" size="40" class="required" />
+<input type="text" name="filename_format" value="{$settings->filename_format}" size="60" class="required" />
 </div>
 
 <h2>番組表表示設定</h2>
