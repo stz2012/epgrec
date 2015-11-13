@@ -139,10 +139,11 @@ class CommonModel extends ModelBase
 	/**
 	 * 何分以内の予約時間を取得
 	 * @param int $minutes 
-	 * @return int
+	 * @return string
 	 */
 	public function getReserveTimeWithInMinutes($minutes)
 	{
+		$retval = '';
 		$sql = "SELECT starttime";
 		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
 		$sql .= " WHERE complete <> '1'";
@@ -164,18 +165,21 @@ class CommonModel extends ModelBase
 		$sql .= " ORDER BY starttime";
 		$stmt = $this->db->prepare($sql);
 		$stmt->execute();
-		$starttime = $stmt->fetchColumn();
+		$result = $stmt->fetchColumn();
+		if ($result !== false)
+			$retval = $result;
 		$stmt->closeCursor();
-		return $starttime;
+		return $retval;
 	}
 
 	/**
 	 * 直近の予約時間の何分前を取得
 	 * @param int $minutes 
-	 * @return int
+	 * @return string
 	 */
 	public function getImmediateReserveTimeBeforeMinutes($minutes)
 	{
+		$retval = '';
 		$sql = "SELECT";
 		if ($this->setting->db_type == 'pgsql')
 			$sql .= " (starttime - INTERVAL '{$minutes} MINUTE') AS waketime";
@@ -192,9 +196,11 @@ class CommonModel extends ModelBase
 		$sql .= " ORDER BY starttime";
 		$stmt = $this->db->prepare($sql);
 		$stmt->execute();
-		$waketime = $stmt->fetchColumn();
+		$result = $stmt->fetchColumn();
+		if ($result !== false)
+			$retval = $result;
 		$stmt->closeCursor();
-		return $starttime;
+		return $retval;
 	}
 
 	/**
