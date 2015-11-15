@@ -184,7 +184,7 @@ class CommonModel extends ModelBase
 		if ($this->setting->db_type == 'pgsql')
 			$sql .= " (starttime - INTERVAL '{$minutes} MINUTE') AS waketime";
 		else if ($this->setting->db_type == 'sqlite')
-			$sql .= " datetime('now', '-{$minutes} minutes', 'localtime') AS waketime";
+			$sql .= " datetime(starttime, '-{$minutes} minutes', 'localtime') AS waketime";
 		else
 			$sql .= " (starttime - INTERVAL {$minutes} MINUTE) AS waketime";
 		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
