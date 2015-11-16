@@ -633,7 +633,7 @@ class Reservation extends ModelBase
 			}
 		}
 		if ( $tuner_type != "*" )
-			$sql .= " AND type = :tuner_type";
+			$sql .= " AND a.type = :tuner_type";
 		if ( $channel_id != 0 )
 			$sql .= " AND channel_id = :channel_id";
 		if ( $category_id != 0 )
