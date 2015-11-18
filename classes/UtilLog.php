@@ -93,6 +93,7 @@ class UtilLog
 			if ($fp)
 			{
 				flock($fp, LOCK_EX);			// データロック
+				global $argv;
 				if (array_key_exists('REMOTE_ADDR', $_SERVER) && array_key_exists('REQUEST_URI', $_SERVER))
 					fputs($fp, date("[Y-m-d H:i:s]") . "[{$_SERVER['REMOTE_ADDR']}][" . ((isset($argv[0])) ? $argv[0] : parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) . "]\n");
 				else if (isset($argv[0]))
