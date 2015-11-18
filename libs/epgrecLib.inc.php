@@ -152,7 +152,7 @@ function set_wakealarm( $wake_datetime )
 
 	// 起動時間を書込（UTC時間）
 	$fp = fopen( $ACPI_TIMER_PATH, 'w' );
-	fwrite($fp , ''.toTimestamp($wake_datetime));
+	fwrite($fp , ''.(toTimestamp($wake_datetime) + 60 * 60 * 9));
 	fclose($fp);
 }
 
