@@ -268,6 +268,12 @@ abstract class ControllerBase
 	 */
 	protected function preAction()
 	{
+		// セッション引継ぎ
+		if ($this->request->getQuery('SESS_ID') != null)
+		{
+			$S_ID = $this->request->getQuery('SESS_ID');
+			$this->request->setSessionId($S_ID);
+		}
 		// コントローラ用のセッション変数を取得
 		$this->session = $this->request->getSession($this->controller);
 		// セッションタイムアウト判定

@@ -123,8 +123,9 @@ class RecprogController extends CommonController
 			echo '<PARAM NAME = "Encoding" VALUE = "UTF-8" />';
 			echo '<ENTRY>';
 			$param = array();
+			$param['SESS_ID'] = session_id();
 			$param['reserve_id'] = $rrec->id;
-			echo '<REF HREF="'.$this->getCurrentUri(false).'/sendStream?'.UtilString::buildQueryString($param).'" />';
+			echo '<REF HREF="'.$this->_getCurrentHost().$this->getCurrentUri(false).'/sendStream?'.UtilString::buildQueryString($param).'" />';
 			echo '<TITLE>'.$title.'</TITLE>';
 			echo '<ABSTRACT>'.$abstract.'</ABSTRACT>';
 			echo '<DURATION VALUE="'.sprintf( '%02d:%02d:%02d', $dh, $dm, $ds ).'" />';
@@ -133,7 +134,7 @@ class RecprogController extends CommonController
 		}
 		catch ( Exception $e )
 		{
-			exit( $e->getMessage() );
+			UtilLog::writeLog($e->getMessage());
 		}
 		exit;
 	}
@@ -143,12 +144,6 @@ class RecprogController extends CommonController
 	 */
 	public function sendStreamAction()
 	{
-		header('Expires: Thu, 01 Dec 1994 16:00:00 GMT');
-		header('Last-Modified: '. gmdate('D, d M Y H:i:s'). ' GMT');
-		header('Cache-Control: no-cache, must-revalidate');
-		header('Cache-Control: post-check=0, pre-check=0', false);
-		header('Pragma: no-cache');
-
 		if ( ! $this->request->getQuery('reserve_id') )
 			jdialog('予約番号が指定されていません', $this->getCurrentUri(false).'/recorded');
 		$reserve_id = $this->request->getQuery('reserve_id');
@@ -156,35 +151,12 @@ class RecprogController extends CommonController
 		try
 		{
 			$rrec = new DBRecord( RESERVE_TBL, 'id', $reserve_id );
-
-			$start_time = toTimestamp($rrec->starttime);
-			$end_time = toTimestamp($rrec->endtime );
-			$duration = $end_time - $start_time;
-			$size = 3 * 1024 * 1024 * $duration;	// 1秒あたり3MBと仮定
-
-			header('Content-type: video/mpeg');
-			header('Content-Disposition: inline; filename="'.$rrec->path.'"');
-			header('Content-Length: ' . $size );
-			ob_clean();
-			flush();
-
-			$fp = @fopen( INSTALL_PATH.$this->setting->spool.'/'.$rrec->path, 'r' );
-			if ( $fp !== false )
-			{
-				do
-				{
-					$start = microtime(true);
-					if ( feof( $fp ) ) break;
-					echo fread( $fp, 6292 );
-					@usleep( 2000 - (int)((microtime(true) - $start) * 1000 * 1000));
-				}
-				while ( connection_aborted() == 0 );
-			}
-			fclose($fp);
+			$stream = new VideoStream(INSTALL_PATH.$this->setting->spool.'/'.$rrec->path);
+			$stream->run();
 		}
 		catch ( Exception $e )
 		{
-			exit( $e->getMessage() );
+			UtilLog::writeLog($e->getMessage());
 		}
 		exit;
 	}
@@ -201,6 +173,27 @@ class RecprogController extends CommonController
 		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode($param);
 		exit;
+	}
+
+	private function _getCurrentHost()
+	{
+		global $_SERVER;
+		if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on')
+			$protocol = 'https://';
+		else
+			$protocol = 'http://';
+		$host = $_SERVER['HTTP_HOST'];
+		if (isset($_SERVER['HTTP_PORT']) &&
+			(($protocol == 'http://' && $_SERVER['HTTP_PORT'] != '80') ||
+			($protocol == 'https://' && $_SERVER['HTTP_PORT'] != '443')))
+		{
+			$port = ':' . $_SERVER['HTTP_PORT'];
+		}
+		else
+		{
+			$port = '';
+		}
+		return $protocol . $host . $port;
 	}
 
 	private function _filesize($path)

@@ -21,7 +21,18 @@ class Session extends RequestVariables
 			$this->_values[$key] = $value;
 		}
 	}
-	
+
+	/**
+	 * セッションIDの設定
+	 * @param string $new_id 設定するID
+	 */
+	public function setId($new_id)
+	{
+		session_write_close();
+		session_id($new_id);
+		session_start();
+	}
+
 	/**
 	 * セッションデータの保存
 	 * @param string $key 保存するキー

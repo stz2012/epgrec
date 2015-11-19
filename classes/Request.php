@@ -83,6 +83,15 @@ class Request
 	}
 
 	/**
+	 * SESSION_ID設定
+	 * @param string $value
+	 */
+	public function setSessionId($value)
+	{
+		$this->_session->setId($value);
+	}
+
+	/**
 	 * SESSION変数取得
 	 * @param string $key
 	 * @return mixed
