@@ -368,7 +368,6 @@ class Reservation extends ModelBase
 			}
 			else
 			{
-				$rrec->delete();
 				UtilLog::outLog( 'Reservation::custom atの実行に失敗した模様', UtilLog::LV_ERROR );
 				throw new Exception('AT実行エラー');
 			}
@@ -393,7 +392,6 @@ class Reservation extends ModelBase
 			}
 
 			// エラー
-			$rrec->delete();
 			UtilLog::outLog( 'Reservation::custom job番号の取得に失敗', UtilLog::LV_ERROR );
 			throw new Exception( 'job番号の取得に失敗' );
 		}
