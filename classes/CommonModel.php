@@ -105,7 +105,7 @@ class CommonModel extends ModelBase
 	}
 
 	/**
-	 * 何分以内に予約が存在するかどうか
+	 * 何分以内に予約データが存在するかどうか
 	 * @param int $minutes 
 	 * @return bool
 	 */
@@ -128,6 +128,38 @@ class CommonModel extends ModelBase
 		{
 			$sql .= " AND starttime >= now()";
 			$sql .= " AND starttime <= (now() + INTERVAL {$minutes} MINUTE)";
+		}
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute();
+		$cnt = $stmt->fetchColumn();
+		$stmt->closeCursor();
+		return ($cnt > 0);
+	}
+
+	/**
+	 * 何分以内の録画済データが存在するかどうか
+	 * @param int $minutes 
+	 * @return bool
+	 */
+	public function isExistRecordedWithInMinutes($minutes)
+	{
+		$sql = "SELECT COUNT(id)";
+		$sql .= " FROM ".$this->getFullTblName(RESERVE_TBL);
+		$sql .= " WHERE complete = '1'";
+		if ($this->setting->db_type == 'pgsql')
+		{
+			$sql .= " AND endtime >= (now() - INTERVAL '{$minutes} MINUTE')";
+			$sql .= " AND endtime <= now()";
+		}
+		else if ($this->setting->db_type == 'sqlite')
+		{
+			$sql .= " AND datetime(endtime) >= datetime('now', '-{$minutes} minutes', 'localtime')";
+			$sql .= " AND datetime(endtime) <= datetime('now', 'localtime')";
+		}
+		else
+		{
+			$sql .= " AND endtime >= (now() - INTERVAL {$minutes} MINUTE)";
+			$sql .= " AND endtime <= now()";
 		}
 		$stmt = $this->db->prepare($sql);
 		$stmt->execute();

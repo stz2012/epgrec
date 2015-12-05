@@ -33,6 +33,13 @@ try
 		exit(1);
 	}
 
+	// 現在から３０分以内に録画済がある
+	if ($db_obj->isExistRecordedWithInMinutes(30))
+	{
+		UtilSQLite::outEventLog('chkstatus', '【自動終了チェック】３０分以内に録画済あり');
+		exit(1);
+	}
+
 	// 起動してから１時間未満の場合
 	if (UtilSQLite::isExistEventWithInHours('wakeup', 1))
 	{
