@@ -10,19 +10,10 @@ try
 {
 	$procMng = new EpgrecProcMng();
 
-	// ユーザー/グループの切り替えを試みる
-	$userinfo = posix_getpwnam( $settings->www_user );
-	$groupinfo = posix_getgrnam( $settings->www_group );
-	posix_setgid( $groupinfo['gid'] );
-	posix_setuid( $userinfo['uid'] );
-
 	$temp_data_bs  = $settings->temp_data.'.bs';
 	$temp_data_cs1 = $settings->temp_data.'.cs1';
 	$temp_data_cs2 = $settings->temp_data.'.cs2';
 	$temp_data_gr  = $settings->temp_data.'.gr';
-
-	if ( file_exists( $settings->temp_data ) )
-		@unlink( $settings->temp_data );
 
 	// 地上波を処理する
 	if ( $settings->gr_tuners != 0 )

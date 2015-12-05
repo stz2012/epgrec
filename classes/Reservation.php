@@ -175,6 +175,7 @@ class Reservation extends ModelBase
 				}
 				if ( $mem_battings >= $tuners )
 				{	// 重複解消できない
+					$msg = '';
 					for ( $j = 0; $j < count($trecs) ; $j++ )
 					{
 						if ( ( $dim_start_time[$j] < $dim_end_time[$i] ) && ( $dim_end_time[$j] >= $dim_end_time[$i] ) )
