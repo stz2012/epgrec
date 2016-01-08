@@ -544,7 +544,8 @@ class Reservation extends ModelBase
 				else
 				{
 					// まだ実行されていない予約ならatを削除しとく
-					exec( $settings->atrm . ' ' . $rec->job );
+					$proc = new EpgrecProc( $settings->atrm . ' ' . $rec->job );
+					$proc->waitCommand();
 					UtilLog::outLog( 'Reservation::cancel ジョブ番号'.$rec->job.'を削除' );
 					$rec->delete();
 				}
