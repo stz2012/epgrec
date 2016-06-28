@@ -452,6 +452,7 @@ function garbageClean()
 		DBRecord::deleteRecords( LOG_TBL, "WHERE datetime(logtime) < datetime('now', '-10 days', 'localtime')" );
 	else
 		DBRecord::deleteRecords( LOG_TBL, "WHERE logtime < (now() - INTERVAL 10 DAY)" );
+	UtilSQLite::cleanEventLog();
 }
 
 /**

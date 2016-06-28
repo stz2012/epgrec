@@ -63,7 +63,12 @@ class SettingController extends CommonController
 	public function viewLogAction()
 	{
 		$this->view->assign( 'sitetitle' , 'epgrec動作ログ' );
-		$this->view->assign( 'logs',       $this->model->getLogList() );
+		$this->view->assign( 'log_types',  UtilSQLite::getLogType() );
+		$log_type = $this->request->getPost('log_type');
+		if ($log_type != '')
+			$this->view->assign( 'events', UtilSQLite::getEventLog($log_type) );
+		else
+			$this->view->assign( 'logs',   $this->model->getLogList() );
 	}
 
 	/**

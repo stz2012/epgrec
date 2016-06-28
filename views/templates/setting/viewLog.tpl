@@ -6,6 +6,14 @@
 </div>
 
 <div class="container nonborderbox">
+<form method="post" action="{$this_class->getCurrentUri()}" class="formSetting">
+<div class="setting">
+<div class="caption">ログ種別を選択してください。</div>
+  <select name="log_type" id="id_log_type">
+    <option value=""></option>
+{html_options options=$log_types selected=$post_data.log_type onchange="this.form.submit();"}
+  </select>
+</div>
 {if count($logs)}
 <table id="log_table" class="table">
 <thead>
@@ -30,9 +38,28 @@
 {/foreach}
 </tbody>
 </table>
+{elseif count($events)}
+<table id="log_table" class="table">
+<thead>
+ <tr>
+  <th>日時</th>
+  <th>内容</th>
+ </tr>
+</thead>
+<tbody>
+{foreach from=$events item=log}
+ <tr>
+  <td>{$log.event_date}</td>
+  <td>{$log.event_comment|escape}</td>
+ </tr>
+{/foreach}
+</tbody>
+</table>
 {else}
 <p>該当するログはありません</p>
 {/if}
+<input type="hidden" name="token" value="{$token}" />
+</form>
 </div>
 {include file='INISet.tpl'}
 {include file='footer.tpl'}

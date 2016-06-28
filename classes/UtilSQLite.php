@@ -17,6 +17,17 @@ class UtilSQLite
 	protected $db = false;
 
 	/**
+	 * @var array ログ種別
+	 */
+	protected static $logType = array(
+		'chkstatus',
+		'encode',
+		'recorder',
+		'shutdown',
+		'wakeup'
+	);
+
+	/**
 	 * コンストラクタ
 	 */
 	function __construct()
@@ -44,7 +55,7 @@ class UtilSQLite
 
 			if ($initDb)
 			{
-				// ＤＢ初期スクリプト
+				// ＤＢ初期スクリプト（設定）
 				$sql = <<<SQL_TEXT
 DROP TABLE IF EXISTS `setting`;
 CREATE TABLE `setting` (
@@ -52,38 +63,22 @@ CREATE TABLE `setting` (
   `item_name`  VARCHAR NOT NULL,
   `item_value` TEXT NOT NULL
 );
-DROP TABLE IF EXISTS `chkstatus`;
+SQL_TEXT;
+				$this->db->exec($sql);
+
+				// ＤＢ初期スクリプト（イベント）
+				foreach ( self::$logType as $type_name )
+				{
+					$sql = <<<SQL_TEXT
+DROP TABLE IF EXISTS `{$type_name}`;
 CREATE TABLE `chkstatus` (
   `event_id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `event_date` TIMESTAMP DEFAULT (DATETIME('now','localtime')),
   `event_comment` varchar(512) DEFAULT NULL
 );
-DROP TABLE IF EXISTS `encode`;
-CREATE TABLE `encode` (
-  `event_id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `event_date` TIMESTAMP DEFAULT (DATETIME('now','localtime')),
-  `event_comment` varchar(512) DEFAULT NULL
-);
-DROP TABLE IF EXISTS `recorder`;
-CREATE TABLE `recorder` (
-  `event_id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `event_date` TIMESTAMP DEFAULT (DATETIME('now','localtime')),
-  `event_comment` varchar(512) DEFAULT NULL
-);
-DROP TABLE IF EXISTS `shutdown`;
-CREATE TABLE `shutdown` (
-  `event_id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `event_date` TIMESTAMP DEFAULT (DATETIME('now','localtime')),
-  `event_comment` varchar(512) DEFAULT NULL
-);
-DROP TABLE IF EXISTS `wakeup`;
-CREATE TABLE `wakeup` (
-  `event_id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `event_date` TIMESTAMP DEFAULT (DATETIME('now','localtime')),
-  `event_comment` varchar(512) DEFAULT NULL
-);
 SQL_TEXT;
-				$this->db->exec($sql);
+					$this->db->exec($sql);
+				}
 
 				// 暗号化キー生成
 				$sql = "INSERT INTO setting (";
@@ -243,6 +238,64 @@ SQL_TEXT;
 	}
 
 	/**
+	 * ログ種別取得
+	 * @return array
+	 */
+	public static function getLogType()
+	{
+		$retval = array();
+		foreach ( self::$logType as $val )
+		{
+			switch ( $val )
+			{
+				case 'chkstatus':
+					$retval[$type_name] = '状態チェックログ';
+					break;
+				case 'encode':
+					$retval[$type_name] = 'エンコードログ';
+					break;
+				case 'recorder':
+					$retval[$type_name] = 'レコーダーログ';
+					break;
+				case 'shutdown':
+					$retval[$type_name] = 'ＰＣ終了ログ';
+					break;
+				case 'wakeup':
+					$retval[$type_name] = 'ＰＣ起動ログ';
+					break;
+			}
+		}
+		return $retval;
+	}
+
+	/**
+	 * イベントログ取得
+	 * @param string $table_name 
+	 * @return array
+	 */
+	public static function getEventLog($table_name)
+	{
+		$retval = '';
+
+		try
+		{
+			$db_obj = new self();
+			$sql = "SELECT * FROM {$table_name}";
+			$sql .= " ORDER BY event_date DESC";
+			$stmt = $db_obj->db->prepare($sql);
+			$stmt->execute();
+			$retval = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$stmt->closeCursor();
+		}
+		catch (PDOException $e)
+		{
+			UtilLog::writeLog($e->getMessage());
+		}
+
+		return $retval;
+	}
+
+	/**
 	 * イベントログ出力
 	 * @param string $table   テーブル名
 	 * @param string $comment コメント
@@ -270,6 +323,29 @@ SQL_TEXT;
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * イベントログ消去
+	 */
+	public static function cleanEventLog()
+	{
+		try
+		{
+			$db_obj = new self();
+			foreach ( self::$logType as $type_name )
+			{
+				$sql = "DELETE FROM {$type_name}";
+				$sql .= " WHERE datetime(event_date) < datetime('now', '-10 days', 'localtime')";
+				$stmt = $db_obj->db->prepare($sql);
+				$stmt->execute();
+			}
+			$stmt->closeCursor();
+		}
+		catch (PDOException $e)
+		{
+			UtilLog::writeLog($e->getMessage());
+		}
 	}
 }
 ?>
