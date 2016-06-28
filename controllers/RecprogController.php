@@ -44,7 +44,7 @@ class RecprogController extends CommonController
 		$channel_id = ($this->request->getPost('station')) ? $this->request->getPost('station') : 0;
 
 		$records = array();
-		$rvs = $this->model->getRecordedData($this->request->getPost());
+		$rvs = $this->model->getRecordedData($this->request->getQuery(), $this->request->getPost());
 		foreach ( $rvs as $r )
 		{
 			$param = array();

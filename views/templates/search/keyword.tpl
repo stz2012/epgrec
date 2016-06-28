@@ -25,8 +25,8 @@
 <tbody>
 {foreach from=$keywords item=keyword}
  <tr id="keyid_{$keyword.id}">
-  <td><a href="{$home_url}recprog/recorded?key={$keyword.id}">{$keyword.id}</a></td>
-  <td><a href="{$home_url}recprog/recorded?key={$keyword.id}">{$keyword.keyword|escape}</a></td>
+  <td><a href="{$home_url}recprog/recorded?{$keyword.link}">{$keyword.id}</a></td>
+  <td><a href="{$this_class->getCurrentUri(false)}?{$keyword.link}">{$keyword.keyword|escape}</a></td>
   <td>{if $keyword.use_regexp}使う{else}使わない{/if}</td>
   <td>{$keyword.type}</td>
   <td>{$keyword.channel}</td>

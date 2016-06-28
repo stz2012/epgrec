@@ -20,7 +20,19 @@ class SearchController extends CommonController
 		$prgtime = 24;
 
 		// パラメータの処理
-		if ( $this->request->getPost('do_search') )
+		if ( $this->request->getQuery('keyword_id') )
+		{
+			$keyword_id = (int)($this->request->getQuery('keyword_id'));
+			$recs = DBRecord::createRecords( KEYWORD_TBL, "WHERE id = {$keyword_id}");
+			$search = $recs[0]->keyword;
+			$use_regexp = (int)$recs[0]->use_regexp;
+			$type = $recs[0]->type;
+			$channel_id = (int)($recs[0]->channel_id);
+			$category_id = (int)($recs[0]->category_id);
+			$prgtime = (int)($recs[0]->prgtime);
+			$weekofday = (int)($recs[0]->weekofday);
+		}
+		else if ( $this->request->getPost('do_search') )
 		{
 			if ( $this->request->getPost('search') )
 			{
@@ -116,6 +128,9 @@ class SearchController extends CommonController
 				$arr['prgtime']      = $prgtimes["$rec->prgtime"];
 				$arr['weekofday']    = $weekofdays["$rec->weekofday"];
 				$arr['autorec_mode'] = $RECORD_MODE[(int)$rec->autorec_mode]['name'];
+				$param = array();
+				$param['keyword_id'] = $rec->id;
+				$arr['link']         = UtilString::buildQueryString($param);
 				array_push( $keywords, $arr );
 			}
 		}

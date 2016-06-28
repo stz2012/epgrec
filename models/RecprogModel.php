@@ -8,10 +8,11 @@ class RecprogModel extends CommonModel
 {
 	/**
 	 * 予約データ取得
+	 * @param array $GET_DATA GETデータ
 	 * @param array $POST_DATA POSTデータ
 	 * @return array
 	 */
-	public function getReserveData($POST_DATA)
+	public function getReserveData($GET_DATA, $POST_DATA)
 	{
 		$reserve_data = array();
 		$sql = "SELECT a.*, b.name_en AS cat, c.name AS station_name";
@@ -21,18 +22,22 @@ class RecprogModel extends CommonModel
 		$sql .= " LEFT JOIN ".$this->getFullTblName(CHANNEL_TBL)." c";
 		$sql .= "   ON a.channel_id = c.id";
 		$sql .= " WHERE a.complete = '0'";
-		if ($POST_DATA['do_search'] != "")
+		if ($GET_DATA['keyword_id'] != "")
+			$sql .= " AND a.autorec = :key_id";
+		else if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")
 				$sql .= " AND CONCAT(title, description) LIKE :search";
 			if ($POST_DATA['category_id'] != 0)
-				$sql .= " AND category_id= :cate_id";
+				$sql .= " AND category_id = :cate_id";
 			if ($POST_DATA['station'] != 0)
-				$sql .= " AND channel_id= :station";
+				$sql .= " AND channel_id = :station";
 		}
 		$sql .= " ORDER BY starttime ASC";
 		$stmt = $this->db->prepare($sql);
-		if ($POST_DATA['do_search'] != "")
+		if ($GET_DATA['keyword_id'] != "")
+			$stmt->bindValue(':key_id', $GET_DATA['keyword_id']);
+		else if ($POST_DATA['do_search'] != "")
 		{
 			if ($POST_DATA['search'] != "")
 				$stmt->bindValue(':search', "%{$POST_DATA['search']}%");
@@ -67,9 +72,9 @@ class RecprogModel extends CommonModel
 			if ($POST_DATA['search'] != "")
 				$sql .= " AND CONCAT(title, description) LIKE :search";
 			if ($POST_DATA['category_id'] != 0)
-				$sql .= " AND category_id= :cate_id";
+				$sql .= " AND category_id = :cate_id";
 			if ($POST_DATA['station'] != 0)
-				$sql .= " AND channel_id= :station";
+				$sql .= " AND channel_id = :station";
 		}
 		$sql .= " ORDER BY starttime DESC";
 		$stmt = $this->db->prepare($sql);
