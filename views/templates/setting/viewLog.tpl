@@ -8,11 +8,10 @@
 <div class="container nonborderbox">
 <form method="post" action="{$this_class->getCurrentUri()}" class="formSetting">
 <div class="setting">
-<div class="caption">ログ種別を選択してください。</div>
-  <select name="log_type" id="id_log_type">
-    <option value=""></option>
+ログ種別：<select name="log_type" id="id_log_type">
+<option value=""></option>
 {html_options options=$log_types selected=$post_data.log_type onchange="this.form.submit();"}
-  </select>
+</select>
 </div>
 {if count($logs)}
 <table id="log_table" class="table">

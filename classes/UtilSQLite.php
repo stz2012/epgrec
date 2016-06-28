@@ -249,19 +249,19 @@ SQL_TEXT;
 			switch ( $val )
 			{
 				case 'chkstatus':
-					$retval[$type_name] = '状態チェックログ';
+					$retval[$val] = '状態チェックログ';
 					break;
 				case 'encode':
-					$retval[$type_name] = 'エンコードログ';
+					$retval[$val] = 'エンコードログ';
 					break;
 				case 'recorder':
-					$retval[$type_name] = 'レコーダーログ';
+					$retval[$val] = 'レコーダーログ';
 					break;
 				case 'shutdown':
-					$retval[$type_name] = 'ＰＣ終了ログ';
+					$retval[$val] = 'ＰＣ終了ログ';
 					break;
 				case 'wakeup':
-					$retval[$type_name] = 'ＰＣ起動ログ';
+					$retval[$val] = 'ＰＣ起動ログ';
 					break;
 			}
 		}
