@@ -265,6 +265,19 @@ class ModelBase
 	}
 
 	/**
+	 * 最終挿入行IDを取得
+	 * @param string $tableName
+	 * @return int
+	 */
+	public function getLastInsertId($tableName=Null)
+	{
+		if (self::getDbType() == 'pgsql' && $tableName)
+			return $this->db->lastInsertId("{$tableName}_id_seq");
+		else
+			return $this->db->lastInsertId();
+	}
+
+	/**
 	 * PDOパラメータタイプを所得
 	 * @param mixed $val
 	 * @return int|null

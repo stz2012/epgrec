@@ -333,7 +333,7 @@ class IndexController extends CommonController
 	 */
 	public function setChannelInfoAction()
 	{
-		if ( $this->request->getPost('sid') && $this->request->getPost('channel_disc') && $this->request->getPost('skip') )
+		if ( $this->request->getPost('sid') && $this->request->getPost('channel_disc') )
 		{
 			try
 			{
