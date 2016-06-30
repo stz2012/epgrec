@@ -152,10 +152,11 @@ function set_wakealarm( $wake_datetime )
 
 	// 起動時間を書込（LOCAL／UTC時間）
 	$fp = fopen( $ACPI_TIMER_PATH, 'w' );
-	if (system('cat /etc/adjtime | tail -n 1') == 'LOCAL')
-		fwrite($fp , ''.(toTimestamp($wake_datetime) + 60 * 60 * 9));
-	else
+	exec('cat /etc/adjtime | tail -n 1', $stdout);
+	if (count($stdout) > 0 && $stdout[0] == 'LOCAL')
 		fwrite($fp , ''.toTimestamp($wake_datetime));
+	else
+		fwrite($fp , ''.(toTimestamp($wake_datetime) - 60 * 60 * 9));
 	fclose($fp);
 }
 
