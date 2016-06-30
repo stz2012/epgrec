@@ -171,6 +171,7 @@ table#log_table td {
 table#log_table td.errorlevel0 {background-color: #FFF;}
 table#log_table td.errorlevel1 {background-color: yellow;}
 table#log_table td.errorlevel2 {background-color: red;}
+table#log_table td.contents {text-align: left;}
 
 div.setting { padding: 0px; margin-left: 20px; margin-bottom: 20px;}
 

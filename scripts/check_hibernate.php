@@ -25,6 +25,7 @@ try
 	if ($waketime > 0)
 	{
 		UtilSQLite::outEventLog('chkstatus', '【ハイバネートチェック】次回予約データが存在した');
+		sleep(3);
 		if (toTimestamp($waketime) < toTimestamp($date_str))
 		{
 			UtilSQLite::outEventLog('chkstatus', "【ハイバネートチェック】次回予約の {$settings->wakeup_before} 分前に起動時間をセット");

@@ -32,7 +32,7 @@
     {/if}
   </td>
   <td>{$log.logtime}</td>
-  <td>{$log.message|escape}</td>
+  <td class="contents">{$log.message|escape}</td>
  </tr>
 {/foreach}
 </tbody>
@@ -49,7 +49,7 @@
 {foreach from=$events item=log}
  <tr>
   <td>{$log.event_date}</td>
-  <td>{$log.event_comment|escape}</td>
+  <td class="contents">{$log.event_comment|escape}</td>
  </tr>
 {/foreach}
 </tbody>
