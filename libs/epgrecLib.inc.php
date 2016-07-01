@@ -154,7 +154,7 @@ function set_wakealarm( $wake_datetime )
 	$fp = fopen( $ACPI_TIMER_PATH, 'w' );
 	exec('cat /etc/adjtime | tail -n 1', $stdout);
 	if (count($stdout) > 0 && $stdout[0] == 'LOCAL')
-		fwrite($fp , ''.toTimestamp($wake_datetime));
+		fwrite($fp , ''.(toTimestamp($wake_datetime) + 60 * 60 * 9));
 	else
 		fwrite($fp , ''.(toTimestamp($wake_datetime) - 60 * 60 * 9));
 	fclose($fp);
