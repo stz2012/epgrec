@@ -17,7 +17,7 @@ class RecprogController extends CommonController
 		$channel_id = ($this->request->getPost('station')) ? $this->request->getPost('station') : 0;
 
 		$reservations = array();
-		$rvs = $this->model->getReserveData($this->request->getPost());
+		$rvs = $this->model->getReserveData($this->request->getQuery(), $this->request->getPost());
 		foreach ( $rvs as $r )
 		{
 			$r['mode'] = $RECORD_MODE[$r['mode']]['name'];
