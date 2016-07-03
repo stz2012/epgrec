@@ -155,7 +155,7 @@ function set_wakealarm( $wake_datetime )
 	if (exec('cat /etc/adjtime | tail -n 1') == 'LOCAL')
 		fwrite($fp , ''.(toTimestamp($wake_datetime) + 60 * 60 * 9));
 	else
-		fwrite($fp , ''.toTimestamp($wake_datetime);
+		fwrite($fp , ''.toTimestamp($wake_datetime));
 	fclose($fp);
 }
 
