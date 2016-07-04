@@ -13,7 +13,7 @@
 {html_options options=$log_types selected=$post_data.log_type}
 </select>
 </div>
-{if count($logs)}
+{if isset($logs) && count($logs) > 0}
 <table id="log_table" class="table">
 <thead>
  <tr>
@@ -37,7 +37,7 @@
 {/foreach}
 </tbody>
 </table>
-{elseif count($events)}
+{elseif isset($events) && count($events) > 0}
 <table id="log_table" class="table">
 <thead>
  <tr>
