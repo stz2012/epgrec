@@ -9,7 +9,7 @@
 <form method="post" action="{$this_class->getCurrentUri()}" class="formSetting">
 <div class="setting">
 ログ種別：<select name="log_type" id="id_log_type" onchange="this.form.submit();">
-<option value=""> </option>
+<option value="">&nbsp;</option>
 {html_options options=$log_types selected=$post_data.log_type}
 </select>
 </div>
