@@ -6,6 +6,16 @@ include_once( dirname( $script_path ) . '/config.php');
 
 $settings = Settings::factory();
 
+// ユーザー/グループの切り替えを試みる
+if ( intval($settings->use_power_reduce) != 0 )
+{
+	$userinfo  = posix_getpwnam( $settings->www_user );
+	$groupinfp = posix_getgrnam( $settings->www_group );
+
+	posix_setgid( $groupinfo['gid'] );
+	posix_setuid( $userinfo['uid'] );
+}
+
 try
 {
 	$procMng = new EpgrecProcMng();
