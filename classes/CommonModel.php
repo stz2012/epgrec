@@ -86,6 +86,8 @@ class CommonModel extends ModelBase
 	public function setUserInfo($user_id, $user_data)
 	{
 		unset($user_data['token']);
+		$user_data['name'] = $user_data['user_name'];
+		unset($user_data['user_name']);
 		if ($user_data['login_pass'] != '')
 			$user_data['login_pass'] = sha1($user_data['login_pass']);
 		else
