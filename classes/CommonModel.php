@@ -79,6 +79,21 @@ class CommonModel extends ModelBase
 	}
 
 	/**
+	 * ユーザ情報設定
+	 * @param int $user_id 
+	 * @param array $user_data
+	 */
+	public function setUserInfo($user_id, $user_data)
+	{
+		unset($user_data['token']);
+		if ($user_data['login_pass'] != '')
+			$user_data['login_pass'] = sha1($user_data['login_pass']);
+		else
+			unset($user_data['login_pass']);
+		$this->updateRow($this->getFullTblName(USER_TBL), $user_data, array('id' => $user_id));
+	}
+
+	/**
 	 * 録画中かどうか
 	 * @return bool
 	 */

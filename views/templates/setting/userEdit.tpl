@@ -10,7 +10,7 @@
 </div>
 
 <div class="container">
-<form id="user_setting" method="post" action="{$post_to}" class="formSetting">
+<form id="user_setting" method="post" action="{$post_to}?{$smarty.server.QUERY_STRING}" class="formSetting">
 
 <h2>ユーザ設定</h2>
 

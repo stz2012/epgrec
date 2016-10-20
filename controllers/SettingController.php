@@ -47,7 +47,15 @@ class SettingController extends CommonController
 		$user_id = $this->request->getQuery('user_id');
 		if ($user_id != '')
 		{
+			$POST_DATA = $this->request->getPost();
+			if ($POST_DATA['token'] != '')
+			{
+				$this->model->setUserInfo($user_id, $POST_DATA);
+				jdialog( '編集が完了しました。', "{$this->getCurrentUri(false)}/userList" );
+				exit;
+			}
 			$this->view->assign( 'sitetitle' , 'ユーザ編集' );
+			$this->view->assign( 'post_to',    "{$this->getCurrentUri()}" );
 			$this->view->assign( 'user_data',  $this->model->getUserInfo($user_id) );
 		}
 		else
