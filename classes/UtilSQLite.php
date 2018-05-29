@@ -71,7 +71,7 @@ SQL_TEXT;
 				{
 					$sql = <<<SQL_TEXT
 DROP TABLE IF EXISTS `{$type_name}`;
-CREATE TABLE `chkstatus` (
+CREATE TABLE `{$type_name}` (
   `event_id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `event_date` TIMESTAMP DEFAULT (DATETIME('now','localtime')),
   `event_comment` varchar(512) DEFAULT NULL
