@@ -9,5 +9,11 @@
     },
     "config": {
         "vendor-dir": "libs"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "chmod 707 settings",
+            "chmod 707 views/templates"
+        ]
     }
 }
