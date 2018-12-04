@@ -13,7 +13,7 @@
     "scripts": {
         "post-install-cmd": [
             "chmod 707 settings",
-            "chmod 707 views/templates"
+            "chmod 707 views/templates_c"
         ]
     }
 }
