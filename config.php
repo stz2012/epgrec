@@ -64,8 +64,8 @@ define( 'LOG_FILEPATH', INSTALL_PATH.'/log/' );					// ログファイルパス
 define( 'DB_FILEPATH',  INSTALL_PATH.'/settings/epgrec.db' );	// ＤＢファイルパス
 
 // ライブラリのディレクトリをinclude_pathに追加
-$includes = array(INSTALL_PATH.'/classes', INSTALL_PATH.'/libs');
-$incPath = implode(PATH_SEPARATOR, $includes);
+$incPath = array(INSTALL_PATH.'/classes', INSTALL_PATH.'/libs');
+set_include_path(implode(PATH_SEPARATOR, $incPath));
 require_once 'autoload.php';
 require_once 'epgrecLib.inc.php';
 setlocale(LC_ALL, 'ja_JP.UTF-8');
