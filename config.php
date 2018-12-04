@@ -66,7 +66,6 @@ define( 'DB_FILEPATH',  INSTALL_PATH.'/settings/epgrec.db' );	// ＤＢファイ
 // ライブラリのディレクトリをinclude_pathに追加
 $includes = array(INSTALL_PATH.'/classes', INSTALL_PATH.'/libs');
 $incPath = implode(PATH_SEPARATOR, $includes);
-set_include_path(get_include_path() . PATH_SEPARATOR . $incPath);
 require_once 'Smarty/Smarty.class.php';
 require_once 'epgrecLib.inc.php';
 setlocale(LC_ALL, 'ja_JP.UTF-8');

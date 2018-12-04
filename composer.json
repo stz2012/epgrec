@@ -1,0 +1,20 @@
+{
+    "name": "stz2012/epgrec_neo",
+    "type": "project",
+    "description": "",
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "pear",
+            "url": "https://pear.php.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.6",
+        "pear-pear.php.net/PEAR": "*",
+        "pear-pear.php.net/Crypt_Blowfish": "*",
+        "pear-pear.php.net/Mail": "*",
+        "pear-pear.php.net/Mail_Mime": "*",
+        "smarty/smarty": "~3.1"
+    }
+}
