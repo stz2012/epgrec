@@ -11,6 +11,11 @@
     "config": {
         "vendor-dir": "libs"
     },
+    "autoload": {
+        "classmap": [
+            "libs/"
+        ]
+    },
     "scripts": {
         "post-install-cmd": [
             "chmod 707 settings",
