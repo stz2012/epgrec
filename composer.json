@@ -11,6 +11,13 @@
     "config": {
         "vendor-dir": "libs"
     },
+    "autoload": {
+        "classmap": [
+            "classes/",
+            "controllers/",
+            "models/"
+        ]
+    },
     "scripts": {
         "post-install-cmd": [
             "chmod 707 settings",
