@@ -67,13 +67,8 @@ define( 'DB_FILEPATH',  INSTALL_PATH.'/settings/epgrec.db' );	// ＤＢファイ
 $incPath = array(INSTALL_PATH.'/classes', INSTALL_PATH.'/libs');
 set_include_path(implode(PATH_SEPARATOR, $incPath));
 require_once 'autoload.php';
-require_once 'smarty/smarty/libs/Smarty.class.php';
 require_once 'epgrecLib.inc.php';
 setlocale(LC_ALL, 'ja_JP.UTF-8');
-spl_autoload_register(function ($className) {
-	$file_name = preg_replace('/[^a-z_A-Z0-9]/u', '', $className) . '.php';
-	require_once $file_name;
-});
 
 // 以降は必要に応じて変更する
 define( 'PADDING_TIME',  180 );											// 詰め物時間
