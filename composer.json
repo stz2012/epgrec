@@ -3,16 +3,10 @@
     "type": "project",
     "description": "",
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "pear",
-            "url": "https://pear.php.net"
-        }
-    ],
     "require": {
         "php": ">=5.3.6",
-        "pear-pear.php.net/PEAR": "*",
-        "smarty/smarty": "~3.1"
+        "pear/pear": "*@stable",
+        "smarty/smarty": "*@stable"
     },
     "config": {
         "vendor-dir": "libs"
